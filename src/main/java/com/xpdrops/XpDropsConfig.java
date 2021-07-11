@@ -1,6 +1,5 @@
 package com.xpdrops;
 
-import net.runelite.client.config.Alpha;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -52,7 +51,7 @@ public interface XpDropsConfig extends Config
 	{
 		return true;
 	}
-	
+
 	@ConfigItem(
 		keyName = "groupedDelay",
 		name = "XP drop delay",
@@ -238,5 +237,16 @@ public interface XpDropsConfig extends Config
 	default boolean attachToPlayer()
 	{
 		return false;
+	}
+
+	@ConfigItem(
+		keyName = "skillsToFilter",
+		name = "Skills to filter",
+		description = "Names of the skills for which a XP drop should not be shown, each name separated by a comma. Must be the full name of the skill as shown when hovered in the skills tab.",
+		position = 15
+	)
+	default String skillsToFilter()
+	{
+		return "";
 	}
 }

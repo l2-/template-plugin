@@ -19,11 +19,14 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
+import net.runelite.client.util.Text;
 
 import javax.inject.Inject;
 import java.awt.image.BufferedImage;
-import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.PriorityQueue;
+import java.util.stream.Collectors;
 
 import static net.runelite.api.ScriptID.XPDROPS_SETDROPSIZE;
 
@@ -58,8 +61,16 @@ public class CustomizableXpDropsPlugin extends Plugin
 		return (XpDropsConfig)configManager.getConfig(XpDropsConfig.class);
 	}
 
+	int skillPriorityComparator(XpDrop x1, XpDrop x2)
+	{
+		int priority1 = XpDropOverlay.SKILL_PRIORITY[x1.getSkill().ordinal()];
+		int priority2 = XpDropOverlay.SKILL_PRIORITY[x2.getSkill().ordinal()];
+		return Integer.compare(priority1, priority2);
+	}
+
 	@Getter
-	private final ArrayDeque<XpDrop> queue = new ArrayDeque<>();
+	private final PriorityQueue<XpDrop> queue = new PriorityQueue<>(this::skillPriorityComparator);
+	private final HashSet<String> filteredSkills = new HashSet<>();
 	private static final int[] previous_exp = new int[Skill.values().length - 1];
 	private static final int[] SKILL_ICON_ORDINAL_ICONS = new int[]{197, 199, 198, 203, 200, 201, 202, 212, 214, 208,
 		211, 213, 207, 210, 209, 205, 204, 206, 216, 217, 215, 220, 221};
@@ -122,6 +133,16 @@ public class CustomizableXpDropsPlugin extends Plugin
 					overlayManager.add(currentOverlay);
 				}
 			}
+			if ("skillsToFilter".equals(configChanged.getKey()))
+			{
+				filteredSkills.clear();
+				filteredSkills.addAll(Text.fromCSV(config.skillsToFilter()).stream().map(String::toLowerCase).collect(Collectors.toList()));
+				// Since most people know this skill by runecrafting not runecraft
+				if (filteredSkills.contains("runecrafting"))
+				{
+					filteredSkills.add("runecraft");
+				}
+			}
 		}
 	}
 
@@ -162,6 +183,11 @@ public class CustomizableXpDropsPlugin extends Plugin
 			// fake fake xp drop?
 			return;
 		}
+		if (filteredSkills.contains(event.getSkill().getName().toLowerCase()))
+		{
+			return;
+		}
+
 		XpDrop xpDrop = new XpDrop(event.getSkill(), currentXp, matchPrayerStyle(event.getSkill()), true);
 		queue.add(xpDrop);
 	}
@@ -171,7 +197,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 	{
 		int currentXp = event.getXp();
 		int previousXp = previous_exp[event.getSkill().ordinal()];
-		if (previousXp > 0 && currentXp - previousXp > 0)
+		if (previousXp > 0 && currentXp - previousXp > 0 && !filteredSkills.contains(event.getSkill().getName().toLowerCase()))
 		{
 			XpDrop xpDrop = new XpDrop(event.getSkill(), currentXp - previousXp, matchPrayerStyle(event.getSkill()), false);
 			queue.add(xpDrop);

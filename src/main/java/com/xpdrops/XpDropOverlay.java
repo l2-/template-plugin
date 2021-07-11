@@ -19,6 +19,7 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 @Slf4j
 public class XpDropOverlay extends Overlay
@@ -28,6 +29,8 @@ public class XpDropOverlay extends Overlay
 	protected static final DecimalFormat xpFormatter = new DecimalFormat(pattern);
 	protected static final ArrayList<XpDropInFlight> xpDropsInFlight = new ArrayList<>();
 	protected static final BufferedImage[] STAT_ICONS = new BufferedImage[Skill.values().length - 1];
+	protected static final int[] SKILL_INDICES = new int[] {10, 0, 2, 4, 6, 1, 3, 5, 16, 15, 17, 12, 20, 14, 13, 7, 11, 8, 9, 18, 19, 22, 21};
+	protected static final int[] SKILL_PRIORITY = new int[] {1, 5, 2, 6, 3, 7, 4, 15, 17, 18, 0, 16, 11, 14, 13, 9, 8, 10, 19, 20, 12, 22, 21};
 	protected static BufferedImage FAKE_SKILL_ICON;
 
 	protected CustomizableXpDropsPlugin plugin;
@@ -163,12 +166,13 @@ public class XpDropOverlay extends Overlay
 	{
 		if (config.showIcons())
 		{
-			for (int i = STAT_ICONS.length - 1; i >= 0; i--)
+			for (int i = SKILL_INDICES.length - 1; i >= 0; i--)
 			{
 				int icon = (icons >> i) & 0x1;
 				if (icon == 0x1)
 				{
-					BufferedImage image = STAT_ICONS[i];
+					int index = SKILL_INDICES[i];
+					BufferedImage image = STAT_ICONS[index];
 					Dimension dimension = drawIcon(graphics, image, x, y, alpha / 0xff);
 
 					x -= dimension.getWidth() + 2;
@@ -315,7 +319,7 @@ public class XpDropOverlay extends Overlay
 			while (xpDrop != null)
 			{
 				amount += xpDrop.getExperience();
-				icons |= 1 << xpDrop.getSkill().ordinal();
+				icons |= 1 << SKILL_PRIORITY[xpDrop.getSkill().ordinal()];
 				if (xpDrop.getStyle() != XpDropStyle.DEFAULT)
 				{
 					style = xpDrop.getStyle();
@@ -342,7 +346,7 @@ public class XpDropOverlay extends Overlay
 			XpDropStyle style  = XpDropStyle.DEFAULT;
 			while (xpDrop != null)
 			{
-				int icons = 1 << xpDrop.getSkill().ordinal();;
+				int icons = 1 << SKILL_PRIORITY[xpDrop.getSkill().ordinal()];
 				int amount = xpDrop.getExperience();
 				if (xpDrop.getStyle() != XpDropStyle.DEFAULT)
 				{
