@@ -69,7 +69,7 @@ public class XpDropOverlayActor extends XpDropOverlay
 			float xStart = xpDropInFlight.xOffset;
 			float yStart = xpDropInFlight.yOffset;
 
-			int x = (int) (xStart - graphics.getFontMetrics().stringWidth(text) / 2 + _x);
+			int x = (int) (xStart + _x);
 			int y = (int) (yStart + _y);
 
 			Color _color = getColor(xpDropInFlight);
@@ -82,7 +82,7 @@ public class XpDropOverlayActor extends XpDropOverlay
 
 			int imageX = x - 2;
 			int imageY = y - graphics.getFontMetrics().getMaxAscent();
-			drawIcons(graphics, xpDropInFlight.icons, imageX, imageY, xpDropInFlight.alpha);
+			drawIcons(graphics, xpDropInFlight.icons, imageX, imageY, xpDropInFlight.alpha, true);
 		}
 	}
 }

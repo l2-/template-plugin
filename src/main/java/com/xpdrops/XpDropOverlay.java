@@ -19,7 +19,6 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 @Slf4j
 public class XpDropOverlay extends Overlay
@@ -51,28 +50,6 @@ public class XpDropOverlay extends Overlay
 		setPosition(OverlayPosition.TOP_RIGHT);
 	}
 
-	@Override
-	public Dimension render(Graphics2D graphics)
-	{
-		if (firstRender)
-		{
-			firstRender = false;
-			initIcons();
-		}
-
-		update();
-
-		drawXpDrops(graphics);
-
-		FontMetrics fontMetrics = graphics.getFontMetrics();
-		int width = fontMetrics.stringWidth(pattern);
-		width += Math.abs(config.framesPerDrop() * config.xPixelsPerSecond() / FRAMES_PER_SECOND);
-		int height = fontMetrics.getHeight();
-		height += Math.abs(config.framesPerDrop() * config.yPixelsPerSecond() / FRAMES_PER_SECOND);
-
-		return new Dimension(width, height);
-	}
-
 	protected void initIcons()
 	{
 		for (int i = 0; i < STAT_ICONS.length; i++)
@@ -80,62 +57,6 @@ public class XpDropOverlay extends Overlay
 			STAT_ICONS[i] = plugin.getSkillIcon(Skill.values()[i]);
 		}
 		FAKE_SKILL_ICON = plugin.getIcon(423, 11);
-	}
-
-	protected void drawXpDrops(Graphics2D graphics)
-	{
-		graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-
-		handleFont(graphics);
-
-		int width = graphics.getFontMetrics().stringWidth(pattern);
-		int totalWidth = width + (int)Math.abs(config.framesPerDrop() * config.xPixelsPerSecond() / FRAMES_PER_SECOND);
-		int height = graphics.getFontMetrics().getHeight();
-		int totalHeight = height + (int)Math.abs(config.framesPerDrop() * config.yPixelsPerSecond() / FRAMES_PER_SECOND);
-
-		for (XpDropInFlight xpDropInFlight : xpDropsInFlight)
-		{
-			if (xpDropInFlight.frame < 0)
-			{
-				continue;
-			}
-			String text = xpFormatter.format(xpDropInFlight.amount);
-
-			float xStart = xpDropInFlight.xOffset;
-			float yStart = xpDropInFlight.yOffset;
-
-			int x;
-			if (config.xDirection() == XpDropsConfig.HorizontalDirection.RIGHT)
-			{
-				x = (int) (xStart);
-			}
-			else
-			{
-				x = (int) (totalWidth + xStart - graphics.getFontMetrics().stringWidth(text));
-			}
-
-			int y;
-			if (config.yDirection() == XpDropsConfig.VerticalDirection.DOWN)
-			{
-				y = (int) (yStart + graphics.getFontMetrics().getMaxAscent());
-			}
-			else
-			{
-				y = (int) (totalHeight + yStart + graphics.getFontMetrics().getMaxAscent() - graphics.getFontMetrics().getHeight());
-			}
-
-			Color _color = getColor(xpDropInFlight);
-			Color backgroundColor = new Color(0, 0, 0, (int)xpDropInFlight.alpha);
-			Color color = new Color(_color.getRed(), _color.getGreen(), _color.getBlue(), (int)xpDropInFlight.alpha);
-			graphics.setColor(backgroundColor);
-			graphics.drawString(text, x + 1, y + 1);
-			graphics.setColor(color);
-			graphics.drawString(text, x, y);
-
-			int imageX = x - 2;
-			int imageY = y - graphics.getFontMetrics().getMaxAscent();
-			drawIcons(graphics, xpDropInFlight.icons, imageX, imageY, xpDropInFlight.alpha);
-		}
 	}
 
 	protected void handleFont(Graphics2D graphics)
@@ -162,8 +83,99 @@ public class XpDropOverlay extends Overlay
 		}
 	}
 
-	protected void drawIcons(Graphics2D graphics, int icons, int x, int y, float alpha)
+	@Override
+	public Dimension render(Graphics2D graphics)
 	{
+		if (firstRender)
+		{
+			firstRender = false;
+			initIcons();
+		}
+
+		update();
+
+		drawXpDrops(graphics);
+
+		// Roughly estimate a bounding box that doesn't take icons into account.
+		FontMetrics fontMetrics = graphics.getFontMetrics();
+		int width = fontMetrics.stringWidth(pattern);
+		width += Math.abs(config.framesPerDrop() * config.xPixelsPerSecond() / FRAMES_PER_SECOND);
+		int height = fontMetrics.getHeight();
+		height += Math.abs(config.framesPerDrop() * config.yPixelsPerSecond() / FRAMES_PER_SECOND);
+
+		return new Dimension(width, height);
+	}
+
+	protected void drawXpDrops(Graphics2D graphics)
+	{
+		graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+
+		handleFont(graphics);
+
+		int width = graphics.getFontMetrics().stringWidth(pattern);
+		int totalWidth = width + (int)Math.abs(config.framesPerDrop() * config.xPixelsPerSecond() / FRAMES_PER_SECOND);
+		int height = graphics.getFontMetrics().getHeight();
+		int totalHeight = height + (int)Math.abs(config.framesPerDrop() * config.yPixelsPerSecond() / FRAMES_PER_SECOND);
+
+		for (XpDropInFlight xpDropInFlight : xpDropsInFlight)
+		{
+			if (xpDropInFlight.frame < 0)
+			{
+				continue;
+			}
+			String text = xpFormatter.format(xpDropInFlight.amount);
+
+			float xStart = xpDropInFlight.xOffset;
+			float yStart = xpDropInFlight.yOffset;
+
+			int textY;
+			if (config.yDirection() == XpDropsConfig.VerticalDirection.DOWN)
+			{
+				textY = (int) (yStart + graphics.getFontMetrics().getMaxAscent());
+			}
+			else
+			{
+				textY = (int) (totalHeight + yStart + graphics.getFontMetrics().getMaxAscent() - graphics.getFontMetrics().getHeight());
+			}
+
+			int textX;
+			if (config.xDirection() == XpDropsConfig.HorizontalDirection.RIGHT)
+			{
+				// Direction left to right, draw icons first and text second
+				int imageX = (int) (xStart);
+				int imageY = textY - graphics.getFontMetrics().getMaxAscent();
+				int imageWidth = drawIcons(graphics, xpDropInFlight.icons, imageX, imageY, xpDropInFlight.alpha, false);
+
+				textX = imageX + imageWidth;
+				drawText(graphics, text, textX, textY, xpDropInFlight);
+			}
+			else
+			{
+				// Direction right to left, draw text first and icons second
+				textX = (int) (totalWidth + xStart - graphics.getFontMetrics().stringWidth(text));
+				drawText(graphics, text, textX, textY, xpDropInFlight);
+
+				int imageX = textX - 2;
+				int imageY = textY - graphics.getFontMetrics().getMaxAscent();
+				drawIcons(graphics, xpDropInFlight.icons, imageX, imageY, xpDropInFlight.alpha, true);
+			}
+		}
+	}
+
+	protected void drawText(Graphics2D graphics, String text, int textX, int textY, XpDropInFlight xpDropInFlight)
+	{
+		Color _color = getColor(xpDropInFlight);
+		Color backgroundColor = new Color(0, 0, 0, (int)xpDropInFlight.alpha);
+		Color color = new Color(_color.getRed(), _color.getGreen(), _color.getBlue(), (int)xpDropInFlight.alpha);
+		graphics.setColor(backgroundColor);
+		graphics.drawString(text, textX + 1, textY + 1);
+		graphics.setColor(color);
+		graphics.drawString(text, textX, textY);
+	}
+
+	protected int drawIcons(Graphics2D graphics, int icons, int x, int y, float alpha, boolean rightToLeft)
+	{
+		int width = 0;
 		if (config.showIcons())
 		{
 			for (int i = SKILL_INDICES.length - 1; i >= 0; i--)
@@ -173,9 +185,17 @@ public class XpDropOverlay extends Overlay
 				{
 					int index = SKILL_INDICES[i];
 					BufferedImage image = STAT_ICONS[index];
-					Dimension dimension = drawIcon(graphics, image, x, y, alpha / 0xff);
+					Dimension dimension = drawIcon(graphics, image, x, y, alpha / 0xff, rightToLeft);
 
-					x -= dimension.getWidth() + 2;
+					if (rightToLeft)
+					{
+						x -= dimension.getWidth() + 2;
+					}
+					else
+					{
+						x += dimension.getWidth() + 2;
+					}
+					width += dimension.getWidth() + 2;
 				}
 			}
 
@@ -185,15 +205,17 @@ public class XpDropOverlay extends Overlay
 				if (icon == 0x1)
 				{
 					BufferedImage image = FAKE_SKILL_ICON;
-					int size = graphics.getFontMetrics().getHeight();
-					size = Math.max(size, 18);
-					drawIcon(graphics, image, x, y, size, size, alpha / 0xff);
+					int size = graphics.getFontMetrics().getHeight() - 4;
+					size = Math.max(size, 14);
+					Dimension dimension = drawIcon(graphics, image, x, y, size, size, alpha / 0xff, rightToLeft);
+					width += dimension.getWidth() + 2;
 				}
 			}
 		}
+		return width;
 	}
 
-	private Dimension drawIcon(Graphics2D graphics, BufferedImage image, int x, int y, float alpha)
+	private Dimension drawIcon(Graphics2D graphics, BufferedImage image, int x, int y, float alpha, boolean rightToLeft)
 	{
 		int size = graphics.getFontMetrics().getHeight();
 		size = Math.max(size, 18);
@@ -201,22 +223,23 @@ public class XpDropOverlay extends Overlay
 		int iconHeight = image.getHeight() * size / 25;
 
 		int yOffset = graphics.getFontMetrics().getHeight() / 2 - iconHeight / 2;
+		int xOffset = rightToLeft ? iconWidth : 0;
 
 		Composite composite = graphics.getComposite();
 		graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
-		graphics.drawImage(image, x - iconWidth, y + yOffset, iconWidth, iconHeight, null);
+		graphics.drawImage(image, x - xOffset, y + yOffset, iconWidth, iconHeight, null);
 		graphics.setComposite(composite);
 		return new Dimension(iconWidth, iconHeight);
 	}
 
-	private Dimension drawIcon(Graphics2D graphics, BufferedImage image, int x, int y, int width, int height, float alpha)
+	private Dimension drawIcon(Graphics2D graphics, BufferedImage image, int x, int y, int width, int height, float alpha, boolean rightToLeft)
 	{
-
 		int yOffset = graphics.getFontMetrics().getHeight() / 2 - height / 2;
+		int xOffset = rightToLeft ? width : 0;
 
 		Composite composite = graphics.getComposite();
 		graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
-		graphics.drawImage(image, x - width, y + yOffset, width, height, null);
+		graphics.drawImage(image, x - xOffset, y + yOffset, width, height, null);
 		graphics.setComposite(composite);
 		return new Dimension(width, height);
 	}
