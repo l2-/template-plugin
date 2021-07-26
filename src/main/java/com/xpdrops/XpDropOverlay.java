@@ -309,6 +309,13 @@ public class XpDropOverlay extends Overlay
 
 	private void pollDrops()
 	{
+		int lastFrame = 0;
+		if (xpDropsInFlight.size() > 0)
+		{
+			XpDropInFlight xpDropInFlight = xpDropsInFlight.get(xpDropsInFlight.size() - 1);
+			lastFrame = xpDropInFlight.frame;
+			lastFrame -= config.groupedDelay();
+		}
 		if (config.isGrouped())
 		{
 			int amount = 0;
@@ -334,7 +341,7 @@ public class XpDropOverlay extends Overlay
 			}
 			if (amount > 0)
 			{
-				XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, amount, style,0, 0, 0xff, 0);
+				XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, amount, style,0, 0, 0xff, Math.min(lastFrame, 0));
 				xpDropsInFlight.add(xpDropInFlight);
 			}
 		}
@@ -360,7 +367,7 @@ public class XpDropOverlay extends Overlay
 					icons |= 1 << 23;
 				}
 
-				XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, amount, style,0, 0, 0xff, offset);
+				XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, amount, style,0, 0, 0xff, Math.min(offset, lastFrame));
 				drops.add(xpDropInFlight);
 
 				index++;
