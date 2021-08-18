@@ -65,6 +65,8 @@ public class XpDropOverlayActor extends XpDropOverlay
 				continue;
 			}
 			String text = xpFormatter.format(xpDropInFlight.amount);
+			text = config.xpDropPrefix() + text;
+			text = text + config.xpDropSuffix();
 
 			float xStart = xpDropInFlight.xOffset;
 			float yStart = xpDropInFlight.yOffset;

@@ -249,4 +249,26 @@ public interface XpDropsConfig extends Config
 	{
 		return "";
 	}
+
+	@ConfigItem(
+		keyName = "xpDropPrefix",
+		name = "Xp drop prefix",
+		description = "Custom prefix to be placed in front of the xp drop after the icon",
+		position = 16
+	)
+	default String xpDropPrefix()
+	{
+		return "";
+	}
+
+	@ConfigItem(
+		keyName = "xpDropSuffix",
+		name = "Xp drop suffix",
+		description = "Custom suffix to be placed after xp drop",
+		position = 17
+	)
+	default String xpDropSuffix()
+	{
+		return "";
+	}
 }
