@@ -26,6 +26,7 @@ Default in game XP drops (left) compared to this plugin with similar settings (r
 Icons turned off. Attach to player selected. Custom font, size and style. "+" prefix and " xp" suffix.\
 ![oldschool](https://i.imgur.com/zdHysdT.png)
 
+From https://github.com/ruchir90 \
 ![pic1](https://i.imgur.com/9HD5scs.png)
 
 Feel free to open an issue or pull request with your screenshot or gif of XP drop if you want it added here (preferably a link to imgur).
