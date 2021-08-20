@@ -71,7 +71,7 @@ public class XpDropOverlayActor extends XpDropOverlay
 			float xStart = xpDropInFlight.xOffset;
 			float yStart = xpDropInFlight.yOffset;
 
-			int x = (int) (xStart + _x);
+			int x = (int) (xStart + _x - (graphics.getFontMetrics().stringWidth(text) / 2.0f));
 			int y = (int) (yStart + _y);
 
 			Color _color = getColor(xpDropInFlight);
