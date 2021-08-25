@@ -28,5 +28,6 @@ Icons turned off. Attach to player selected. Custom font, size and style. "+" pr
 
 From https://github.com/ruchir90 \
 ![pic1](https://imgur.com/Ur3CKEX.png)
+![pic2](https://i.imgur.com/g5Ju3Cy.png)
 
 Feel free to open an issue or pull request with your screenshot or gif of XP drop if you want it added here (preferably a link to imgur).
