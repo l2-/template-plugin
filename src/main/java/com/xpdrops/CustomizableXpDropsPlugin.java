@@ -102,6 +102,14 @@ public class CustomizableXpDropsPlugin extends Plugin
 			currentOverlay = xpDropOverlay;
 		}
 		overlayManager.add(currentOverlay);
+
+		filteredSkills.clear();
+		filteredSkills.addAll(Text.fromCSV(config.skillsToFilter()).stream().map(String::toLowerCase).collect(Collectors.toList()));
+		// Since most people know this skill by runecrafting not runecraft
+		if (filteredSkills.contains("runecrafting"))
+		{
+			filteredSkills.add("runecraft");
+		}
 	}
 
 	@Override
