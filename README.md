@@ -13,8 +13,10 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - Customize which skills to filter from showing XP drops at all.
 - Attach XP drop location to in game player model.
 - Add a custom prefix and suffix to the XP drop text.
+- Show predicted damage from XP drop.
 
 # Change log
+v1.3 - Add damage prediction based on XP drop.\
 v1.2 - Add config options for prefix and suffix for XP drop text.\
 v1.1 - Updated positioning logic and make sure shortly subsequent XP drops are evenly spaced.\
 v1.0 - Initial release
@@ -25,6 +27,9 @@ Default in game XP drops (left) compared to this plugin with similar settings (r
 
 Icons turned off. Attach to player selected. Custom font, size and style. "+" prefix and " xp" suffix.\
 ![oldschool](https://i.imgur.com/u6sO5QK.png)
+
+Damage prediction never grouped(left) and grouped(right).\
+![damageprediction](https://i.imgur.com/MPdFFvy.png)
 
 From https://github.com/ruchir90 \
 ![pic1](https://i.imgur.com/8W9zE8g.png)

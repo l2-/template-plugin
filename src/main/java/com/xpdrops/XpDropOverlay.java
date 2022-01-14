@@ -23,6 +23,7 @@ import java.util.ArrayList;
 @Slf4j
 public class XpDropOverlay extends Overlay
 {
+	protected static final int RED_HIT_SPLAT_SPRITE_ID = 1359;
 	protected static final float FRAMES_PER_SECOND = 50;
 	protected static final String pattern = "###,###,###";
 	protected static final DecimalFormat xpFormatter = new DecimalFormat(pattern);
@@ -31,6 +32,7 @@ public class XpDropOverlay extends Overlay
 	protected static final int[] SKILL_INDICES = new int[] {10, 0, 2, 4, 6, 1, 3, 5, 16, 15, 17, 12, 20, 14, 13, 7, 11, 8, 9, 18, 19, 22, 21};
 	protected static final int[] SKILL_PRIORITY = new int[] {1, 5, 2, 6, 3, 7, 4, 15, 17, 18, 0, 16, 11, 14, 13, 9, 8, 10, 19, 20, 12, 22, 21};
 	protected static BufferedImage FAKE_SKILL_ICON;
+	protected static BufferedImage HITSPLAT_ICON;
 
 	protected CustomizableXpDropsPlugin plugin;
 	protected XpDropsConfig config;
@@ -57,6 +59,7 @@ public class XpDropOverlay extends Overlay
 			STAT_ICONS[i] = plugin.getSkillIcon(Skill.values()[i]);
 		}
 		FAKE_SKILL_ICON = plugin.getIcon(423, 11);
+		HITSPLAT_ICON = plugin.getIcon(RED_HIT_SPLAT_SPRITE_ID, 0);
 	}
 
 	protected void handleFont(Graphics2D graphics)
@@ -113,9 +116,9 @@ public class XpDropOverlay extends Overlay
 		handleFont(graphics);
 
 		int width = graphics.getFontMetrics().stringWidth(pattern);
-		int totalWidth = width + (int)Math.abs(config.framesPerDrop() * config.xPixelsPerSecond() / FRAMES_PER_SECOND);
+		int totalWidth = width + (int) Math.abs(config.framesPerDrop() * config.xPixelsPerSecond() / FRAMES_PER_SECOND);
 		int height = graphics.getFontMetrics().getHeight();
-		int totalHeight = height + (int)Math.abs(config.framesPerDrop() * config.yPixelsPerSecond() / FRAMES_PER_SECOND);
+		int totalHeight = height + (int) Math.abs(config.framesPerDrop() * config.yPixelsPerSecond() / FRAMES_PER_SECOND);
 
 		for (XpDropInFlight xpDropInFlight : xpDropsInFlight)
 		{
@@ -123,9 +126,7 @@ public class XpDropOverlay extends Overlay
 			{
 				continue;
 			}
-			String text = xpFormatter.format(xpDropInFlight.amount);
-			text = config.xpDropPrefix() + text;
-			text = text + config.xpDropSuffix();
+			String text = getDropText(xpDropInFlight);
 
 			float xStart = xpDropInFlight.xOffset;
 			float yStart = xpDropInFlight.yOffset;
@@ -164,11 +165,24 @@ public class XpDropOverlay extends Overlay
 		}
 	}
 
+	protected String getDropText(XpDropInFlight xpDropInFlight)
+	{
+		String text = xpFormatter.format(xpDropInFlight.amount);
+		text = config.xpDropPrefix() + text;
+		text = text + config.xpDropSuffix();
+
+		if (xpDropInFlight.getHit() > 0)
+		{
+			text += " (" + xpDropInFlight.getHit() + ")";
+		}
+		return text;
+	}
+
 	protected void drawText(Graphics2D graphics, String text, int textX, int textY, XpDropInFlight xpDropInFlight)
 	{
 		Color _color = getColor(xpDropInFlight);
-		Color backgroundColor = new Color(0, 0, 0, (int)xpDropInFlight.alpha);
-		Color color = new Color(_color.getRed(), _color.getGreen(), _color.getBlue(), (int)xpDropInFlight.alpha);
+		Color backgroundColor = new Color(0, 0, 0, (int) xpDropInFlight.alpha);
+		Color color = new Color(_color.getRed(), _color.getGreen(), _color.getBlue(), (int) xpDropInFlight.alpha);
 		graphics.setColor(backgroundColor);
 		graphics.drawString(text, textX + 1, textY + 1);
 		graphics.setColor(color);
@@ -207,6 +221,19 @@ public class XpDropOverlay extends Overlay
 				if (icon == 0x1)
 				{
 					BufferedImage image = FAKE_SKILL_ICON;
+					int size = graphics.getFontMetrics().getHeight() - 4;
+					size = Math.max(size, 14);
+					Dimension dimension = drawIcon(graphics, image, x, y, size, size, alpha / 0xff, rightToLeft);
+					width += dimension.getWidth() + 2;
+				}
+			}
+
+			{
+				// HIT SPLAT ICON
+				int icon = (icons >> 24) & 0x1;
+				if (icon == 0x1)
+				{
+					BufferedImage image = HITSPLAT_ICON;
 					int size = graphics.getFontMetrics().getHeight() - 4;
 					size = Math.max(size, 14);
 					Dimension dimension = drawIcon(graphics, image, x, y, size, size, alpha / 0xff, rightToLeft);
@@ -341,11 +368,33 @@ public class XpDropOverlay extends Overlay
 			lastFrame = xpDropInFlight.frame;
 			lastFrame -= config.groupedDelay();
 		}
+
+		ArrayList<XpDropInFlight> drops = new ArrayList<>();
+
+		XpDropStyle style = XpDropStyle.DEFAULT;
+
+		int totalHit = 0;
+		if (config.showPredictedHit())
+		{
+			Integer hit = plugin.getHitBuffer().poll();
+			while (hit != null)
+			{
+				totalHit += hit;
+				hit = plugin.getHitBuffer().poll();
+			}
+		}
+
+		if (config.showPredictedHit() && (config.neverGroupPredictedHit() || !config.isGrouped()) && totalHit > 0)
+		{
+			int icons = 1 << 24;
+			XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, totalHit, style, 0, 0, 0xff, 0, 0);
+			drops.add(xpDropInFlight);
+		}
+
 		if (config.isGrouped())
 		{
 			int amount = 0;
 			int icons = 0;
-			XpDropStyle style = XpDropStyle.DEFAULT;
 
 			XpDrop xpDrop = plugin.getQueue().poll();
 			while (xpDrop != null)
@@ -366,16 +415,14 @@ public class XpDropOverlay extends Overlay
 			}
 			if (amount > 0)
 			{
-				XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, amount, style,0, 0, 0xff, Math.min(lastFrame, 0));
-				xpDropsInFlight.add(xpDropInFlight);
+				int hit = config.neverGroupPredictedHit() ? 0 : totalHit;
+				XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, amount, style, 0, 0, 0xff, 0, hit);
+				drops.add(xpDropInFlight);
 			}
 		}
 		else
 		{
 			XpDrop xpDrop = plugin.getQueue().poll();
-			int index = 0;
-			ArrayList<XpDropInFlight> drops = new ArrayList<>();
-			XpDropStyle style  = XpDropStyle.DEFAULT;
 			while (xpDrop != null)
 			{
 				int icons = 1 << SKILL_PRIORITY[xpDrop.getSkill().ordinal()];
@@ -385,25 +432,27 @@ public class XpDropOverlay extends Overlay
 					style = xpDrop.getStyle();
 				}
 
-				int offset = -index * config.groupedDelay();
-
 				if (xpDrop.fake)
 				{
 					icons |= 1 << 23;
 				}
 
-				XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, amount, style,0, 0, 0xff, Math.min(offset, lastFrame));
+				XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, amount, style, 0, 0, 0xff, 0, 0);
 				drops.add(xpDropInFlight);
 
-				index++;
 				xpDrop = plugin.getQueue().poll();
 			}
+		}
 
-			for (XpDropInFlight drop : drops)
-			{
-				drop.setStyle(style);
-				xpDropsInFlight.add(drop);
-			}
+		int index = 0;
+		for (XpDropInFlight drop : drops)
+		{
+			int frameOffset = -index * config.groupedDelay();
+			drop.setStyle(style);
+			drop.setFrame(Math.min(frameOffset, lastFrame));
+
+			xpDropsInFlight.add(drop);
+			index++;
 		}
 	}
 }

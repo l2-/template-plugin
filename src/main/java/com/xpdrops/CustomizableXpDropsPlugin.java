@@ -3,12 +3,16 @@ package com.xpdrops;
 import com.google.inject.Provides;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.NPC;
+import net.runelite.api.Player;
 import net.runelite.api.Skill;
 import net.runelite.api.SpritePixels;
 import net.runelite.api.events.FakeXpDrop;
 import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.InteractingChanged;
 import net.runelite.api.events.ScriptPreFired;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.widgets.Widget;
@@ -23,6 +27,7 @@ import net.runelite.client.util.Text;
 
 import javax.inject.Inject;
 import java.awt.image.BufferedImage;
+import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.PriorityQueue;
@@ -53,7 +58,10 @@ public class CustomizableXpDropsPlugin extends Plugin
 	private XpDropsConfig config;
 
 	@Inject
-	private  ClientThread clientThread;
+	private ClientThread clientThread;
+
+	@Inject
+	private XpDropDamageCalculator xpDropDamageCalculator;
 
 	@Provides
 	XpDropsConfig provideConfig(ConfigManager configManager)
@@ -70,10 +78,14 @@ public class CustomizableXpDropsPlugin extends Plugin
 
 	@Getter
 	private final PriorityQueue<XpDrop> queue = new PriorityQueue<>(this::skillPriorityComparator);
+	@Getter
+	private final ArrayDeque<Integer> hitBuffer = new ArrayDeque<>();
 	private final HashSet<String> filteredSkills = new HashSet<>();
 	private static final int[] previous_exp = new int[Skill.values().length - 1];
 	private static final int[] SKILL_ICON_ORDINAL_ICONS = new int[]{197, 199, 198, 203, 200, 201, 202, 212, 214, 208,
 		211, 213, 207, 210, 209, 205, 204, 206, 216, 217, 215, 220, 221};
+	private int lastOpponentId = -1;
+	private boolean lastOpponentIsPlayer = false;
 
 	private XpDropOverlay currentOverlay;
 
@@ -110,6 +122,8 @@ public class CustomizableXpDropsPlugin extends Plugin
 		{
 			filteredSkills.add("runecraft");
 		}
+
+		xpDropDamageCalculator.populateMap();
 	}
 
 	@Override
@@ -155,6 +169,34 @@ public class CustomizableXpDropsPlugin extends Plugin
 	}
 
 	@Subscribe
+	public void onInteractingChanged(InteractingChanged event)
+	{
+		if (event.getSource() != client.getLocalPlayer())
+		{
+			return;
+		}
+
+		Actor opponent = event.getTarget();
+
+		if (opponent instanceof NPC)
+		{
+			NPC npc = (NPC) opponent;
+
+			lastOpponentId = npc.getId();
+			lastOpponentIsPlayer = false;
+		}
+		else if (opponent instanceof Player)
+		{
+			lastOpponentId = opponent.getCombatLevel();
+			lastOpponentIsPlayer = true;
+		}
+		else
+		{
+			lastOpponentId = -1;
+		}
+	}
+
+	@Subscribe
 	public void onScriptPreFired(ScriptPreFired scriptPreFired)
 	{
 		if (scriptPreFired.getScriptId() == XPDROPS_SETDROPSIZE)
@@ -196,6 +238,13 @@ public class CustomizableXpDropsPlugin extends Plugin
 			return;
 		}
 
+		if (event.getSkill() == Skill.HITPOINTS)
+		{
+			int hit = xpDropDamageCalculator.calculateHitOnNpc(lastOpponentId, currentXp, lastOpponentIsPlayer);
+			log.debug("Hit npc with fake hp xp drop xp:{} hit:{} npc_id:{}", currentXp, hit, lastOpponentId);
+			hitBuffer.add(hit);
+		}
+
 		XpDrop xpDrop = new XpDrop(event.getSkill(), currentXp, matchPrayerStyle(event.getSkill()), true);
 		queue.add(xpDrop);
 	}
@@ -207,6 +256,13 @@ public class CustomizableXpDropsPlugin extends Plugin
 		int previousXp = previous_exp[event.getSkill().ordinal()];
 		if (previousXp > 0 && currentXp - previousXp > 0 && !filteredSkills.contains(event.getSkill().getName().toLowerCase()))
 		{
+			if (event.getSkill() == Skill.HITPOINTS)
+			{
+				int hit = xpDropDamageCalculator.calculateHitOnNpc(lastOpponentId, currentXp - previousXp, lastOpponentIsPlayer);
+				log.debug("Hit npc with hp xp drop xp:{} hit:{} npc_id:{}", currentXp - previousXp, hit, lastOpponentId);
+				hitBuffer.add(hit);
+			}
+
 			XpDrop xpDrop = new XpDrop(event.getSkill(), currentXp - previousXp, matchPrayerStyle(event.getSkill()), false);
 			queue.add(xpDrop);
 		}

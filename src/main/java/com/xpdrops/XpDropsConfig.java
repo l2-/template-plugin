@@ -3,6 +3,7 @@ package com.xpdrops;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.ConfigSection;
 
 import java.awt.Color;
 
@@ -41,11 +42,33 @@ public interface XpDropsConfig extends Config
 		RIGHT
 	}
 
+	@ConfigSection(
+		name = "xp drop settings",
+		description = "Settings relating to xp drops",
+		position = 1
+	)
+	String xp_drop_settings = "xp_drop_settings";
+
+	@ConfigSection(
+		name = "font settings",
+		description = "Settings relating to fonts",
+		position = 2
+	)
+	String font_settings = "font_settings";
+
+	@ConfigSection(
+		name = "predicted hit",
+		description = "Settings relating to predicted hit",
+		position = 3
+	)
+	String predicted_hit = "predicted_hit";
+
 	@ConfigItem(
 		keyName = "grouped",
 		name = "Group XP drops",
 		description = "Group XP drops",
-		position = 0
+		position = 0,
+		section = xp_drop_settings
 	)
 	default boolean isGrouped()
 	{
@@ -56,7 +79,8 @@ public interface XpDropsConfig extends Config
 		keyName = "groupedDelay",
 		name = "XP drop delay",
 		description = "The amount of frames delay between 2 drops when not grouped",
-		position = 0
+		position = 0,
+		section = xp_drop_settings
 	)
 	default int groupedDelay()
 	{
@@ -67,7 +91,8 @@ public interface XpDropsConfig extends Config
 		keyName = "yPixelsPerSecond",
 		name = "Vertical XP drop speed",
 		description = "The amount of pixels per second the drop is moved in vertical direction",
-		position = 1
+		position = 1,
+		section = xp_drop_settings
 	)
 	default int yPixelsPerSecond()
 	{
@@ -78,7 +103,8 @@ public interface XpDropsConfig extends Config
 		keyName = "yDirection",
 		name = "Vertical direction",
 		description = "The direction in which the XP drop moves",
-		position = 1
+		position = 1,
+		section = xp_drop_settings
 	)
 	default VerticalDirection yDirection()
 	{
@@ -89,7 +115,8 @@ public interface XpDropsConfig extends Config
 		keyName = "xPixelsPerSecond",
 		name = "Horizontal XP drop speed",
 		description = "The amount of pixels per second the drop is moved in horizontal direction",
-		position = 2
+		position = 2,
+		section = xp_drop_settings
 	)
 	default int xPixelsPerSecond()
 	{
@@ -100,7 +127,8 @@ public interface XpDropsConfig extends Config
 		keyName = "xDirection",
 		name = "Horizontal direction",
 		description = "The direction in which the XP drop moves",
-		position = 2
+		position = 2,
+		section = xp_drop_settings
 	)
 	default HorizontalDirection xDirection()
 	{
@@ -111,7 +139,8 @@ public interface XpDropsConfig extends Config
 		keyName = "framesPerDrop",
 		name = "Time until disappearance",
 		description = "The amount of frames (50 per second) the XP drop will show for",
-		position = 3
+		position = 3,
+		section = xp_drop_settings
 	)
 	default int framesPerDrop()
 	{
@@ -122,7 +151,8 @@ public interface XpDropsConfig extends Config
 		keyName = "fadeOut",
 		name = "Fade out",
 		description = "Should the XP drop fade out",
-		position = 4
+		position = 4,
+		section = xp_drop_settings
 	)
 	default boolean fadeOut()
 	{
@@ -133,7 +163,8 @@ public interface XpDropsConfig extends Config
 		keyName = "showIcons",
 		name = "Show skill icons",
 		description = "Show the skill icons next to the XP drop",
-		position = 5
+		position = 5,
+		section = xp_drop_settings
 	)
 	default boolean showIcons()
 	{
@@ -144,7 +175,8 @@ public interface XpDropsConfig extends Config
 		keyName = "showFakeIcon",
 		name = "Show fake icon",
 		description = "Show the fake icon for a fake XP drop",
-		position = 6
+		position = 6,
+		section = xp_drop_settings
 	)
 	default boolean showFakeIcon()
 	{
@@ -155,7 +187,8 @@ public interface XpDropsConfig extends Config
 		keyName = "xpDropColor",
 		name = "Xp drop color",
 		description = "Color of the XP drop text",
-		position = 7
+		position = 7,
+		section = xp_drop_settings
 	)
 	default Color xpDropColor()
 	{
@@ -166,7 +199,8 @@ public interface XpDropsConfig extends Config
 		keyName = "xpDropColorMelee",
 		name = "Xp drop color melee",
 		description = "Color of the XP drop text when praying melee offensively",
-		position = 8
+		position = 8,
+		section = xp_drop_settings
 	)
 	default Color xpDropColorMelee()
 	{
@@ -177,7 +211,8 @@ public interface XpDropsConfig extends Config
 		keyName = "xpDropColorMage",
 		name = "Xp drop color mage",
 		description = "Color of the XP drop text when praying mage offensively",
-		position = 9
+		position = 9,
+		section = xp_drop_settings
 	)
 	default Color xpDropColorMage()
 	{
@@ -188,7 +223,8 @@ public interface XpDropsConfig extends Config
 		keyName = "xpDropColorRange",
 		name = "Xp drop color range",
 		description = "Color of the XP drop text when praying range offensively",
-		position = 10
+		position = 10,
+		section = xp_drop_settings
 	)
 	default Color xpDropColorRange()
 	{
@@ -199,7 +235,8 @@ public interface XpDropsConfig extends Config
 		keyName = "fontName",
 		name = "Font",
 		description = "Name of the font to use for XP drops. Leave blank to use RuneLite setting.",
-		position = 11
+		position = 11,
+		section = font_settings
 	)
 	default String fontName()
 	{
@@ -210,7 +247,8 @@ public interface XpDropsConfig extends Config
 		keyName = "fontStyle",
 		name = "Font style",
 		description = "Style of the font to use for XP drops. Only works with custom font.",
-		position = 12
+		position = 12,
+		section = font_settings
 	)
 	default FontStyle fontStyle()
 	{
@@ -221,7 +259,8 @@ public interface XpDropsConfig extends Config
 		keyName = "fontSize",
 		name = "Font size",
 		description = "Size of the font to use for XP drops. Only works with custom font.",
-		position = 13
+		position = 13,
+		section = font_settings
 	)
 	default int fontSize()
 	{
@@ -232,7 +271,8 @@ public interface XpDropsConfig extends Config
 		keyName = "attachToPlayer",
 		name = "Attach to player",
 		description = "Attaches the XP drop location to the player",
-		position = 14
+		position = 14,
+		section = xp_drop_settings
 	)
 	default boolean attachToPlayer()
 	{
@@ -243,7 +283,8 @@ public interface XpDropsConfig extends Config
 		keyName = "skillsToFilter",
 		name = "Skills to filter",
 		description = "Names of the skills for which a XP drop should not be shown, each name separated by a comma. Must be the full name of the skill as shown when hovered in the skills tab.",
-		position = 15
+		position = 15,
+		section = xp_drop_settings
 	)
 	default String skillsToFilter()
 	{
@@ -254,7 +295,8 @@ public interface XpDropsConfig extends Config
 		keyName = "xpDropPrefix",
 		name = "Xp drop prefix",
 		description = "Custom prefix to be placed in front of the xp drop after the icon",
-		position = 16
+		position = 16,
+		section = xp_drop_settings
 	)
 	default String xpDropPrefix()
 	{
@@ -265,10 +307,35 @@ public interface XpDropsConfig extends Config
 		keyName = "xpDropSuffix",
 		name = "Xp drop suffix",
 		description = "Custom suffix to be placed after xp drop",
-		position = 17
+		position = 17,
+		section = xp_drop_settings
 	)
 	default String xpDropSuffix()
 	{
 		return "";
+	}
+
+	@ConfigItem(
+		keyName = "showPredictedHit",
+		name = "Show predicted hit",
+		description = "Show the amount that is predicted you will hit based on the current xp drop",
+		position = 18,
+		section = predicted_hit
+	)
+	default boolean showPredictedHit()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "neverGroupPredictedHit",
+		name = "Never group predicted hit",
+		description = "Always show the predicted hit as a separate drop regardless of the xp grouped setting",
+		position = 19,
+		section = predicted_hit
+	)
+	default boolean neverGroupPredictedHit()
+	{
+		return false;
 	}
 }

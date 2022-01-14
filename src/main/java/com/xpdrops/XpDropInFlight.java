@@ -3,8 +3,6 @@ package com.xpdrops;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.awt.Color;
-
 @Data
 @AllArgsConstructor
 public class XpDropInFlight
@@ -16,4 +14,5 @@ public class XpDropInFlight
 	float xOffset;
 	float alpha;
 	int frame;
+	int hit;
 }
