@@ -240,7 +240,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 
 		if (event.getSkill() == Skill.HITPOINTS)
 		{
-			int hit = xpDropDamageCalculator.calculateHitOnNpc(lastOpponentId, currentXp, lastOpponentIsPlayer);
+			int hit = xpDropDamageCalculator.calculateHitOnNpc(lastOpponentId, currentXp, lastOpponentIsPlayer, config.xpMultiplier());
 			log.debug("Hit npc with fake hp xp drop xp:{} hit:{} npc_id:{}", currentXp, hit, lastOpponentId);
 			hitBuffer.add(hit);
 		}
@@ -258,7 +258,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 		{
 			if (event.getSkill() == Skill.HITPOINTS)
 			{
-				int hit = xpDropDamageCalculator.calculateHitOnNpc(lastOpponentId, currentXp - previousXp, lastOpponentIsPlayer);
+				int hit = xpDropDamageCalculator.calculateHitOnNpc(lastOpponentId, currentXp - previousXp, lastOpponentIsPlayer, config.xpMultiplier());
 				log.debug("Hit npc with hp xp drop xp:{} hit:{} npc_id:{}", currentXp - previousXp, hit, lastOpponentId);
 				hitBuffer.add(hit);
 			}

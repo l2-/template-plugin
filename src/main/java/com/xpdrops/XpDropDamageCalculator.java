@@ -33,8 +33,13 @@ public class XpDropDamageCalculator
 		XP_BONUS_MAPPING.putAll(getNpcsWithXpBonus());
 	}
 
-	public int calculateHitOnNpc(int id, int hpXpDiff, boolean isPlayer)
+	public int calculateHitOnNpc(int id, int hpXpDiff, boolean isPlayer, double configModifier)
 	{
+		if (Math.abs(configModifier) < 1e-6)
+		{
+			configModifier = 1e-6;
+		}
+
 		double modifier = 1.0;
 		if (isPlayer)
 		{
@@ -49,7 +54,7 @@ public class XpDropDamageCalculator
 		{
 			return 0;
 		}
-		return (int) Math.round((hpXpDiff * (3.0d / 4.0d)) / modifier);
+		return (int) Math.round((hpXpDiff * (3.0d / 4.0d)) / modifier / configModifier);
 	}
 
 	// Don't do this in static block since we may want finer control of when it happens for a possibly long blocking

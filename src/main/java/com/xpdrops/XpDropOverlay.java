@@ -168,12 +168,22 @@ public class XpDropOverlay extends Overlay
 	protected String getDropText(XpDropInFlight xpDropInFlight)
 	{
 		String text = xpFormatter.format(xpDropInFlight.amount);
-		text = config.xpDropPrefix() + text;
-		text = text + config.xpDropSuffix();
+
+		boolean isPredictedHit = ((xpDropInFlight.icons >> 24) & 0x1) == 0x1;
+		if (isPredictedHit)
+		{
+			text = config.predictedHitPrefix() + text;
+			text = text + config.predictedHitSuffix();
+		}
+		else
+		{
+			text = config.xpDropPrefix() + text;
+			text = text + config.xpDropSuffix();
+		}
 
 		if (xpDropInFlight.getHit() > 0)
 		{
-			text += " (" + xpDropInFlight.getHit() + ")";
+			text += " (" + config.predictedHitPrefix() + xpDropInFlight.getHit() + config.predictedHitSuffix() + ")";
 		}
 		return text;
 	}

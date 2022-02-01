@@ -338,4 +338,40 @@ public interface XpDropsConfig extends Config
 	{
 		return false;
 	}
+
+	@ConfigItem(
+		keyName = "predictedHitPrefix",
+		name = "Predicted hit prefix",
+		description = "Custom prefix to be placed in front of the predicted hit after the icon",
+		position = 20,
+		section = predicted_hit
+	)
+	default String predictedHitPrefix()
+	{
+		return "";
+	}
+
+	@ConfigItem(
+		keyName = "predictedHitSuffix",
+		name = "Predicted hit suffix",
+		description = "Custom suffix to be placed after predicted hit",
+		position = 21,
+		section = predicted_hit
+	)
+	default String predictedHitSuffix()
+	{
+		return "";
+	}
+
+	@ConfigItem(
+		keyName = "xpMultiplier",
+		name = "Xp multiplier",
+		description = "The bonus xp multiplier (from season game mode for example) that should be factored when calculating the hit",
+		position = 22,
+		section = predicted_hit
+	)
+	default double xpMultiplier()
+	{
+		return 1;
+	}
 }
