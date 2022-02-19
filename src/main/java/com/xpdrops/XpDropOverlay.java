@@ -33,6 +33,7 @@ public class XpDropOverlay extends Overlay
 	protected static final int[] SKILL_PRIORITY = new int[] {1, 5, 2, 6, 3, 7, 4, 15, 17, 18, 0, 16, 11, 14, 13, 9, 8, 10, 19, 20, 12, 22, 21};
 	protected static BufferedImage FAKE_SKILL_ICON;
 	protected static BufferedImage HITSPLAT_ICON;
+	protected static final float CONSTANT_FRAME_TIME = 1000.0f / FRAMES_PER_SECOND;
 
 	protected CustomizableXpDropsPlugin plugin;
 	protected XpDropsConfig config;
@@ -42,6 +43,7 @@ public class XpDropOverlay extends Overlay
 	protected XpDropsConfig.FontStyle lastFontStyle = XpDropsConfig.FontStyle.DEFAULT;
 	protected Font font = null;
 	protected boolean firstRender = true;
+	protected long lastFrameTime = 0;
 
 	@Inject
 	protected XpDropOverlay(CustomizableXpDropsPlugin plugin, XpDropsConfig config)
@@ -86,14 +88,24 @@ public class XpDropOverlay extends Overlay
 		}
 	}
 
-	@Override
-	public Dimension render(Graphics2D graphics)
+	protected void lazyInit()
 	{
 		if (firstRender)
 		{
 			firstRender = false;
 			initIcons();
 		}
+		// avoid very long first frame time
+		if (lastFrameTime <= 0)
+		{
+			lastFrameTime = System.currentTimeMillis() - 20;
+		}
+	}
+
+	@Override
+	public Dimension render(Graphics2D graphics)
+	{
+		lazyInit();
 
 		update();
 
@@ -106,6 +118,7 @@ public class XpDropOverlay extends Overlay
 		int height = fontMetrics.getHeight();
 		height += Math.abs(config.framesPerDrop() * config.yPixelsPerSecond() / FRAMES_PER_SECOND);
 
+		lastFrameTime = System.currentTimeMillis();
 		return new Dimension(width, height);
 	}
 
@@ -343,14 +356,17 @@ public class XpDropOverlay extends Overlay
 		int xModifier = config.xDirection() == XpDropsConfig.HorizontalDirection.LEFT ? -1 : 1;
 		int yModifier = config.yDirection() == XpDropsConfig.VerticalDirection.UP ? -1 : 1;
 
+		float frameTime = System.currentTimeMillis() - lastFrameTime;
+		float frameTimeModifier = frameTime / CONSTANT_FRAME_TIME;
+
 		for (XpDropInFlight xpDropInFlight : xpDropsInFlight)
 		{
 			if (xpDropInFlight.frame >= 0)
 			{
-				xpDropInFlight.xOffset += config.xPixelsPerSecond() / FRAMES_PER_SECOND * xModifier;
-				xpDropInFlight.yOffset += config.yPixelsPerSecond() / FRAMES_PER_SECOND * yModifier;
+				xpDropInFlight.xOffset += config.xPixelsPerSecond() / FRAMES_PER_SECOND * xModifier * frameTimeModifier;
+				xpDropInFlight.yOffset += config.yPixelsPerSecond() / FRAMES_PER_SECOND * yModifier * frameTimeModifier;
 			}
-			xpDropInFlight.frame++;
+			xpDropInFlight.frame += frameTimeModifier;
 		}
 
 		if (config.fadeOut())
@@ -361,7 +377,7 @@ public class XpDropOverlay extends Overlay
 			{
 				if (xpDropInFlight.frame > threshold)
 				{
-					int point = xpDropInFlight.frame - threshold;
+					int point = (int)xpDropInFlight.frame - threshold;
 					float fade = point / (float) delta;
 					xpDropInFlight.alpha = Math.max(0, 0xff - fade * 0xff);
 				}
@@ -371,7 +387,7 @@ public class XpDropOverlay extends Overlay
 
 	private void pollDrops()
 	{
-		int lastFrame = 0;
+		float lastFrame = 0;
 		if (xpDropsInFlight.size() > 0)
 		{
 			XpDropInFlight xpDropInFlight = xpDropsInFlight.get(xpDropsInFlight.size() - 1);

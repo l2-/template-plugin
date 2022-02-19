@@ -28,11 +28,7 @@ public class XpDropOverlayActor extends XpDropOverlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (firstRender)
-		{
-			firstRender = false;
-			initIcons();
-		}
+		lazyInit();
 
 		if (client.getLocalPlayer() == null)
 		{
@@ -49,6 +45,7 @@ public class XpDropOverlayActor extends XpDropOverlay
 
 		drawXpDrops(graphics, point.getX(), point.getY());
 
+		lastFrameTime = System.currentTimeMillis();
 		return null;
 	}
 

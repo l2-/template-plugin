@@ -13,6 +13,6 @@ public class XpDropInFlight
 	float yOffset;
 	float xOffset;
 	float alpha;
-	int frame;
+	float frame;
 	int hit;
 }

@@ -16,6 +16,7 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - Show predicted damage from XP drop.
 
 # Change log
+v1.3.2 - Make XP drop speed independent to fps. 
 v1.3.1 - Add prefix and suffix settings for predicted hit. Add xp multiplier for predicted hits.\
 v1.3 - Add damage prediction based on XP drop.\
 v1.2 - Add config options for prefix and suffix for XP drop text.\
