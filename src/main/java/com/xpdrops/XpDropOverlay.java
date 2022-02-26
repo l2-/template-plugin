@@ -72,18 +72,25 @@ public class XpDropOverlay extends Overlay
 		}
 		else
 		{
+			Font font;
 			if (config.fontSize() < 16)
 			{
-				graphics.setFont(FontManager.getRunescapeSmallFont());
+				font = FontManager.getRunescapeSmallFont();
 			}
 			else if (config.fontStyle() == XpDropsConfig.FontStyle.BOLD)
 			{
-				graphics.setFont(FontManager.getRunescapeBoldFont());
+				font = FontManager.getRunescapeBoldFont();
 			}
 			else
 			{
-				graphics.setFont(FontManager.getRunescapeFont());
+				font = FontManager.getRunescapeFont();
 			}
+
+			if (config.fontSize() > 16)
+			{
+				font = font.deriveFont((float)config.fontSize());
+			}
+			graphics.setFont(font);
 			graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 		}
 	}
@@ -332,7 +339,7 @@ public class XpDropOverlay extends Overlay
 				this.font = null;
 				return;
 			}
-			int style = 0;
+			int style = Font.PLAIN;
 			switch (config.fontStyle())
 			{
 				case BOLD:
