@@ -233,10 +233,6 @@ public class CustomizableXpDropsPlugin extends Plugin
 			// fake fake xp drop?
 			return;
 		}
-		if (filteredSkills.contains(event.getSkill().getName().toLowerCase()))
-		{
-			return;
-		}
 
 		if (event.getSkill() == Skill.HITPOINTS)
 		{
@@ -245,8 +241,11 @@ public class CustomizableXpDropsPlugin extends Plugin
 			hitBuffer.add(hit);
 		}
 
-		XpDrop xpDrop = new XpDrop(event.getSkill(), currentXp, matchPrayerStyle(event.getSkill()), true);
-		queue.add(xpDrop);
+		if (!filteredSkills.contains(event.getSkill().getName().toLowerCase()))
+		{
+			XpDrop xpDrop = new XpDrop(event.getSkill(), currentXp, matchPrayerStyle(event.getSkill()), true);
+			queue.add(xpDrop);
+		}
 	}
 
 	@Subscribe
@@ -254,7 +253,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 	{
 		int currentXp = event.getXp();
 		int previousXp = previous_exp[event.getSkill().ordinal()];
-		if (previousXp > 0 && currentXp - previousXp > 0 && !filteredSkills.contains(event.getSkill().getName().toLowerCase()))
+		if (previousXp > 0 && currentXp - previousXp > 0)
 		{
 			if (event.getSkill() == Skill.HITPOINTS)
 			{
@@ -263,8 +262,11 @@ public class CustomizableXpDropsPlugin extends Plugin
 				hitBuffer.add(hit);
 			}
 
-			XpDrop xpDrop = new XpDrop(event.getSkill(), currentXp - previousXp, matchPrayerStyle(event.getSkill()), false);
-			queue.add(xpDrop);
+			if (!filteredSkills.contains(event.getSkill().getName().toLowerCase()))
+			{
+				XpDrop xpDrop = new XpDrop(event.getSkill(), currentXp - previousXp, matchPrayerStyle(event.getSkill()), false);
+				queue.add(xpDrop);
+			}
 		}
 
 		previous_exp[event.getSkill().ordinal()] = event.getXp();
