@@ -40,6 +40,7 @@ public class XpDropOverlayActor extends XpDropOverlay
 		{
 			return null;
 		}
+		point = new Point(point.getX() + config.attachToPlayerOffsetX(), point.getY() - config.attachToPlayerOffsetY()); // subtract y since conventional y-axis is from bottom to top
 
 		update();
 

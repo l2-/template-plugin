@@ -40,6 +40,7 @@ public class XpDropOverlay extends Overlay
 
 	protected String lastFont = "";
 	protected int lastFontSize = 0;
+	protected boolean useRunescapeFont = true;
 	protected XpDropsConfig.FontStyle lastFontStyle = XpDropsConfig.FontStyle.DEFAULT;
 	protected Font font = null;
 	protected boolean firstRender = true;
@@ -69,29 +70,10 @@ public class XpDropOverlay extends Overlay
 		if (font != null)
 		{
 			graphics.setFont(font);
-		}
-		else
-		{
-			Font font;
-			if (config.fontSize() < 16)
+			if (useRunescapeFont)
 			{
-				font = FontManager.getRunescapeSmallFont();
+				graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 			}
-			else if (config.fontStyle() == XpDropsConfig.FontStyle.BOLD)
-			{
-				font = FontManager.getRunescapeBoldFont();
-			}
-			else
-			{
-				font = FontManager.getRunescapeFont();
-			}
-
-			if (config.fontSize() > 16)
-			{
-				font = font.deriveFont((float)config.fontSize());
-			}
-			graphics.setFont(font);
-			graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 		}
 	}
 
@@ -334,11 +316,46 @@ public class XpDropOverlay extends Overlay
 			lastFontSize = config.fontSize();
 			lastFontStyle = config.fontStyle();
 
+			// default to runescape fonts
 			if ("".equals(config.fontName()))
 			{
-				this.font = null;
+				if (config.fontSize() < 16)
+				{
+					font = FontManager.getRunescapeSmallFont();
+				}
+				else if (config.fontStyle() == XpDropsConfig.FontStyle.BOLD
+					|| config.fontStyle() == XpDropsConfig.FontStyle.BOLD_ITALICS)
+				{
+					font = FontManager.getRunescapeBoldFont();
+				}
+				else
+				{
+					font = FontManager.getRunescapeFont();
+				}
+
+				if (config.fontSize() > 16)
+				{
+					font = font.deriveFont((float)config.fontSize());
+				}
+
+				if (config.fontStyle() == XpDropsConfig.FontStyle.BOLD)
+				{
+					font = font.deriveFont(Font.BOLD);
+				}
+				if (config.fontStyle() == XpDropsConfig.FontStyle.ITALICS)
+				{
+					font = font.deriveFont(Font.ITALIC);
+				}
+				if (config.fontStyle() == XpDropsConfig.FontStyle.BOLD_ITALICS)
+				{
+					font = font.deriveFont(Font.ITALIC | Font.BOLD);
+				}
+
+				useRunescapeFont = true;
 				return;
 			}
+
+			// use a system wide font
 			int style = Font.PLAIN;
 			switch (config.fontStyle())
 			{
@@ -352,7 +369,9 @@ public class XpDropOverlay extends Overlay
 					style = Font.BOLD | Font.ITALIC;
 					break;
 			}
-			this.font = new Font(config.fontName(), style, config.fontSize());
+
+			font = new Font(config.fontName(), style, config.fontSize());
+			useRunescapeFont = false;
 		}
 	}
 

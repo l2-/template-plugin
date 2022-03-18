@@ -4,6 +4,7 @@ import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
+import net.runelite.client.config.Range;
 
 import java.awt.Color;
 
@@ -279,11 +280,37 @@ public interface XpDropsConfig extends Config
 		return false;
 	}
 
+	@Range(min = Integer.MIN_VALUE)
+	@ConfigItem(
+		keyName = "attachToPlayerOffsetX",
+		name = "Attach to player offset x",
+		description = "Attaches the XP drop location to the player",
+		position = 15,
+		section = xp_drop_settings
+	)
+	default int attachToPlayerOffsetX()
+	{
+		return 0;
+	}
+
+	@Range(min = Integer.MIN_VALUE)
+	@ConfigItem(
+		keyName = "attachToPlayerOffsetY",
+		name = "Attach to player offset y",
+		description = "Attaches the XP drop location to the player",
+		position = 15,
+		section = xp_drop_settings
+	)
+	default int attachToPlayerOffsetY()
+	{
+		return 0;
+	}
+
 	@ConfigItem(
 		keyName = "skillsToFilter",
 		name = "Skills to filter",
 		description = "Names of the skills for which a XP drop should not be shown, each name separated by a comma. Must be the full name of the skill as shown when hovered in the skills tab.",
-		position = 15,
+		position = 17,
 		section = xp_drop_settings
 	)
 	default String skillsToFilter()
@@ -295,7 +322,7 @@ public interface XpDropsConfig extends Config
 		keyName = "xpDropPrefix",
 		name = "Xp drop prefix",
 		description = "Custom prefix to be placed in front of the xp drop after the icon",
-		position = 16,
+		position = 18,
 		section = xp_drop_settings
 	)
 	default String xpDropPrefix()
@@ -307,7 +334,7 @@ public interface XpDropsConfig extends Config
 		keyName = "xpDropSuffix",
 		name = "Xp drop suffix",
 		description = "Custom suffix to be placed after xp drop",
-		position = 17,
+		position = 19,
 		section = xp_drop_settings
 	)
 	default String xpDropSuffix()
