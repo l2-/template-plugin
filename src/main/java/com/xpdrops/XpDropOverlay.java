@@ -39,13 +39,13 @@ public class XpDropOverlay extends Overlay
 	protected CustomizableXpDropsPlugin plugin;
 	protected XpDropsConfig config;
 
-	protected String lastFont = "";
-	protected int lastFontSize = 0;
-	protected boolean useRunescapeFont = true;
-	protected XpDropsConfig.FontStyle lastFontStyle = XpDropsConfig.FontStyle.DEFAULT;
-	protected Font font = null;
-	protected boolean firstRender = true;
-	protected long lastFrameTime = 0;
+	protected static String lastFont = "";
+	protected static int lastFontSize = 0;
+	protected static boolean useRunescapeFont = true;
+	protected static XpDropsConfig.FontStyle lastFontStyle = XpDropsConfig.FontStyle.DEFAULT;
+	protected static Font font = null;
+	protected static boolean firstRender = true;
+	protected static long lastFrameTime = 0;
 
 	@Inject
 	protected XpDropOverlay(CustomizableXpDropsPlugin plugin, XpDropsConfig config)
@@ -97,7 +97,6 @@ public class XpDropOverlay extends Overlay
 	{
 		lazyInit();
 		update();
-		updateFont();
 
 		if (!config.attachToNPC() && !config.attachToPlayer())
 		{
@@ -211,6 +210,11 @@ public class XpDropOverlay extends Overlay
 	protected int drawIcons(Graphics2D graphics, int icons, int x, int y, float alpha, boolean rightToLeft)
 	{
 		int width = 0;
+		int iconSize = graphics.getFontMetrics().getHeight();
+		if (config.iconSizeOverride() > 0)
+		{
+			iconSize = config.iconSizeOverride();
+		}
 		if (config.showIcons())
 		{
 			for (int i = SKILL_INDICES.length - 1; i >= 0; i--)
@@ -220,7 +224,10 @@ public class XpDropOverlay extends Overlay
 				{
 					int index = SKILL_INDICES[i];
 					BufferedImage image = STAT_ICONS[index];
-					Dimension dimension = drawIcon(graphics, image, x, y, alpha / 0xff, rightToLeft);
+					int _iconSize = Math.max(iconSize, 18);
+					int iconWidth = image.getWidth() * _iconSize / 25;
+					int iconHeight = image.getHeight() * _iconSize / 25;
+					Dimension dimension = drawIcon(graphics, image, x, y, iconWidth, iconHeight, alpha / 0xff, rightToLeft);
 
 					if (rightToLeft)
 					{
@@ -240,9 +247,8 @@ public class XpDropOverlay extends Overlay
 				if (icon == 0x1)
 				{
 					BufferedImage image = FAKE_SKILL_ICON;
-					int size = graphics.getFontMetrics().getHeight() - 4;
-					size = Math.max(size, 14);
-					Dimension dimension = drawIcon(graphics, image, x, y, size, size, alpha / 0xff, rightToLeft);
+					int _iconSize = Math.max(iconSize - 4, 14);
+					Dimension dimension = drawIcon(graphics, image, x, y, _iconSize, _iconSize, alpha / 0xff, rightToLeft);
 					width += dimension.getWidth() + 2;
 				}
 			}
@@ -253,31 +259,13 @@ public class XpDropOverlay extends Overlay
 				if (icon == 0x1)
 				{
 					BufferedImage image = HITSPLAT_ICON;
-					int size = graphics.getFontMetrics().getHeight() - 4;
-					size = Math.max(size, 14);
-					Dimension dimension = drawIcon(graphics, image, x, y, size, size, alpha / 0xff, rightToLeft);
+					int _iconSize = Math.max(iconSize - 4, 14);
+					Dimension dimension = drawIcon(graphics, image, x, y, _iconSize, _iconSize, alpha / 0xff, rightToLeft);
 					width += dimension.getWidth() + 2;
 				}
 			}
 		}
 		return width;
-	}
-
-	private Dimension drawIcon(Graphics2D graphics, BufferedImage image, int x, int y, float alpha, boolean rightToLeft)
-	{
-		int size = graphics.getFontMetrics().getHeight();
-		size = Math.max(size, 18);
-		int iconWidth = image.getWidth() * size / 25;
-		int iconHeight = image.getHeight() * size / 25;
-
-		int yOffset = graphics.getFontMetrics().getHeight() / 2 - iconHeight / 2;
-		int xOffset = rightToLeft ? iconWidth : 0;
-
-		Composite composite = graphics.getComposite();
-		graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
-		graphics.drawImage(image, x - xOffset, y + yOffset, iconWidth, iconHeight, null);
-		graphics.setComposite(composite);
-		return new Dimension(iconWidth, iconHeight);
 	}
 
 	private Dimension drawIcon(Graphics2D graphics, BufferedImage image, int x, int y, int width, int height, float alpha, boolean rightToLeft)
@@ -310,11 +298,12 @@ public class XpDropOverlay extends Overlay
 
 	private void update()
 	{
+		updateFont();
 		updateDrops();
 		pollDrops();
 	}
 
-	protected void updateFont()
+	private void updateFont()
 	{
 		if (!lastFont.equals(config.fontName()) || lastFontSize != config.fontSize() || lastFontStyle != config.fontStyle())
 		{

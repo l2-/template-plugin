@@ -29,9 +29,6 @@ public class XpDropOverlayActor extends XpDropOverlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		lazyInit();
-		updateFont();
-
 		if (config.attachToNPC() || config.attachToPlayer())
 		{
 			if (client.getLocalPlayer() == null)

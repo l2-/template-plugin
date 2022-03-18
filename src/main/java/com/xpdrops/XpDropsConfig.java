@@ -267,6 +267,18 @@ public interface XpDropsConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "iconSizeOverride",
+		name = "Icon size override",
+		description = "When non zero indicates the size of the skill icons in the xp drop.",
+		position = 13,
+		section = font_settings
+	)
+	default int iconSizeOverride()
+	{
+		return 0;
+	}
+
+	@ConfigItem(
 		keyName = "attachToPlayer",
 		name = "Attach to player",
 		description = "Attaches the XP drop location to the player",
