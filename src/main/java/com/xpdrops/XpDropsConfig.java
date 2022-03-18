@@ -291,39 +291,39 @@ public interface XpDropsConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "attachToNPC",
-		name = "Attach to NPC",
-		description = "Attaches the XP drop location to the targeted NPC",
+		keyName = "attachToTarget",
+		name = "Attach to Target",
+		description = "Attaches the XP drop location to the targeted Actor(NPC/Player)",
 		position = 14,
 		section = xp_drop_settings
 	)
-	default boolean attachToNPC()
+	default boolean attachToTarget()
 	{
 		return false;
 	}
 
 	@Range(min = Integer.MIN_VALUE)
 	@ConfigItem(
-		keyName = "attachToPlayerOffsetX",
-		name = "Attach to player offset x",
-		description = "Attaches the XP drop location to the player",
+		keyName = "attachToOffsetX",
+		name = "(x)Attach to offset",
+		description = "Change the attach to overlay x position with relation to the target",
 		position = 15,
 		section = xp_drop_settings
 	)
-	default int attachToPlayerOffsetX()
+	default int attachToOffsetX()
 	{
 		return 0;
 	}
 
 	@Range(min = Integer.MIN_VALUE)
 	@ConfigItem(
-		keyName = "attachToPlayerOffsetY",
-		name = "Attach to player offset y",
-		description = "Attaches the XP drop location to the player",
+		keyName = "attachToOffsetY",
+		name = "(y)Attach to offset",
+		description = "Change the attach to overlay y position with relation to the target",
 		position = 15,
 		section = xp_drop_settings
 	)
-	default int attachToPlayerOffsetY()
+	default int attachToOffsetY()
 	{
 		return 0;
 	}

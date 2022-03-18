@@ -16,6 +16,7 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - Show predicted damage from XP drop.
 
 # Change log
+v1.4 - Add attach to NPC option. Add icon size override. Add attach overlay offset config options. Default font now follow italic and bold style settings.\
 v1.3.3 - Show predicted hit when Hitpoints skill is filtered. Allow for larger default(Runescape) font size.\
 v1.3.2 - Make XP drop speed independent to fps. \
 v1.3.1 - Add prefix and suffix settings for predicted hit. Add xp multiplier for predicted hits.\

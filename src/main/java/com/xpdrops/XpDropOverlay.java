@@ -2,6 +2,8 @@ package com.xpdrops;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Actor;
+import net.runelite.api.Client;
+import net.runelite.api.Point;
 import net.runelite.api.Skill;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.overlay.Overlay;
@@ -39,13 +41,16 @@ public class XpDropOverlay extends Overlay
 	protected CustomizableXpDropsPlugin plugin;
 	protected XpDropsConfig config;
 
-	protected static String lastFont = "";
-	protected static int lastFontSize = 0;
-	protected static boolean useRunescapeFont = true;
-	protected static XpDropsConfig.FontStyle lastFontStyle = XpDropsConfig.FontStyle.DEFAULT;
-	protected static Font font = null;
-	protected static boolean firstRender = true;
-	protected static long lastFrameTime = 0;
+	protected String lastFont = "";
+	protected int lastFontSize = 0;
+	protected boolean useRunescapeFont = true;
+	protected XpDropsConfig.FontStyle lastFontStyle = XpDropsConfig.FontStyle.DEFAULT;
+	protected Font font = null;
+	protected boolean firstRender = true;
+	protected long lastFrameTime = 0;
+
+	@Inject
+	private Client client;
 
 	@Inject
 	protected XpDropOverlay(CustomizableXpDropsPlugin plugin, XpDropsConfig config)
@@ -98,8 +103,23 @@ public class XpDropOverlay extends Overlay
 		lazyInit();
 		update();
 
-		if (!config.attachToNPC() && !config.attachToPlayer())
+		if (config.attachToPlayer() || config.attachToTarget())
 		{
+			setPosition(OverlayPosition.DYNAMIC);
+			setLayer(OverlayLayer.ABOVE_WIDGETS);
+
+			if (client.getLocalPlayer() == null)
+			{
+				return null;
+			}
+
+			drawAttachedXpDrops(graphics);
+		}
+		else
+		{
+			setLayer(OverlayLayer.ABOVE_WIDGETS);
+			setPosition(OverlayPosition.TOP_RIGHT);
+
 			drawXpDrops(graphics);
 
 			// Roughly estimate a bounding box that doesn't take icons into account.
@@ -115,6 +135,62 @@ public class XpDropOverlay extends Overlay
 
 		lastFrameTime = System.currentTimeMillis();
 		return null;
+	}
+
+	protected Point getCanvasTextLocation(Graphics2D graphics, Actor actor)
+	{
+		int zOffset = Math.min(actor.getLogicalHeight(), 140);
+		return actor.getCanvasTextLocation(graphics, "x", zOffset);
+	}
+
+	protected void drawAttachedXpDrops(Graphics2D graphics)
+	{
+		graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+
+		handleFont(graphics);
+
+		for (XpDropInFlight xpDropInFlight : xpDropsInFlight)
+		{
+			if (xpDropInFlight.frame < 0)
+			{
+				continue;
+			}
+			String text = getDropText(xpDropInFlight);
+
+			Actor target = xpDropInFlight.attachTo;
+			if (target == null || !config.attachToTarget())
+			{
+				target = client.getLocalPlayer();
+			}
+			if (target == null)
+			{
+				continue;
+			}
+			Point point = getCanvasTextLocation(graphics, target);
+			if (point == null)
+			{
+				continue;
+			}
+			point = new Point(point.getX() + config.attachToOffsetX(), point.getY() - config.attachToOffsetY()); // subtract y since conventional y-axis is from bottom to top
+
+			float xStart = xpDropInFlight.xOffset;
+			float yStart = xpDropInFlight.yOffset;
+
+			int x = (int) (xStart + point.getX() - (graphics.getFontMetrics().stringWidth(text) / 2.0f));
+			int y = (int) (yStart + point.getY());
+
+			Color _color = getColor(xpDropInFlight);
+			Color backgroundColor = new Color(0, 0, 0, (int)xpDropInFlight.alpha);
+			Color color = new Color(_color.getRed(), _color.getGreen(), _color.getBlue(), (int)xpDropInFlight.alpha);
+			graphics.setColor(backgroundColor);
+			graphics.drawString(text, x + 1, y + 1);
+			graphics.setColor(color);
+			graphics.drawString(text, x, y);
+
+			int imageX = x - 2;
+			int imageY = y - graphics.getFontMetrics().getMaxAscent();
+			drawIcons(graphics, xpDropInFlight.icons, imageX, imageY, xpDropInFlight.alpha, true);
+		}
 	}
 
 	protected void drawXpDrops(Graphics2D graphics)

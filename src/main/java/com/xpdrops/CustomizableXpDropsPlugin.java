@@ -52,9 +52,6 @@ public class CustomizableXpDropsPlugin extends Plugin
 	private XpDropOverlay xpDropOverlay;
 
 	@Inject
-	private XpDropOverlayActor xpDropOverlayActor;
-
-	@Inject
 	private XpDropsConfig config;
 
 	@Inject
@@ -106,7 +103,6 @@ public class CustomizableXpDropsPlugin extends Plugin
 		queue.clear();
 
 		overlayManager.add(xpDropOverlay);
-		overlayManager.add(xpDropOverlayActor);
 
 		filteredSkills.clear();
 		filteredSkills.addAll(Text.fromCSV(config.skillsToFilter()).stream().map(String::toLowerCase).collect(Collectors.toList()));
@@ -123,7 +119,6 @@ public class CustomizableXpDropsPlugin extends Plugin
 	protected void shutDown()
 	{
 		overlayManager.remove(xpDropOverlay);
-		overlayManager.remove(xpDropOverlayActor);
 	}
 
 	@Subscribe
