@@ -3,15 +3,11 @@ package com.xpdrops;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import net.runelite.api.Actor;
-import net.runelite.api.Skill;
 
 @Data
 @AllArgsConstructor
-public class XpDrop
+public class Hit
 {
-	Skill skill;
-	int experience;
-	XpDropStyle style;
-	boolean fake;
+	int hit;
 	Actor attachedActor;
 }

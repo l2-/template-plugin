@@ -1,5 +1,6 @@
 package com.xpdrops;
 
+import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import net.runelite.api.Point;
 import net.runelite.client.ui.overlay.OverlayLayer;
@@ -29,28 +30,29 @@ public class XpDropOverlayActor extends XpDropOverlay
 	public Dimension render(Graphics2D graphics)
 	{
 		lazyInit();
+		updateFont();
 
-		if (client.getLocalPlayer() == null)
+		if (config.attachToNPC() || config.attachToPlayer())
 		{
-			return null;
+			if (client.getLocalPlayer() == null)
+			{
+				return null;
+			}
+
+			handleFont(graphics);
+			drawXpDrops(graphics);
 		}
-		int zOffset = Math.min(client.getLocalPlayer().getLogicalHeight(), 140);
-		Point point = client.getLocalPlayer().getCanvasTextLocation(graphics, "x", zOffset);
-		if (point == null)
-		{
-			return null;
-		}
-		point = new Point(point.getX() + config.attachToPlayerOffsetX(), point.getY() - config.attachToPlayerOffsetY()); // subtract y since conventional y-axis is from bottom to top
 
-		update();
-
-		drawXpDrops(graphics, point.getX(), point.getY());
-
-		lastFrameTime = System.currentTimeMillis();
 		return null;
 	}
 
-	protected void drawXpDrops(Graphics2D graphics, int _x, int _y)
+	protected Point getCanvasTextLocation(Graphics2D graphics, Actor actor)
+	{
+		int zOffset = Math.min(actor.getLogicalHeight(), 140);
+		return actor.getCanvasTextLocation(graphics, "x", zOffset);
+	}
+
+	protected void drawXpDrops(Graphics2D graphics)
 	{
 		graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 
@@ -64,11 +66,27 @@ public class XpDropOverlayActor extends XpDropOverlay
 			}
 			String text = getDropText(xpDropInFlight);
 
+			Actor target = xpDropInFlight.attachTo;
+			if (target == null || !config.attachToNPC())
+			{
+				target = client.getLocalPlayer();
+			}
+			if (target == null)
+			{
+				continue;
+			}
+			Point point = getCanvasTextLocation(graphics, target);
+			if (point == null)
+			{
+				continue;
+			}
+			point = new Point(point.getX() + config.attachToPlayerOffsetX(), point.getY() - config.attachToPlayerOffsetY()); // subtract y since conventional y-axis is from bottom to top
+
 			float xStart = xpDropInFlight.xOffset;
 			float yStart = xpDropInFlight.yOffset;
 
-			int x = (int) (xStart + _x - (graphics.getFontMetrics().stringWidth(text) / 2.0f));
-			int y = (int) (yStart + _y);
+			int x = (int) (xStart + point.getX() - (graphics.getFontMetrics().stringWidth(text) / 2.0f));
+			int y = (int) (yStart + point.getY());
 
 			Color _color = getColor(xpDropInFlight);
 			Color backgroundColor = new Color(0, 0, 0, (int)xpDropInFlight.alpha);

@@ -1,6 +1,7 @@
 package com.xpdrops;
 
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.Actor;
 import net.runelite.api.Skill;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.overlay.Overlay;
@@ -95,20 +96,26 @@ public class XpDropOverlay extends Overlay
 	public Dimension render(Graphics2D graphics)
 	{
 		lazyInit();
-
 		update();
+		updateFont();
 
-		drawXpDrops(graphics);
+		if (!config.attachToNPC() && !config.attachToPlayer())
+		{
+			drawXpDrops(graphics);
 
-		// Roughly estimate a bounding box that doesn't take icons into account.
-		FontMetrics fontMetrics = graphics.getFontMetrics();
-		int width = fontMetrics.stringWidth(pattern);
-		width += Math.abs(config.framesPerDrop() * config.xPixelsPerSecond() / FRAMES_PER_SECOND);
-		int height = fontMetrics.getHeight();
-		height += Math.abs(config.framesPerDrop() * config.yPixelsPerSecond() / FRAMES_PER_SECOND);
+			// Roughly estimate a bounding box that doesn't take icons into account.
+			FontMetrics fontMetrics = graphics.getFontMetrics();
+			int width = fontMetrics.stringWidth(pattern);
+			width += Math.abs(config.framesPerDrop() * config.xPixelsPerSecond() / FRAMES_PER_SECOND);
+			int height = fontMetrics.getHeight();
+			height += Math.abs(config.framesPerDrop() * config.yPixelsPerSecond() / FRAMES_PER_SECOND);
+
+			lastFrameTime = System.currentTimeMillis();
+			return new Dimension(width, height);
+		}
 
 		lastFrameTime = System.currentTimeMillis();
-		return new Dimension(width, height);
+		return null;
 	}
 
 	protected void drawXpDrops(Graphics2D graphics)
@@ -301,14 +308,13 @@ public class XpDropOverlay extends Overlay
 		return Color.WHITE;
 	}
 
-	protected void update()
+	private void update()
 	{
 		updateDrops();
-		updateFont();
 		pollDrops();
 	}
 
-	private void updateFont()
+	protected void updateFont()
 	{
 		if (!lastFont.equals(config.fontName()) || lastFontSize != config.fontSize() || lastFontStyle != config.fontStyle())
 		{
@@ -426,12 +432,14 @@ public class XpDropOverlay extends Overlay
 		XpDropStyle style = XpDropStyle.DEFAULT;
 
 		int totalHit = 0;
+		Actor target = null;
 		if (config.showPredictedHit())
 		{
-			Integer hit = plugin.getHitBuffer().poll();
+			Hit hit = plugin.getHitBuffer().poll();
 			while (hit != null)
 			{
-				totalHit += hit;
+				totalHit += hit.hit;
+				target = hit.attachedActor;
 				hit = plugin.getHitBuffer().poll();
 			}
 		}
@@ -439,7 +447,7 @@ public class XpDropOverlay extends Overlay
 		if (config.showPredictedHit() && (config.neverGroupPredictedHit() || !config.isGrouped()) && totalHit > 0)
 		{
 			int icons = 1 << 24;
-			XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, totalHit, style, 0, 0, 0xff, 0, 0);
+			XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, totalHit, style, 0, 0, 0xff, 0, 0, target);
 			drops.add(xpDropInFlight);
 		}
 
@@ -468,7 +476,7 @@ public class XpDropOverlay extends Overlay
 			if (amount > 0)
 			{
 				int hit = config.neverGroupPredictedHit() ? 0 : totalHit;
-				XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, amount, style, 0, 0, 0xff, 0, hit);
+				XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, amount, style, 0, 0, 0xff, 0, hit, target);
 				drops.add(xpDropInFlight);
 			}
 		}
@@ -489,7 +497,7 @@ public class XpDropOverlay extends Overlay
 					icons |= 1 << 23;
 				}
 
-				XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, amount, style, 0, 0, 0xff, 0, 0);
+				XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, amount, style, 0, 0, 0xff, 0, 0, xpDrop.attachedActor);
 				drops.add(xpDropInFlight);
 
 				xpDrop = plugin.getQueue().poll();

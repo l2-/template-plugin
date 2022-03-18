@@ -19,12 +19,10 @@ public interface XpDropsConfig extends Config
 		DEFAULT("Default");
 
 		String name;
-
 		FontStyle(String name)
 		{
 			this.name = name;
 		}
-
 		public String getName()
 		{
 			return name;
@@ -276,6 +274,18 @@ public interface XpDropsConfig extends Config
 		section = xp_drop_settings
 	)
 	default boolean attachToPlayer()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "attachToNPC",
+		name = "Attach to NPC",
+		description = "Attaches the XP drop location to the targeted NPC",
+		position = 14,
+		section = xp_drop_settings
+	)
+	default boolean attachToNPC()
 	{
 		return false;
 	}

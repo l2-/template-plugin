@@ -79,15 +79,14 @@ public class CustomizableXpDropsPlugin extends Plugin
 	@Getter
 	private final PriorityQueue<XpDrop> queue = new PriorityQueue<>(this::skillPriorityComparator);
 	@Getter
-	private final ArrayDeque<Integer> hitBuffer = new ArrayDeque<>();
+	private final ArrayDeque<Hit> hitBuffer = new ArrayDeque<>();
 	private final HashSet<String> filteredSkills = new HashSet<>();
 	private static final int[] previous_exp = new int[Skill.values().length - 1];
 	private static final int[] SKILL_ICON_ORDINAL_ICONS = new int[]{197, 199, 198, 203, 200, 201, 202, 212, 214, 208,
 		211, 213, 207, 210, 209, 205, 204, 206, 216, 217, 215, 220, 221};
 	private int lastOpponentId = -1;
 	private boolean lastOpponentIsPlayer = false;
-
-	private XpDropOverlay currentOverlay;
+	private Actor lastOpponent;
 
 	@Override
 	protected void startUp()
@@ -105,15 +104,9 @@ public class CustomizableXpDropsPlugin extends Plugin
 			Arrays.fill(previous_exp, 0);
 		}
 		queue.clear();
-		if (config.attachToPlayer())
-		{
-			currentOverlay = xpDropOverlayActor;
-		}
-		else
-		{
-			currentOverlay = xpDropOverlay;
-		}
-		overlayManager.add(currentOverlay);
+
+		overlayManager.add(xpDropOverlay);
+		overlayManager.add(xpDropOverlayActor);
 
 		filteredSkills.clear();
 		filteredSkills.addAll(Text.fromCSV(config.skillsToFilter()).stream().map(String::toLowerCase).collect(Collectors.toList()));
@@ -129,10 +122,8 @@ public class CustomizableXpDropsPlugin extends Plugin
 	@Override
 	protected void shutDown()
 	{
-		if (currentOverlay != null)
-		{
-			overlayManager.remove(currentOverlay);
-		}
+		overlayManager.remove(xpDropOverlay);
+		overlayManager.remove(xpDropOverlayActor);
 	}
 
 	@Subscribe
@@ -140,21 +131,6 @@ public class CustomizableXpDropsPlugin extends Plugin
 	{
 		if ("CustomizableXPDrops".equals(configChanged.getGroup()))
 		{
-			if ("attachToPlayer".equals(configChanged.getKey()))
-			{
-				if (config.attachToPlayer() && currentOverlay != xpDropOverlayActor)
-				{
-					overlayManager.remove(currentOverlay);
-					currentOverlay = xpDropOverlayActor;
-					overlayManager.add(currentOverlay);
-				}
-				else if (!config.attachToPlayer() && currentOverlay == xpDropOverlayActor)
-				{
-					overlayManager.remove(currentOverlay);
-					currentOverlay = xpDropOverlay;
-					overlayManager.add(currentOverlay);
-				}
-			}
 			if ("skillsToFilter".equals(configChanged.getKey()))
 			{
 				filteredSkills.clear();
@@ -177,6 +153,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 		}
 
 		Actor opponent = event.getTarget();
+		lastOpponent = opponent;
 
 		if (opponent instanceof NPC)
 		{
@@ -238,12 +215,12 @@ public class CustomizableXpDropsPlugin extends Plugin
 		{
 			int hit = xpDropDamageCalculator.calculateHitOnNpc(lastOpponentId, currentXp, lastOpponentIsPlayer, config.xpMultiplier());
 			log.debug("Hit npc with fake hp xp drop xp:{} hit:{} npc_id:{}", currentXp, hit, lastOpponentId);
-			hitBuffer.add(hit);
+			hitBuffer.add(new Hit(hit, lastOpponent));
 		}
 
 		if (!filteredSkills.contains(event.getSkill().getName().toLowerCase()))
 		{
-			XpDrop xpDrop = new XpDrop(event.getSkill(), currentXp, matchPrayerStyle(event.getSkill()), true);
+			XpDrop xpDrop = new XpDrop(event.getSkill(), currentXp, matchPrayerStyle(event.getSkill()), true, lastOpponent);
 			queue.add(xpDrop);
 		}
 	}
@@ -259,12 +236,12 @@ public class CustomizableXpDropsPlugin extends Plugin
 			{
 				int hit = xpDropDamageCalculator.calculateHitOnNpc(lastOpponentId, currentXp - previousXp, lastOpponentIsPlayer, config.xpMultiplier());
 				log.debug("Hit npc with hp xp drop xp:{} hit:{} npc_id:{}", currentXp - previousXp, hit, lastOpponentId);
-				hitBuffer.add(hit);
+				hitBuffer.add(new Hit(hit, lastOpponent));
 			}
 
 			if (!filteredSkills.contains(event.getSkill().getName().toLowerCase()))
 			{
-				XpDrop xpDrop = new XpDrop(event.getSkill(), currentXp - previousXp, matchPrayerStyle(event.getSkill()), false);
+				XpDrop xpDrop = new XpDrop(event.getSkill(), currentXp - previousXp, matchPrayerStyle(event.getSkill()), false, lastOpponent);
 				queue.add(xpDrop);
 			}
 		}
