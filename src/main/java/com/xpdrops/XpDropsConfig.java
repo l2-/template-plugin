@@ -413,10 +413,22 @@ public interface XpDropsConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "skillsToFilterForPredictedHits",
+		name = "Skills to filter for hits",
+		description = "Names of the skills for which a predicted hit should not be shown, each name separated by a comma. Must be the full name of the skill as shown when hovered in the skills tab.",
+		position = 22,
+		section = predicted_hit
+	)
+	default String skillsToFilterForPredictedHits()
+{
+	return "";
+}
+
+	@ConfigItem(
 		keyName = "xpMultiplier",
 		name = "Xp multiplier",
 		description = "The bonus xp multiplier (from season game mode for example) that should be factored when calculating the hit",
-		position = 22,
+		position = 23,
 		section = predicted_hit
 	)
 	default double xpMultiplier()

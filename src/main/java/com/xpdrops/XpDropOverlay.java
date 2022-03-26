@@ -509,7 +509,13 @@ public class XpDropOverlay extends Overlay
 			}
 		}
 
-		if (config.showPredictedHit() && (config.neverGroupPredictedHit() || !config.isGrouped()) && totalHit > 0)
+		boolean filteredHit = false;
+		for (XpDrop xpDrop : plugin.getQueue())
+		{
+			filteredHit |= plugin.getFilteredSkillsPredictedHits().contains(xpDrop.getSkill().getName().toLowerCase());
+		}
+
+		if (config.showPredictedHit() && (config.neverGroupPredictedHit() || !config.isGrouped()) && totalHit > 0 && !filteredHit)
 		{
 			int icons = 1 << 24;
 			XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, totalHit, style, 0, 0, 0xff, 0, 0, target);
@@ -540,7 +546,7 @@ public class XpDropOverlay extends Overlay
 			}
 			if (amount > 0)
 			{
-				int hit = config.neverGroupPredictedHit() ? 0 : totalHit;
+				int hit = config.neverGroupPredictedHit() || filteredHit ? 0 : totalHit;
 				XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, amount, style, 0, 0, 0xff, 0, hit, target);
 				drops.add(xpDropInFlight);
 			}
