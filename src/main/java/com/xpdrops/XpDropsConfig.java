@@ -62,6 +62,13 @@ public interface XpDropsConfig extends Config
 	)
 	String predicted_hit = "predicted_hit";
 
+	@ConfigSection(
+			name = "xp tracker overlay",
+			description = "Settings relating to the xp tracker",
+			position = 4
+	)
+	String xp_tracker_settings = "xp_tracker_settings";
+
 	@ConfigItem(
 		keyName = "grouped",
 		name = "Group XP drops",
@@ -434,5 +441,41 @@ public interface XpDropsConfig extends Config
 	default double xpMultiplier()
 	{
 		return 1;
+	}
+
+	@ConfigItem(
+			keyName = "useCustomXpTracker",
+			name = "Use custom xp tracker",
+			description = "Turn custom xp tracker on or off",
+			position = 24,
+			section = xp_tracker_settings
+	)
+	default boolean useCustomXpTracker()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "xpTrackerFontSize",
+			name = "XP tracker font size",
+			description = "Size of font for the XP Tracker overlay",
+			position = 24,
+			section = xp_tracker_settings
+	)
+	default int xpTrackerFontSize()
+	{
+		return 16;
+	}
+
+	@ConfigItem(
+			keyName = "xpTrackerColor",
+			name = "Overall XP Color",
+			description = "Color for the Overall Xp Tracker",
+			position = 15,
+			section = xp_tracker_settings
+	)
+	default Color xpTrackerColor()
+	{
+		return Color.white;
 	}
 }

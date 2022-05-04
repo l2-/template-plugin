@@ -51,6 +51,8 @@ public class CustomizableXpDropsPlugin extends Plugin
 	@Inject
 	private XpDropOverlay xpDropOverlay;
 
+	@Inject XpTrackerOverlay xpTrackerOverlay;
+
 	@Inject
 	private XpDropsConfig config;
 
@@ -104,6 +106,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 		}
 		queue.clear();
 
+		overlayManager.add(xpTrackerOverlay);
 		overlayManager.add(xpDropOverlay);
 
 		filteredSkillsPredictedHits.clear();
@@ -128,6 +131,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 	@Override
 	protected void shutDown()
 	{
+		overlayManager.remove(xpTrackerOverlay);
 		overlayManager.remove(xpDropOverlay);
 	}
 
