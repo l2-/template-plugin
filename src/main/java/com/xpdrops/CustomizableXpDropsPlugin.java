@@ -133,6 +133,8 @@ public class CustomizableXpDropsPlugin extends Plugin
 	{
 		overlayManager.remove(xpTrackerOverlay);
 		overlayManager.remove(xpDropOverlay);
+		final Widget xpTracker = client.getWidget(122,0);
+		xpTracker.setHidden(false);
 	}
 
 	@Subscribe
@@ -205,9 +207,20 @@ public class CustomizableXpDropsPlugin extends Plugin
 			final int widgetId = intStack[intStackSize - 4];
 
 			final Widget xpdrop = client.getWidget(widgetId);
+			final Widget xpTracker = client.getWidget(122,0);
 			if (xpdrop != null)
 			{
 				xpdrop.setHidden(true);
+			}
+
+			//TODO: Default xp tracker isn't showing back up when custom xp tracker turned off
+			if(config.useXpTracker())
+			{
+				xpTracker.setHidden(true);
+			}
+			else
+			{
+				xpTracker.setHidden(false);
 			}
 		}
 	}
