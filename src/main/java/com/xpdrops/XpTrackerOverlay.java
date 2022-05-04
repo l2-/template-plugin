@@ -141,51 +141,6 @@ public class XpTrackerOverlay extends Overlay {
         graphics.drawString(text, textX, textY);
     }
 
-    protected int drawIcons(Graphics2D graphics, int icons, int x, int y, float alpha, boolean rightToLeft)
-    {
-        int width = 0;
-        int iconSize = graphics.getFontMetrics().getHeight();
-        if (config.showIconsXpTracker())
-        {
-            for (int i = SKILL_INDICES.length - 1; i >= 0; i--)
-            {
-                int icon = (icons >> i) & 0x1;
-                if (icon == 0x1)
-                {
-                    int index = SKILL_INDICES[i];
-                    BufferedImage image = STAT_ICONS[index];
-                    int _iconSize = Math.max(iconSize, 18);
-                    int iconWidth = image.getWidth() * _iconSize / 25;
-                    int iconHeight = image.getHeight() * _iconSize / 25;
-                    Dimension dimension = drawIcon(graphics, image, x, y, iconWidth, iconHeight, alpha / 0xff, rightToLeft);
-
-                    if (rightToLeft)
-                    {
-                        x -= dimension.getWidth() + 2;
-                    }
-                    else
-                    {
-                        x += dimension.getWidth() + 2;
-                    }
-                    width += dimension.getWidth() + 2;
-                }
-            }
-        }
-        return width;
-    }
-
-    private Dimension drawIcon(Graphics2D graphics, BufferedImage image, int x, int y, int width, int height, float alpha, boolean rightToLeft)
-    {
-        int yOffset = graphics.getFontMetrics().getHeight() / 2 - height / 2;
-        int xOffset = rightToLeft ? width : 0;
-
-        Composite composite = graphics.getComposite();
-        graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
-        graphics.drawImage(image, x - xOffset, y + yOffset, width, height, null);
-        graphics.setComposite(composite);
-        return new Dimension(width, height);
-    }
-
     private void update()
     {
         updateFont();
