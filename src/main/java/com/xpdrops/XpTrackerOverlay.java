@@ -116,7 +116,7 @@ public class XpTrackerOverlay extends Overlay {
         int width = graphics.getFontMetrics().stringWidth(pattern);
         int height = graphics.getFontMetrics().getHeight();
 
-        if (config.xpTrackerSkill().equals(Skill.OVERALL))
+        if (config.xpTrackerSkill().equals(XpTrackerSkills.OVERALL))
         {
             text = xpFormatter.format(overallXp);
         }
@@ -189,7 +189,7 @@ public class XpTrackerOverlay extends Overlay {
     private void update()
     {
         updateFont();
-        updateXpTracker(config.xpTrackerSkill());
+        updateXpTracker();
     }
 
     private void updateFont()
@@ -258,8 +258,9 @@ public class XpTrackerOverlay extends Overlay {
         }
     }
 
-    private void updateXpTracker(Skill skill)
+    private void updateXpTracker()
     {
+        Skill skill = determineSkill();
         if (skill.equals(Skill.OVERALL))
         {
             overallXp = client.getOverallExperience();
@@ -268,5 +269,69 @@ public class XpTrackerOverlay extends Overlay {
         {
             skillXp = client.getSkillExperience(skill);
         }
+    }
+
+    private Skill determineSkill()
+    {
+        if (config.xpTrackerSkill().equals(XpTrackerSkills.MOST_RECENT))
+        {
+            for (XpDrop xpDrop : plugin.getQueue())
+            {
+                return xpDrop.getSkill();
+            }
+        }
+
+        switch (config.xpTrackerSkill())
+        {
+            case OVERALL:
+                return Skill.OVERALL;
+            case ATTACK:
+                return Skill.ATTACK;
+            case STRENGTH:
+                return Skill.STRENGTH;
+            case DEFENCE:
+                return Skill.DEFENCE;
+            case HITPOINTS:
+                return Skill.HITPOINTS;
+            case RANGED:
+                return Skill.RANGED;
+            case PRAYER:
+                return Skill.PRAYER;
+            case MAGIC:
+                return Skill.MAGIC;
+            case RUNECRAFT:
+                return Skill.RUNECRAFT;
+            case CONSTRUCTION:
+                return Skill.CONSTRUCTION;
+            case AGILITY:
+                return Skill.AGILITY;
+            case HERBLORE:
+                return Skill.HERBLORE;
+            case THEIVING:
+                return Skill.THIEVING;
+            case CRAFTING:
+                return Skill.CRAFTING;
+            case FLETCHING:
+                return Skill.FLETCHING;
+            case SLAYER:
+                return Skill.SLAYER;
+            case HUNTER:
+                return Skill.HUNTER;
+            case MINING:
+                return Skill.MINING;
+            case SMITHING:
+                return Skill.SMITHING;
+            case FISHING:
+                return Skill.FISHING;
+            case COOKING:
+                return Skill.COOKING;
+            case FIREMAKING:
+                return Skill.FIREMAKING;
+            case WOODCUTTING:
+                return Skill.WOODCUTTING;
+            case FARMING:
+                return Skill.FARMING;
+        }
+        return Skill.OVERALL;
     }
 }

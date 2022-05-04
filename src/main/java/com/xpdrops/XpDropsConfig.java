@@ -475,8 +475,8 @@ public interface XpDropsConfig extends Config
 			position = 26,
 			section = xp_tracker_settings
 	)
-	default Skill xpTrackerSkill() {
-		return Skill.OVERALL;
+	default XpTrackerSkills xpTrackerSkill() {
+		return XpTrackerSkills.MOST_RECENT;
 	}
 
 	@ConfigItem(
@@ -493,8 +493,8 @@ public interface XpDropsConfig extends Config
 
 	@ConfigItem(
 			keyName = "xpTrackerColor",
-			name = "Overall XP Color",
-			description = "Color for the Overall Xp Tracker",
+			name = "XP Tracker Color",
+			description = "Color for the Xp Tracker",
 			position = 27,
 			section = xp_tracker_settings
 	)
