@@ -51,6 +51,8 @@ public class CustomizableXpDropsPlugin extends Plugin
 	@Inject
 	private XpDropOverlay xpDropOverlay;
 
+	@Inject XpTrackerOverlay xpTrackerOverlay;
+
 	@Inject
 	private XpDropsConfig config;
 
@@ -104,6 +106,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 		}
 		queue.clear();
 
+		overlayManager.add(xpTrackerOverlay);
 		overlayManager.add(xpDropOverlay);
 
 		filteredSkillsPredictedHits.clear();
@@ -122,13 +125,24 @@ public class CustomizableXpDropsPlugin extends Plugin
 			filteredSkills.add("runecraft");
 		}
 
+		if(config.useXpTracker())
+		{
+			final Widget xpTracker = client.getWidget(122,0);
+			assert xpTracker != null;
+			xpTracker.setHidden(true);
+		}
+
 		xpDropDamageCalculator.populateMap();
 	}
 
 	@Override
 	protected void shutDown()
 	{
+		overlayManager.remove(xpTrackerOverlay);
 		overlayManager.remove(xpDropOverlay);
+		final Widget xpTracker = client.getWidget(122,0);
+		assert xpTracker != null;
+		xpTracker.setHidden(false);
 	}
 
 	@Subscribe
@@ -156,6 +170,18 @@ public class CustomizableXpDropsPlugin extends Plugin
 				{
 					filteredSkillsPredictedHits.add("runecraft");
 				}
+			}
+
+			final Widget xpTracker = client.getWidget(122,0);
+			if(config.useXpTracker())
+			{
+				assert xpTracker != null;
+				xpTracker.setHidden(true);
+			}
+			else
+			{
+				assert xpTracker != null;
+				xpTracker.setHidden(false);
 			}
 		}
 	}
@@ -189,6 +215,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 		}
 	}
 
+	//TODO: When the XPTrackerWidget gets hidden, this onScriptPreFired no longer gets called
 	@Subscribe
 	public void onScriptPreFired(ScriptPreFired scriptPreFired)
 	{

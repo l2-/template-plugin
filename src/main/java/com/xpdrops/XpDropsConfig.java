@@ -1,5 +1,6 @@
 package com.xpdrops;
 
+import net.runelite.api.Skill;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -61,6 +62,13 @@ public interface XpDropsConfig extends Config
 		position = 3
 	)
 	String predicted_hit = "predicted_hit";
+
+	@ConfigSection(
+			name = "xp tracker overlay",
+			description = "Settings relating to the xp tracker",
+			position = 4
+	)
+	String xp_tracker_settings = "xp_tracker_settings";
 
 	@ConfigItem(
 		keyName = "grouped",
@@ -434,5 +442,64 @@ public interface XpDropsConfig extends Config
 	default double xpMultiplier()
 	{
 		return 1;
+	}
+
+	@ConfigItem(
+			keyName = "useXpTracker",
+			name = "Use xp tracker",
+			description = "Turn custom xp tracker on or off",
+			position = 24,
+			section = xp_tracker_settings
+	)
+	default boolean useXpTracker()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "showIconsXpTracker",
+			name = "Show icons xp tracker",
+			description = "Turn on skill icons for xp tracker",
+			position = 25,
+			section = xp_tracker_settings
+	)
+	default boolean showIconsXpTracker()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+			keyName = "xpTrackerSkill",
+			name = "Xp tracker skill",
+			description = "Skill to display within the Xp Tracker",
+			position = 26,
+			section = xp_tracker_settings
+	)
+	default XpTrackerSkills xpTrackerSkill() {
+		return XpTrackerSkills.MOST_RECENT;
+	}
+
+	@ConfigItem(
+			keyName = "xpTrackerFontSize",
+			name = "XP tracker font size",
+			description = "Size of font for the XP Tracker overlay",
+			position = 26,
+			section = xp_tracker_settings
+	)
+	default int xpTrackerFontSize()
+	{
+		return 16;
+	}
+
+	@ConfigItem(
+			keyName = "xpTrackerColor",
+			name = "XP tracker color",
+			description = "Color for the Xp Tracker",
+			position = 27,
+			section = xp_tracker_settings
+	)
+	default Color xpTrackerColor()
+	{
+		return Color.white;
 	}
 }
