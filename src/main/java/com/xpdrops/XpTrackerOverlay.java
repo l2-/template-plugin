@@ -36,6 +36,8 @@ public class XpTrackerOverlay extends Overlay {
 
     private Long overallXp;
     private int skillXp;
+    private int icon;
+    private Skill currentSkill;
 
     @Inject
     protected XpTrackerOverlay(CustomizableXpDropsPlugin plugin, XpDropsConfig config)
@@ -66,6 +68,10 @@ public class XpTrackerOverlay extends Overlay {
     {
         if (firstRender)
         {
+            //Default the xpTracker to Attack for first render
+            icon = 0;
+            currentSkill = Skill.ATTACK;
+
             firstRender = false;
             initIcons();
         }
@@ -91,7 +97,7 @@ public class XpTrackerOverlay extends Overlay {
             lazyInit();
             update();
 
-            setLayer(OverlayLayer.ABOVE_WIDGETS);
+            setLayer(OverlayLayer.UNDER_WIDGETS);
             setPosition(OverlayPosition.TOP_RIGHT);
 
             drawXpTracker(graphics);
@@ -128,7 +134,51 @@ public class XpTrackerOverlay extends Overlay {
         int textY = height + graphics.getFontMetrics().getMaxAscent() - graphics.getFontMetrics().getHeight();
         int textX = width - graphics.getFontMetrics().stringWidth(text);
 
-        drawText(graphics, text, textX, textY);
+        int imageY = textY - graphics.getFontMetrics().getMaxAscent();
+
+        int imageWidth = drawIcons(graphics, 0, imageY, 0xff, true);
+
+        drawText(graphics, text, imageWidth, textY);
+    }
+
+    private int drawIcons(Graphics2D graphics, int x, int y, float alpha, boolean rightToLeft)
+    {
+        int width = 0;
+        int iconSize = graphics.getFontMetrics().getHeight();
+
+        if (config.showIconsXpTracker())
+        {
+            BufferedImage image = STAT_ICONS[icon];
+            int _iconSize = Math.max(iconSize, 18);
+            int iconWidth = image.getWidth() * _iconSize / 25;
+            int iconHeight = image.getHeight() * _iconSize / 25;
+            Dimension dimension = drawIcon(graphics, image, x, y, iconWidth, iconHeight, alpha / 0xff, rightToLeft);
+
+            if (rightToLeft)
+            {
+                x -= dimension.getWidth() + 2;
+            }
+            else
+            {
+                x += dimension.getWidth() + 2;
+            }
+            width += dimension.getWidth() + 2;
+            //return after we've gotten the first icon, since we only want to display 1 skill if multiple get xp at once
+            return width;
+        }
+        return width;
+    }
+
+    private Dimension drawIcon(Graphics2D graphics, BufferedImage image, int x, int y, int width, int height, float alpha, boolean rightToLeft)
+    {
+        int yOffset = graphics.getFontMetrics().getHeight() / 2 - height / 2;
+        int xOffset = rightToLeft ? width : 0;
+
+        Composite composite = graphics.getComposite();
+        graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+        graphics.drawImage(image, x - xOffset, y + yOffset, width, height, null);
+        graphics.setComposite(composite);
+        return new Dimension(width, height);
     }
 
     protected void drawText(Graphics2D graphics, String text, int textX, int textY)
@@ -215,78 +265,109 @@ public class XpTrackerOverlay extends Overlay {
 
     private void updateXpTracker()
     {
-        Skill skill = determineSkill();
-        if (skill.equals(Skill.OVERALL))
+        determineSkill();
+        if (currentSkill.equals(Skill.OVERALL))
         {
             overallXp = client.getOverallExperience();
         }
         else
         {
-            skillXp = client.getSkillExperience(skill);
+            skillXp = client.getSkillExperience(currentSkill);
         }
     }
 
-    private Skill determineSkill()
+    private void determineSkill()
     {
         if (config.xpTrackerSkill().equals(XpTrackerSkills.MOST_RECENT))
         {
             for (XpDrop xpDrop : plugin.getQueue())
             {
-                return xpDrop.getSkill();
+                 currentSkill = selectSkill(xpDrop.getSkill().getName().toUpperCase());
+                 break;
             }
         }
-
-        switch (config.xpTrackerSkill())
+        else
         {
-            case OVERALL:
-                return Skill.OVERALL;
-            case ATTACK:
-                return Skill.ATTACK;
-            case STRENGTH:
-                return Skill.STRENGTH;
-            case DEFENCE:
-                return Skill.DEFENCE;
-            case HITPOINTS:
-                return Skill.HITPOINTS;
-            case RANGED:
-                return Skill.RANGED;
-            case PRAYER:
-                return Skill.PRAYER;
-            case MAGIC:
-                return Skill.MAGIC;
-            case RUNECRAFT:
-                return Skill.RUNECRAFT;
-            case CONSTRUCTION:
-                return Skill.CONSTRUCTION;
-            case AGILITY:
-                return Skill.AGILITY;
-            case HERBLORE:
-                return Skill.HERBLORE;
-            case THEIVING:
-                return Skill.THIEVING;
-            case CRAFTING:
-                return Skill.CRAFTING;
-            case FLETCHING:
-                return Skill.FLETCHING;
-            case SLAYER:
-                return Skill.SLAYER;
-            case HUNTER:
-                return Skill.HUNTER;
-            case MINING:
-                return Skill.MINING;
-            case SMITHING:
-                return Skill.SMITHING;
-            case FISHING:
-                return Skill.FISHING;
-            case COOKING:
-                return Skill.COOKING;
-            case FIREMAKING:
-                return Skill.FIREMAKING;
-            case WOODCUTTING:
-                return Skill.WOODCUTTING;
-            case FARMING:
-                return Skill.FARMING;
+            currentSkill = selectSkill(config.xpTrackerSkill().toString());
         }
-        return Skill.OVERALL;
+    }
+
+    private Skill selectSkill(String xpTrackerSkills) {
+        switch (xpTrackerSkills)
+        {
+            case "OVERALL":
+                icon = 23;
+                return Skill.OVERALL;
+            case "ATTACK":
+                icon = 0;
+                return Skill.ATTACK;
+            case "DEFENCE":
+                icon = 1;
+                return Skill.DEFENCE;
+            case "STRENGTH":
+                icon = 2;
+                return Skill.STRENGTH;
+            case "HITPOINTS":
+                icon = 3;
+                return Skill.HITPOINTS;
+            case "RANGED":
+                icon = 4;
+                return Skill.RANGED;
+            case "PRAYER":
+                icon = 5;
+                return Skill.PRAYER;
+            case "MAGIC":
+                icon = 6;
+                return Skill.MAGIC;
+            case "COOKING":
+                icon = 7;
+                return Skill.COOKING;
+            case "WOODCUTTING":
+                icon = 8;
+                return Skill.WOODCUTTING;
+            case "FLETCHING":
+                icon = 9;
+                return Skill.FLETCHING;
+            case "FISHING":
+                icon = 10;
+                return Skill.FISHING;
+            case "FIREMAKING":
+                icon = 11;
+                return Skill.FIREMAKING;
+            case "CRAFTING":
+                icon = 12;
+                return Skill.CRAFTING;
+            case "SMITHING":
+                icon = 13;
+                return Skill.SMITHING;
+            case "MINING":
+                icon = 14;
+                return Skill.MINING;
+            case "HERBLORE":
+                icon = 15;
+                return Skill.HERBLORE;
+            case "AGILITY":
+                icon = 16;
+                return Skill.AGILITY;
+            case "THEIVING":
+                icon = 17;
+                return Skill.THIEVING;
+            case "SLAYER":
+                icon = 18;
+                return Skill.SLAYER;
+            case "FARMING":
+                icon = 19;
+                return Skill.FARMING;
+            case "RUNECRAFT":
+                icon = 20;
+                return Skill.RUNECRAFT;
+            case "HUNTER":
+                icon = 21;
+                return Skill.HUNTER;
+            case "CONSTRUCTION":
+                icon = 22;
+                return Skill.CONSTRUCTION;
+        }
+        return null;
     }
 }

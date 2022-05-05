@@ -493,7 +493,7 @@ public interface XpDropsConfig extends Config
 
 	@ConfigItem(
 			keyName = "xpTrackerColor",
-			name = "XP Tracker Color",
+			name = "XP tracker color",
 			description = "Color for the Xp Tracker",
 			position = 27,
 			section = xp_tracker_settings
