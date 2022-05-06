@@ -14,6 +14,7 @@ import java.text.DecimalFormat;
 
 public class XpTrackerOverlay extends Overlay {
 
+    protected static final int TOTAL_LEVEL_ICON = 898;
     protected static final float FRAMES_PER_SECOND = 50;
     protected static final String pattern = "#,###,###,###";
     protected static final DecimalFormat xpFormatter = new DecimalFormat(pattern);
@@ -115,6 +116,7 @@ public class XpTrackerOverlay extends Overlay {
     {
         graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
         String text = "";
+        boolean isOverall = false;
         handleFont(graphics);
 
         int width = graphics.getFontMetrics().stringWidth(pattern);
@@ -123,6 +125,7 @@ public class XpTrackerOverlay extends Overlay {
         if (config.xpTrackerSkill().equals(XpTrackerSkills.OVERALL))
         {
             text = xpFormatter.format(overallXp);
+            isOverall = true;
         }
         else
         {
@@ -134,21 +137,31 @@ public class XpTrackerOverlay extends Overlay {
 
         int imageY = textY - graphics.getFontMetrics().getMaxAscent();
 
-        int imageWidth = drawIcons(graphics, 0, imageY, 0xff);
+        int imageWidth = drawIcons(graphics, 0, imageY, 0xff, isOverall);
 
         drawText(graphics, text, imageWidth, textY);
 
         return textX + imageWidth;
     }
 
-    private int drawIcons(Graphics2D graphics, int x, int y, float alpha)
+    private int drawIcons(Graphics2D graphics, int x, int y, float alpha, boolean isOverallXp)
     {
         int width = 0;
         int iconSize = graphics.getFontMetrics().getHeight();
+        BufferedImage image;
 
         if (config.showIconsXpTracker())
         {
-            BufferedImage image = STAT_ICONS[icon];
+            //if the skill we're tracking is not OverallXp, get the icon from the array of bufferedImages using the icon ID
+            if(!isOverallXp)
+            {
+                image = STAT_ICONS[icon];
+            }
+            //If we're tracking OverallXp, get the Skills Tab icon by getting the icon from the spriteList, using ID 898
+            else
+            {
+                image = plugin.getIcon(898, 0);
+            }
             int _iconSize = Math.max(iconSize, 18);
             int iconWidth = image.getWidth() * _iconSize / 25;
             int iconHeight = image.getHeight() * _iconSize / 25;
@@ -283,7 +296,6 @@ public class XpTrackerOverlay extends Overlay {
         switch (xpTrackerSkills)
         {
             case "OVERALL":
-                //icon = 23;
                 return Skill.OVERALL;
             case "ATTACK":
                 icon = 0;
