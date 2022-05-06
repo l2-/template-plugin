@@ -69,9 +69,11 @@ public class XpTrackerOverlay extends Overlay {
     {
         if (firstRender)
         {
-            //Default the xpTracker to Attack for first render
-            icon = 0;
-            currentSkill = Skill.ATTACK;
+            //If the user is using the MOST_RECENT, default to showing overall xp for the first render
+            if(config.xpTrackerSkill().equals(XpTrackerSkills.MOST_RECENT))
+            {
+                currentSkill = Skill.OVERALL;
+            }
 
             firstRender = false;
             initIcons();
@@ -105,6 +107,7 @@ public class XpTrackerOverlay extends Overlay {
 
             int width = drawXpTracker(graphics);
             int height = fontMetrics.getHeight();
+            height += Math.abs(config.xpTrackerFontSize() - fontMetrics.getHeight());
 
             lastFrameTime = System.currentTimeMillis();
             return new Dimension(width, height);
@@ -122,7 +125,7 @@ public class XpTrackerOverlay extends Overlay {
         int width = graphics.getFontMetrics().stringWidth(pattern);
         int height = graphics.getFontMetrics().getHeight();
 
-        if (config.xpTrackerSkill().equals(XpTrackerSkills.OVERALL))
+        if (currentSkill.equals(Skill.OVERALL))
         {
             text = xpFormatter.format(overallXp);
             isOverall = true;
@@ -133,11 +136,12 @@ public class XpTrackerOverlay extends Overlay {
         }
 
         int textY = height + graphics.getFontMetrics().getMaxAscent() - graphics.getFontMetrics().getHeight();
-        int textX = width - graphics.getFontMetrics().stringWidth(text);
+        int textX = width - (width - graphics.getFontMetrics().stringWidth(text));
 
         int imageY = textY - graphics.getFontMetrics().getMaxAscent();
 
-        int imageWidth = drawIcons(graphics, 0, imageY, 0xff, isOverall);
+        //Adding 5 onto image width to give a little space in between icon and text
+        int imageWidth = drawIcons(graphics, 0, imageY, 0xff, isOverall) + 5;
 
         drawText(graphics, text, imageWidth, textY);
 
@@ -167,7 +171,7 @@ public class XpTrackerOverlay extends Overlay {
             int iconHeight = image.getHeight() * _iconSize / 25;
             Dimension dimension = drawIcon(graphics, image, x, y, iconWidth, iconHeight, alpha / 0xff);
 
-            width += dimension.getWidth() + 1;
+            width += dimension.getWidth();
             return width;
         }
         return width;
@@ -180,7 +184,7 @@ public class XpTrackerOverlay extends Overlay {
 
         Composite composite = graphics.getComposite();
         graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
-        graphics.drawImage(image, x - xOffset, y + yOffset, width, height, null);
+        graphics.drawImage(image, x, y + yOffset, width, height, null);
         graphics.setComposite(composite);
         return new Dimension(width, height);
     }
