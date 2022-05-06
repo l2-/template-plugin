@@ -161,10 +161,10 @@ public class XpTrackerOverlay extends Overlay {
             {
                 image = STAT_ICONS[icon];
             }
-            //If we're tracking OverallXp, get the Skills Tab icon by getting the icon from the spriteList, using ID 898
+            //If we're tracking OverallXp, get the Skills Tab icon by getting the icon from the spriteList
             else
             {
-                image = plugin.getIcon(898, 0);
+                image = plugin.getIcon(TOTAL_LEVEL_ICON, 0);
             }
             int _iconSize = Math.max(iconSize, 18);
             int iconWidth = image.getWidth() * _iconSize / 25;
