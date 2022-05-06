@@ -125,6 +125,13 @@ public class CustomizableXpDropsPlugin extends Plugin
 			filteredSkills.add("runecraft");
 		}
 
+		if(config.useXpTracker())
+		{
+			final Widget xpTracker = client.getWidget(122,0);
+			assert xpTracker != null;
+			xpTracker.setHidden(true);
+		}
+
 		xpDropDamageCalculator.populateMap();
 	}
 
@@ -134,6 +141,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 		overlayManager.remove(xpTrackerOverlay);
 		overlayManager.remove(xpDropOverlay);
 		final Widget xpTracker = client.getWidget(122,0);
+		assert xpTracker != null;
 		xpTracker.setHidden(false);
 	}
 
@@ -162,6 +170,18 @@ public class CustomizableXpDropsPlugin extends Plugin
 				{
 					filteredSkillsPredictedHits.add("runecraft");
 				}
+			}
+
+			final Widget xpTracker = client.getWidget(122,0);
+			if(config.useXpTracker())
+			{
+				assert xpTracker != null;
+				xpTracker.setHidden(true);
+			}
+			else
+			{
+				assert xpTracker != null;
+				xpTracker.setHidden(false);
 			}
 		}
 	}
@@ -195,6 +215,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 		}
 	}
 
+	//TODO: When the XPTrackerWidget gets hidden, this onScriptPreFired no longer gets called
 	@Subscribe
 	public void onScriptPreFired(ScriptPreFired scriptPreFired)
 	{
@@ -207,20 +228,9 @@ public class CustomizableXpDropsPlugin extends Plugin
 			final int widgetId = intStack[intStackSize - 4];
 
 			final Widget xpdrop = client.getWidget(widgetId);
-			final Widget xpTracker = client.getWidget(122,0);
 			if (xpdrop != null)
 			{
 				xpdrop.setHidden(true);
-			}
-
-			//TODO: Default xp tracker isn't showing back up when custom xp tracker turned off
-			if(config.useXpTracker())
-			{
-				xpTracker.setHidden(true);
-			}
-			else
-			{
-				xpTracker.setHidden(false);
 			}
 		}
 	}
