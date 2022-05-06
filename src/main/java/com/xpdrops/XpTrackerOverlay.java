@@ -15,11 +15,9 @@ import java.text.DecimalFormat;
 public class XpTrackerOverlay extends Overlay {
 
     protected static final int TOTAL_LEVEL_ICON = 898;
-    protected static final float FRAMES_PER_SECOND = 50;
     protected static final String pattern = "#,###,###,###";
     protected static final DecimalFormat xpFormatter = new DecimalFormat(pattern);
     protected static final BufferedImage[] STAT_ICONS = new BufferedImage[Skill.values().length - 1];
-    protected static final int[] SKILL_INDICES = new int[] {10, 0, 2, 4, 6, 1, 3, 5, 16, 15, 17, 12, 20, 14, 13, 7, 11, 8, 9, 18, 19, 22, 21};
 
     protected CustomizableXpDropsPlugin plugin;
     protected XpDropsConfig config;
