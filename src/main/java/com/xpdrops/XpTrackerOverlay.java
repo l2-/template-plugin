@@ -256,7 +256,19 @@ public class XpTrackerOverlay extends Overlay {
 
     private void updateXpTracker()
     {
-        determineSkill();
+        if (config.xpTrackerSkill().equals(XpTrackerSkills.MOST_RECENT))
+        {
+            for (XpDrop xpDrop : plugin.getQueue())
+            {
+                currentSkill = selectSkill(xpDrop.getSkill().getName().toUpperCase());
+                break;
+            }
+        }
+        else
+        {
+            currentSkill = selectSkill(config.xpTrackerSkill().toString());
+        }
+
         if (currentSkill.equals(Skill.OVERALL))
         {
             overallXp = client.getOverallExperience();
@@ -264,22 +276,6 @@ public class XpTrackerOverlay extends Overlay {
         else
         {
             skillXp = client.getSkillExperience(currentSkill);
-        }
-    }
-
-    private void determineSkill()
-    {
-        if (config.xpTrackerSkill().equals(XpTrackerSkills.MOST_RECENT))
-        {
-            for (XpDrop xpDrop : plugin.getQueue())
-            {
-                 currentSkill = selectSkill(xpDrop.getSkill().getName().toUpperCase());
-                 break;
-            }
-        }
-        else
-        {
-            currentSkill = selectSkill(config.xpTrackerSkill().toString());
         }
     }
 
