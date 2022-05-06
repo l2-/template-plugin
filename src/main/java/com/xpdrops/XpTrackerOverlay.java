@@ -43,7 +43,7 @@ public class XpTrackerOverlay extends Overlay {
     {
         this.plugin = plugin;
         this.config = config;
-        setLayer(OverlayLayer.ABOVE_WIDGETS);
+        setLayer(OverlayLayer.UNDER_WIDGETS);
         setPosition(OverlayPosition.TOP_RIGHT);
     }
 
