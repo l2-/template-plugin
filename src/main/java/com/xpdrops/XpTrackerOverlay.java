@@ -100,11 +100,9 @@ public class XpTrackerOverlay extends Overlay {
             setLayer(OverlayLayer.UNDER_WIDGETS);
             setPosition(OverlayPosition.TOP_RIGHT);
 
-            drawXpTracker(graphics);
-
             FontMetrics fontMetrics = graphics.getFontMetrics();
 
-            int width = fontMetrics.stringWidth(pattern);
+            int width = drawXpTracker(graphics);
             int height = fontMetrics.getHeight();
 
             lastFrameTime = System.currentTimeMillis();
@@ -113,7 +111,7 @@ public class XpTrackerOverlay extends Overlay {
         return new Dimension(0,0);
     }
 
-    protected void drawXpTracker(Graphics2D graphics)
+    protected int drawXpTracker(Graphics2D graphics)
     {
         graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
         String text = "";
@@ -136,12 +134,14 @@ public class XpTrackerOverlay extends Overlay {
 
         int imageY = textY - graphics.getFontMetrics().getMaxAscent();
 
-        int imageWidth = drawIcons(graphics, 0, imageY, 0xff, true);
+        int imageWidth = drawIcons(graphics, 0, imageY, 0xff);
 
         drawText(graphics, text, imageWidth, textY);
+
+        return textX + imageWidth;
     }
 
-    private int drawIcons(Graphics2D graphics, int x, int y, float alpha, boolean rightToLeft)
+    private int drawIcons(Graphics2D graphics, int x, int y, float alpha)
     {
         int width = 0;
         int iconSize = graphics.getFontMetrics().getHeight();
@@ -152,27 +152,18 @@ public class XpTrackerOverlay extends Overlay {
             int _iconSize = Math.max(iconSize, 18);
             int iconWidth = image.getWidth() * _iconSize / 25;
             int iconHeight = image.getHeight() * _iconSize / 25;
-            Dimension dimension = drawIcon(graphics, image, x, y, iconWidth, iconHeight, alpha / 0xff, rightToLeft);
+            Dimension dimension = drawIcon(graphics, image, x, y, iconWidth, iconHeight, alpha / 0xff);
 
-            if (rightToLeft)
-            {
-                x -= dimension.getWidth() + 2;
-            }
-            else
-            {
-                x += dimension.getWidth() + 2;
-            }
-            width += dimension.getWidth() + 2;
-            //return after we've gotten the first icon, since we only want to display 1 skill if multiple get xp at once
+            width += dimension.getWidth() + 1;
             return width;
         }
         return width;
     }
 
-    private Dimension drawIcon(Graphics2D graphics, BufferedImage image, int x, int y, int width, int height, float alpha, boolean rightToLeft)
+    private Dimension drawIcon(Graphics2D graphics, BufferedImage image, int x, int y, int width, int height, float alpha)
     {
         int yOffset = graphics.getFontMetrics().getHeight() / 2 - height / 2;
-        int xOffset = rightToLeft ? width : 0;
+        int xOffset = width;
 
         Composite composite = graphics.getComposite();
         graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
@@ -296,7 +287,7 @@ public class XpTrackerOverlay extends Overlay {
         switch (xpTrackerSkills)
         {
             case "OVERALL":
-                icon = 23;
+                //icon = 23;
                 return Skill.OVERALL;
             case "ATTACK":
                 icon = 0;
