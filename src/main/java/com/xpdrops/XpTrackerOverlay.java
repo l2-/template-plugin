@@ -171,6 +171,10 @@ public class XpTrackerOverlay extends Overlay {
     {
         int width = 0;
         int iconSize = graphics.getFontMetrics().getHeight();
+        if (config.xpTrackerIconSizeOverride() > 0)
+        {
+            iconSize = config.xpTrackerIconSizeOverride();
+        }
         BufferedImage image;
 
         if (config.showIconsXpTracker())
@@ -212,20 +216,20 @@ public class XpTrackerOverlay extends Overlay {
     private void updateFont()
     {
         //only perform anything within this function if any settings related to the font have changed
-        if(!lastFont.equals(config.fontName()) || lastFontSize != config.xpTrackerFontSize() || lastFontStyle != config.fontStyle())
+        if(!lastFont.equals(config.xpTrackerFontName()) || lastFontSize != config.xpTrackerFontSize() || lastFontStyle != config.xpTrackerFontStyle())
         {
-            lastFont = config.fontName();
+            lastFont = config.xpTrackerFontName();
             lastFontSize = config.xpTrackerFontSize();
-            lastFontStyle = config.fontStyle();
+            lastFontStyle = config.xpTrackerFontStyle();
 
             //use runescape font as default
-            if (config.fontName().equals(""))
+            if (config.xpTrackerFontName().equals(""))
             {
                 if (config.xpTrackerFontSize() < 16)
                 {
                     font = FontManager.getRunescapeSmallFont();
                 }
-                else if (config.fontStyle() == XpDropsConfig.FontStyle.BOLD || config.fontStyle() == XpDropsConfig.FontStyle.BOLD_ITALICS)
+                else if (config.xpTrackerFontStyle() == XpDropsConfig.FontStyle.BOLD || config.xpTrackerFontStyle() == XpDropsConfig.FontStyle.BOLD_ITALICS)
                 {
                     font = FontManager.getRunescapeBoldFont();
                 }
@@ -239,15 +243,15 @@ public class XpTrackerOverlay extends Overlay {
                     font = font.deriveFont((float)config.xpTrackerFontSize());
                 }
 
-                if (config.fontStyle() == XpDropsConfig.FontStyle.BOLD)
+                if (config.xpTrackerFontStyle() == XpDropsConfig.FontStyle.BOLD)
                 {
                     font = font.deriveFont(Font.BOLD);
                 }
-                if (config.fontStyle() == XpDropsConfig.FontStyle.ITALICS)
+                if (config.xpTrackerFontStyle() == XpDropsConfig.FontStyle.ITALICS)
                 {
                     font = font.deriveFont(Font.ITALIC);
                 }
-                if (config.fontStyle() == XpDropsConfig.FontStyle.BOLD_ITALICS)
+                if (config.xpTrackerFontStyle() == XpDropsConfig.FontStyle.BOLD_ITALICS)
                 {
                     font = font.deriveFont(Font.ITALIC | Font.BOLD);
                 }
@@ -257,7 +261,7 @@ public class XpTrackerOverlay extends Overlay {
             }
 
             int style = Font.PLAIN;
-            switch (config.fontStyle())
+            switch (config.xpTrackerFontStyle())
             {
                 case BOLD:
                     style = Font.BOLD;
@@ -270,7 +274,7 @@ public class XpTrackerOverlay extends Overlay {
                     break;
             }
 
-            font = new Font(config.fontName(), style, config.xpTrackerFontSize());
+            font = new Font(config.xpTrackerFontName(), style, config.xpTrackerFontSize());
             useRunescapeFont = false;
         }
     }

@@ -20,10 +20,12 @@ public interface XpDropsConfig extends Config
 		DEFAULT("Default");
 
 		String name;
+
 		FontStyle(String name)
 		{
 			this.name = name;
 		}
+
 		public String getName()
 		{
 			return name;
@@ -64,9 +66,9 @@ public interface XpDropsConfig extends Config
 	String predicted_hit = "predicted_hit";
 
 	@ConfigSection(
-			name = "xp tracker overlay",
-			description = "Settings relating to the xp tracker",
-			position = 4
+		name = "xp tracker overlay",
+		description = "Settings relating to the xp tracker",
+		position = 4
 	)
 	String xp_tracker_settings = "xp_tracker_settings";
 
@@ -271,7 +273,7 @@ public interface XpDropsConfig extends Config
 	)
 	default int fontSize()
 	{
-		return 12;
+		return 16;
 	}
 
 	@ConfigItem(
@@ -428,9 +430,9 @@ public interface XpDropsConfig extends Config
 		section = predicted_hit
 	)
 	default String skillsToFilterForPredictedHits()
-{
-	return "";
-}
+	{
+		return "";
+	}
 
 	@ConfigItem(
 		keyName = "xpMultiplier",
@@ -445,11 +447,11 @@ public interface XpDropsConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "useXpTracker",
-			name = "Use xp tracker",
-			description = "Turn custom xp tracker on or off",
-			position = 24,
-			section = xp_tracker_settings
+		keyName = "useXpTracker",
+		name = "Use xp tracker",
+		description = "Turn custom xp tracker on or off",
+		position = 24,
+		section = xp_tracker_settings
 	)
 	default boolean useXpTracker()
 	{
@@ -457,11 +459,11 @@ public interface XpDropsConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "showIconsXpTracker",
-			name = "Show icons xp tracker",
-			description = "Turn on skill icons for xp tracker",
-			position = 25,
-			section = xp_tracker_settings
+		keyName = "showIconsXpTracker",
+		name = "Show icons xp tracker",
+		description = "Turn on skill icons for xp tracker",
+		position = 25,
+		section = xp_tracker_settings
 	)
 	default boolean showIconsXpTracker()
 	{
@@ -469,34 +471,71 @@ public interface XpDropsConfig extends Config
 	}
 
 	@ConfigItem(
-			keyName = "xpTrackerSkill",
-			name = "Xp tracker skill",
-			description = "Skill to display within the Xp Tracker",
-			position = 26,
-			section = xp_tracker_settings
+		keyName = "xpTrackerSkill",
+		name = "Xp tracker skill",
+		description = "Skill to display within the Xp Tracker",
+		position = 26,
+		section = xp_tracker_settings
 	)
-	default XpTrackerSkills xpTrackerSkill() {
+	default XpTrackerSkills xpTrackerSkill()
+	{
 		return XpTrackerSkills.MOST_RECENT;
 	}
 
 	@ConfigItem(
-			keyName = "xpTrackerFontSize",
-			name = "XP tracker font size",
-			description = "Size of font for the XP Tracker overlay",
-			position = 26,
-			section = xp_tracker_settings
+		keyName = "xpTrackerFontName",
+		name = "Font",
+		description = "Name of the font to use for XP tracker. Leave blank to use RuneLite setting.",
+		position = 26,
+		section = xp_tracker_settings
 	)
-	default int xpTrackerFontSize()
+	default String xpTrackerFontName()
 	{
-		return 16;
+		return "";
 	}
 
 	@ConfigItem(
-			keyName = "xpTrackerColor",
-			name = "XP tracker color",
-			description = "Color for the Xp Tracker",
-			position = 27,
-			section = xp_tracker_settings
+		keyName = "xpTrackerFontStyle",
+		name = "Font style",
+		description = "Style of the font to use for XP tracker. Only works with custom font.",
+		position = 26,
+		section = xp_tracker_settings
+	)
+	default FontStyle xpTrackerFontStyle()
+	{
+		return FontStyle.DEFAULT;
+	}
+
+	@ConfigItem(
+		keyName = "xpTrackerFontSize",
+		name = "XP tracker font size",
+		description = "Size of font for the XP Tracker overlay",
+		position = 26,
+		section = xp_tracker_settings
+	)
+	default int xpTrackerFontSize()
+	{
+		return 12;
+	}
+
+	@ConfigItem(
+		keyName = "xpTrackerIconSizeOverride",
+		name = "Icon size override",
+		description = "When non zero indicates the size of the skill icons for the XP tracker.",
+		position = 26,
+		section = xp_tracker_settings
+	)
+	default int xpTrackerIconSizeOverride()
+	{
+		return 0;
+	}
+
+	@ConfigItem(
+		keyName = "xpTrackerColor",
+		name = "XP tracker color",
+		description = "Color for the Xp Tracker",
+		position = 27,
+		section = xp_tracker_settings
 	)
 	default Color xpTrackerColor()
 	{
