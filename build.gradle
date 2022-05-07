@@ -24,7 +24,7 @@ dependencies {
 }
 
 group = 'com.xpdrops'
-version = '1.4.1'
+version = '1.5'
 sourceCompatibility = '1.8'
 
 tasks.withType(JavaCompile) {
