@@ -93,6 +93,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 	private int lastOpponentId = -1;
 	private boolean lastOpponentIsPlayer = false;
 	private Actor lastOpponent;
+	private boolean resetXpTrackerLingerTimerFlag = false;
 
 	@Override
 	protected void startUp()
@@ -256,6 +257,12 @@ public class CustomizableXpDropsPlugin extends Plugin
 		if (gameStateChanged.getGameState() == GameState.LOGIN_SCREEN || gameStateChanged.getGameState() == GameState.HOPPING)
 		{
 			Arrays.fill(previous_exp, 0);
+			resetXpTrackerLingerTimerFlag = true;
+		}
+		if (gameStateChanged.getGameState() == GameState.LOGGED_IN && resetXpTrackerLingerTimerFlag)
+		{
+			resetXpTrackerLingerTimerFlag = false;
+			xpTrackerOverlay.setLastSkillSetMillis(System.currentTimeMillis());
 		}
 	}
 

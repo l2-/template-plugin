@@ -541,4 +541,28 @@ public interface XpDropsConfig extends Config
 	{
 		return Color.white;
 	}
+
+	@ConfigItem(
+		keyName = "xpTrackerClientTicksToLinger",
+		name = "Time until disappearance",
+		description = "Never disappear when set to 0. The amount of frames (50 per second) the XP tracker will show for.",
+		position = 27,
+		section = xp_tracker_settings
+	)
+	default int xpTrackerClientTicksToLinger()
+	{
+		return 0;
+	}
+
+	@ConfigItem(
+		keyName = "xpTrackerFadeOut",
+		name = "Fade out",
+		description = "Should the XP tracker fade out",
+		position = 28,
+		section = xp_tracker_settings
+	)
+	default boolean xpTrackerFadeOut()
+	{
+		return true;
+	}
 }

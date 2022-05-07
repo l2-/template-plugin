@@ -1,5 +1,7 @@
 package com.xpdrops;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.runelite.api.Client;
 import net.runelite.api.Skill;
 import net.runelite.client.ui.FontManager;
@@ -37,6 +39,9 @@ public class XpTrackerOverlay extends Overlay {
     protected boolean firstRender = true;
 
     protected Skill lastSkill = Skill.OVERALL;
+    @Setter
+    @Getter
+    protected long lastSkillSetMillis = 0;
 
     @Inject
     protected XpTrackerOverlay(CustomizableXpDropsPlugin plugin, XpDropsConfig config, Client client)
@@ -68,6 +73,7 @@ public class XpTrackerOverlay extends Overlay {
     {
         if (firstRender)
         {
+            lastSkillSetMillis = System.currentTimeMillis();
             firstRender = false;
             initIcons();
         }
@@ -84,6 +90,7 @@ public class XpTrackerOverlay extends Overlay {
     @Override
     public Dimension render(Graphics2D graphics)
     {
+        Dimension dimension = new Dimension();
         if (config.useXpTracker())
         {
             lazyInit();
@@ -92,7 +99,11 @@ public class XpTrackerOverlay extends Overlay {
             FontMetrics fontMetrics = graphics.getFontMetrics();
 
             Skill _lastSkill = pollLastSkill();
-            if (_lastSkill != null) lastSkill = _lastSkill;
+            if (_lastSkill != null)
+            {
+                lastSkillSetMillis = System.currentTimeMillis();
+                lastSkill = _lastSkill;
+            }
 
             Skill currentSkill = lastSkill;
             long xp = getSkillExperience(currentSkill);
@@ -101,9 +112,9 @@ public class XpTrackerOverlay extends Overlay {
             int height = fontMetrics.getHeight();
             height += Math.abs(config.xpTrackerFontSize() - fontMetrics.getHeight());
 
-            return new Dimension(width, height);
+            dimension = new Dimension(width, height);
         }
-        return new Dimension(0,0);
+        return dimension;
     }
 
     protected long getSkillExperience(Skill skill)
@@ -159,10 +170,29 @@ public class XpTrackerOverlay extends Overlay {
 
         int imageY = textY - graphics.getFontMetrics().getMaxAscent();
 
-        //Adding 5 onto image width to give a little space in between icon and text
-        int imageWidth = drawIcon(graphics, icon, 0, imageY, 0xff) + 5;
+        int alpha = 0xff;
+        if (config.xpTrackerClientTicksToLinger() != 0)
+        {
+            long deltaTime = System.currentTimeMillis() - lastSkillSetMillis;
+            long deltaClientTicks = deltaTime / 20;
+            if (config.xpTrackerFadeOut())
+            {
 
-        drawText(graphics, text, imageWidth, textY);
+                int delta = Math.min(33, (int)(0.33f * config.xpTrackerClientTicksToLinger()));
+                int threshold = config.xpTrackerClientTicksToLinger() - delta;
+                int point = (int) (deltaClientTicks - threshold);
+                float fade = Math.max(0.0f, Math.min(1.0f, point / (float) delta));
+                alpha = (int)Math.max(0, 0xff - fade * 0xff);
+            }
+            else if (deltaClientTicks > config.xpTrackerClientTicksToLinger())
+            {
+                alpha = 0;
+            }
+        }
+        //Adding 5 onto image width to give a little space in between icon and text
+        int imageWidth = drawIcon(graphics, icon, 0, imageY, alpha) + 5;
+
+        drawText(graphics, text, imageWidth, textY, alpha);
 
         return textX + imageWidth;
     }
@@ -203,13 +233,14 @@ public class XpTrackerOverlay extends Overlay {
         return new Dimension(width, height);
     }
 
-    protected void drawText(Graphics2D graphics, String text, int textX, int textY)
+    protected void drawText(Graphics2D graphics, String text, int textX, int textY, int alpha)
     {
         Color _color = config.xpTrackerColor();
-        Color backgroundColor = new Color(0,0,0);
+        Color backgroundColor = new Color(0,0,0, alpha);
+        Color color = new Color(_color.getRed(), _color.getGreen(), _color.getBlue(), alpha);
         graphics.setColor(backgroundColor);
         graphics.drawString(text, textX + 1, textY + 1);
-        graphics.setColor(_color);
+        graphics.setColor(color);
         graphics.drawString(text, textX, textY);
     }
 
