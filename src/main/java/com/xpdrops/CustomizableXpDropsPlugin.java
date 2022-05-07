@@ -51,7 +51,8 @@ public class CustomizableXpDropsPlugin extends Plugin
 	@Inject
 	private XpDropOverlay xpDropOverlay;
 
-	@Inject XpTrackerOverlay xpTrackerOverlay;
+	@Inject
+	private XpTrackerOverlay xpTrackerOverlay;
 
 	@Inject
 	private XpDropsConfig config;
@@ -84,7 +85,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 	private final HashSet<String> filteredSkillsPredictedHits = new HashSet<>();
 	private static final int[] previous_exp = new int[Skill.values().length - 1];
 	private static final int[] SKILL_ICON_ORDINAL_ICONS = new int[]{197, 199, 198, 203, 200, 201, 202, 212, 214, 208,
-		211, 213, 207, 210, 209, 205, 204, 206, 216, 217, 215, 220, 221};
+		211, 213, 207, 210, 209, 205, 204, 206, 216, 217, 215, 220, 221, 898};
 	private int lastOpponentId = -1;
 	private boolean lastOpponentIsPlayer = false;
 	private Actor lastOpponent;
