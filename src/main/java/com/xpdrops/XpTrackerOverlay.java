@@ -1,5 +1,7 @@
 package com.xpdrops;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.runelite.api.Client;
 import net.runelite.api.Skill;
 import net.runelite.client.ui.FontManager;
@@ -8,19 +10,26 @@ import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 
 import javax.inject.Inject;
-import java.awt.*;
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Composite;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 
 public class XpTrackerOverlay extends Overlay {
 
-    protected static final int TOTAL_LEVEL_ICON = 898;
     protected static final String pattern = "#,###,###,###";
     protected static final DecimalFormat xpFormatter = new DecimalFormat(pattern);
-    protected static final BufferedImage[] STAT_ICONS = new BufferedImage[Skill.values().length - 1];
+    protected static final BufferedImage[] STAT_ICONS = new BufferedImage[Skill.values().length];
 
     protected CustomizableXpDropsPlugin plugin;
     protected XpDropsConfig config;
+    protected Client client;
 
     protected String lastFont = "";
     protected int lastFontSize = 0;
@@ -28,21 +37,18 @@ public class XpTrackerOverlay extends Overlay {
     protected XpDropsConfig.FontStyle lastFontStyle = XpDropsConfig.FontStyle.DEFAULT;
     protected Font font = null;
     protected boolean firstRender = true;
-    protected long lastFrameTime = 0;
+
+    protected Skill lastSkill = Skill.OVERALL;
+    @Setter
+    @Getter
+    protected long lastSkillSetMillis = 0;
 
     @Inject
-    private Client client;
-
-    private Long overallXp;
-    private int skillXp;
-    private int icon;
-    private Skill currentSkill;
-
-    @Inject
-    protected XpTrackerOverlay(CustomizableXpDropsPlugin plugin, XpDropsConfig config)
+    protected XpTrackerOverlay(CustomizableXpDropsPlugin plugin, XpDropsConfig config, Client client)
     {
         this.plugin = plugin;
         this.config = config;
+        this.client = client;
         setLayer(OverlayLayer.UNDER_WIDGETS);
         setPosition(OverlayPosition.TOP_RIGHT);
     }
@@ -53,10 +59,10 @@ public class XpTrackerOverlay extends Overlay {
      */
     protected void handleFont(Graphics2D graphics)
     {
-        if( font != null)
+        if(font != null)
         {
             graphics.setFont(font);
-            if( useRunescapeFont)
+            if(useRunescapeFont)
             {
                 graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
             }
@@ -67,18 +73,9 @@ public class XpTrackerOverlay extends Overlay {
     {
         if (firstRender)
         {
-            //If the user is using the MOST_RECENT, default to showing overall xp for the first render
-            if(config.xpTrackerSkill().equals(XpTrackerSkills.MOST_RECENT))
-            {
-                currentSkill = Skill.OVERALL;
-            }
-
+            lastSkillSetMillis = System.currentTimeMillis();
             firstRender = false;
             initIcons();
-        }
-        if (lastFrameTime <= 0)
-        {
-            lastFrameTime = System.currentTimeMillis() - 20;
         }
     }
 
@@ -93,77 +90,126 @@ public class XpTrackerOverlay extends Overlay {
     @Override
     public Dimension render(Graphics2D graphics)
     {
+        Dimension dimension = new Dimension();
         if (config.useXpTracker())
         {
             lazyInit();
-            update();
-
-            setLayer(OverlayLayer.UNDER_WIDGETS);
-            setPosition(OverlayPosition.TOP_RIGHT);
+            updateFont();
 
             FontMetrics fontMetrics = graphics.getFontMetrics();
 
-            int width = drawXpTracker(graphics);
+            Skill _lastSkill = pollLastSkill();
+            if (_lastSkill != null)
+            {
+                lastSkillSetMillis = System.currentTimeMillis();
+                lastSkill = _lastSkill;
+            }
+
+            Skill currentSkill = lastSkill;
+            long xp = getSkillExperience(currentSkill);
+            int icon = getSkillIconIndex(currentSkill);
+            int width = drawXpTracker(graphics, icon, xp);
             int height = fontMetrics.getHeight();
             height += Math.abs(config.xpTrackerFontSize() - fontMetrics.getHeight());
 
-            lastFrameTime = System.currentTimeMillis();
-            return new Dimension(width, height);
+            dimension = new Dimension(width, height);
         }
-        return new Dimension(0,0);
+        return dimension;
     }
 
-    protected int drawXpTracker(Graphics2D graphics)
+    protected long getSkillExperience(Skill skill)
+    {
+        long xp;
+        if (Skill.OVERALL.equals(skill))
+        {
+            xp = client.getOverallExperience();
+        }
+        else
+        {
+            xp = client.getSkillExperience(skill);
+        }
+        return xp;
+    }
+
+    protected int getSkillIconIndex(Skill skill)
+    {
+        return skill.ordinal();
+    }
+
+    protected Skill pollLastSkill()
+    {
+        Skill currentSkill = null;
+        if (config.xpTrackerSkill().equals(XpTrackerSkills.MOST_RECENT))
+        {
+            XpDrop topDrop = plugin.getQueue().peek();
+            if (topDrop != null)
+            {
+                return topDrop.getSkill();
+            }
+        }
+        else
+        {
+            currentSkill = config.xpTrackerSkill().getAssociatedSkill();
+        }
+        return currentSkill;
+    }
+
+    protected int drawXpTracker(Graphics2D graphics, int icon, long experience)
     {
         graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-        String text = "";
-        boolean isOverall = false;
+
         handleFont(graphics);
 
         int width = graphics.getFontMetrics().stringWidth(pattern);
         int height = graphics.getFontMetrics().getHeight();
 
-        if (currentSkill.equals(Skill.OVERALL))
-        {
-            text = xpFormatter.format(overallXp);
-            isOverall = true;
-        }
-        else
-        {
-            text = xpFormatter.format(skillXp);
-        }
+        String text = xpFormatter.format(experience);
 
         int textY = height + graphics.getFontMetrics().getMaxAscent() - graphics.getFontMetrics().getHeight();
         int textX = width - (width - graphics.getFontMetrics().stringWidth(text));
 
         int imageY = textY - graphics.getFontMetrics().getMaxAscent();
 
-        //Adding 5 onto image width to give a little space in between icon and text
-        int imageWidth = drawIcons(graphics, 0, imageY, 0xff, isOverall) + 5;
+        int alpha = 0xff;
+        if (config.xpTrackerClientTicksToLinger() != 0)
+        {
+            long deltaTime = System.currentTimeMillis() - lastSkillSetMillis;
+            long deltaClientTicks = deltaTime / 20;
+            if (config.xpTrackerFadeOut())
+            {
 
-        drawText(graphics, text, imageWidth, textY);
+                int delta = Math.min(33, (int)(0.33f * config.xpTrackerClientTicksToLinger()));
+                int threshold = config.xpTrackerClientTicksToLinger() - delta;
+                int point = (int) (deltaClientTicks - threshold);
+                float fade = Math.max(0.0f, Math.min(1.0f, point / (float) delta));
+                alpha = (int)Math.max(0, 0xff - fade * 0xff);
+            }
+            else if (deltaClientTicks > config.xpTrackerClientTicksToLinger())
+            {
+                alpha = 0;
+            }
+        }
+        //Adding 5 onto image width to give a little space in between icon and text
+        int imageWidth = drawIcon(graphics, icon, 0, imageY, alpha) + 5;
+
+        drawText(graphics, text, imageWidth, textY, alpha);
 
         return textX + imageWidth;
     }
 
-    private int drawIcons(Graphics2D graphics, int x, int y, float alpha, boolean isOverallXp)
+    private int drawIcon(Graphics2D graphics, int icon, int x, int y, float alpha)
     {
         int width = 0;
         int iconSize = graphics.getFontMetrics().getHeight();
+        if (config.xpTrackerIconSizeOverride() > 0)
+        {
+            iconSize = config.xpTrackerIconSizeOverride();
+        }
         BufferedImage image;
 
         if (config.showIconsXpTracker())
         {
-            //if the skill we're tracking is not OverallXp, get the icon from the array of bufferedImages using the icon ID
-            if(!isOverallXp)
-            {
-                image = STAT_ICONS[icon];
-            }
-            //If we're tracking OverallXp, get the Skills Tab icon by getting the icon from the spriteList
-            else
-            {
-                image = plugin.getIcon(TOTAL_LEVEL_ICON, 0);
-            }
+            image = STAT_ICONS[icon];
             int _iconSize = Math.max(iconSize, 18);
             int iconWidth = image.getWidth() * _iconSize / 25;
             int iconHeight = image.getHeight() * _iconSize / 25;
@@ -187,39 +233,34 @@ public class XpTrackerOverlay extends Overlay {
         return new Dimension(width, height);
     }
 
-    protected void drawText(Graphics2D graphics, String text, int textX, int textY)
+    protected void drawText(Graphics2D graphics, String text, int textX, int textY, int alpha)
     {
         Color _color = config.xpTrackerColor();
-        Color backgroundColor = new Color(0,0,0);
+        Color backgroundColor = new Color(0,0,0, alpha);
+        Color color = new Color(_color.getRed(), _color.getGreen(), _color.getBlue(), alpha);
         graphics.setColor(backgroundColor);
         graphics.drawString(text, textX + 1, textY + 1);
-        graphics.setColor(_color);
+        graphics.setColor(color);
         graphics.drawString(text, textX, textY);
-    }
-
-    private void update()
-    {
-        updateFont();
-        updateXpTracker();
     }
 
     private void updateFont()
     {
         //only perform anything within this function if any settings related to the font have changed
-        if(!lastFont.equals(config.fontName()) || lastFontSize != config.xpTrackerFontSize() || lastFontStyle != config.fontStyle())
+        if(!lastFont.equals(config.xpTrackerFontName()) || lastFontSize != config.xpTrackerFontSize() || lastFontStyle != config.xpTrackerFontStyle())
         {
-            lastFont = config.fontName();
+            lastFont = config.xpTrackerFontName();
             lastFontSize = config.xpTrackerFontSize();
-            lastFontStyle = config.fontStyle();
+            lastFontStyle = config.xpTrackerFontStyle();
 
             //use runescape font as default
-            if (config.fontName().equals(""))
+            if (config.xpTrackerFontName().equals(""))
             {
                 if (config.xpTrackerFontSize() < 16)
                 {
                     font = FontManager.getRunescapeSmallFont();
                 }
-                else if (config.fontStyle() == XpDropsConfig.FontStyle.BOLD || config.fontStyle() == XpDropsConfig.FontStyle.BOLD_ITALICS)
+                else if (config.xpTrackerFontStyle() == XpDropsConfig.FontStyle.BOLD || config.xpTrackerFontStyle() == XpDropsConfig.FontStyle.BOLD_ITALICS)
                 {
                     font = FontManager.getRunescapeBoldFont();
                 }
@@ -233,15 +274,15 @@ public class XpTrackerOverlay extends Overlay {
                     font = font.deriveFont((float)config.xpTrackerFontSize());
                 }
 
-                if (config.fontStyle() == XpDropsConfig.FontStyle.BOLD)
+                if (config.xpTrackerFontStyle() == XpDropsConfig.FontStyle.BOLD)
                 {
                     font = font.deriveFont(Font.BOLD);
                 }
-                if (config.fontStyle() == XpDropsConfig.FontStyle.ITALICS)
+                if (config.xpTrackerFontStyle() == XpDropsConfig.FontStyle.ITALICS)
                 {
                     font = font.deriveFont(Font.ITALIC);
                 }
-                if (config.fontStyle() == XpDropsConfig.FontStyle.BOLD_ITALICS)
+                if (config.xpTrackerFontStyle() == XpDropsConfig.FontStyle.BOLD_ITALICS)
                 {
                     font = font.deriveFont(Font.ITALIC | Font.BOLD);
                 }
@@ -251,7 +292,7 @@ public class XpTrackerOverlay extends Overlay {
             }
 
             int style = Font.PLAIN;
-            switch (config.fontStyle())
+            switch (config.xpTrackerFontStyle())
             {
                 case BOLD:
                     style = Font.BOLD;
@@ -264,111 +305,8 @@ public class XpTrackerOverlay extends Overlay {
                     break;
             }
 
-            font = new Font(config.fontName(), style, config.xpTrackerFontSize());
+            font = new Font(config.xpTrackerFontName(), style, config.xpTrackerFontSize());
             useRunescapeFont = false;
         }
-    }
-
-    private void updateXpTracker()
-    {
-        if (config.xpTrackerSkill().equals(XpTrackerSkills.MOST_RECENT))
-        {
-            for (XpDrop xpDrop : plugin.getQueue())
-            {
-                currentSkill = selectSkill(xpDrop.getSkill().getName().toUpperCase());
-                break;
-            }
-        }
-        else
-        {
-            currentSkill = selectSkill(config.xpTrackerSkill().toString());
-        }
-
-        if (currentSkill.equals(Skill.OVERALL))
-        {
-            overallXp = client.getOverallExperience();
-        }
-        else
-        {
-            skillXp = client.getSkillExperience(currentSkill);
-        }
-    }
-
-    private Skill selectSkill(String xpTrackerSkills) {
-        switch (xpTrackerSkills)
-        {
-            case "OVERALL":
-                return Skill.OVERALL;
-            case "ATTACK":
-                icon = 0;
-                return Skill.ATTACK;
-            case "DEFENCE":
-                icon = 1;
-                return Skill.DEFENCE;
-            case "STRENGTH":
-                icon = 2;
-                return Skill.STRENGTH;
-            case "HITPOINTS":
-                icon = 3;
-                return Skill.HITPOINTS;
-            case "RANGED":
-                icon = 4;
-                return Skill.RANGED;
-            case "PRAYER":
-                icon = 5;
-                return Skill.PRAYER;
-            case "MAGIC":
-                icon = 6;
-                return Skill.MAGIC;
-            case "COOKING":
-                icon = 7;
-                return Skill.COOKING;
-            case "WOODCUTTING":
-                icon = 8;
-                return Skill.WOODCUTTING;
-            case "FLETCHING":
-                icon = 9;
-                return Skill.FLETCHING;
-            case "FISHING":
-                icon = 10;
-                return Skill.FISHING;
-            case "FIREMAKING":
-                icon = 11;
-                return Skill.FIREMAKING;
-            case "CRAFTING":
-                icon = 12;
-                return Skill.CRAFTING;
-            case "SMITHING":
-                icon = 13;
-                return Skill.SMITHING;
-            case "MINING":
-                icon = 14;
-                return Skill.MINING;
-            case "HERBLORE":
-                icon = 15;
-                return Skill.HERBLORE;
-            case "AGILITY":
-                icon = 16;
-                return Skill.AGILITY;
-            case "THEIVING":
-                icon = 17;
-                return Skill.THIEVING;
-            case "SLAYER":
-                icon = 18;
-                return Skill.SLAYER;
-            case "FARMING":
-                icon = 19;
-                return Skill.FARMING;
-            case "RUNECRAFT":
-                icon = 20;
-                return Skill.RUNECRAFT;
-            case "HUNTER":
-                icon = 21;
-                return Skill.HUNTER;
-            case "CONSTRUCTION":
-                icon = 22;
-                return Skill.CONSTRUCTION;
-        }
-        return null;
     }
 }

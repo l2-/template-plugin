@@ -475,7 +475,7 @@ public class XpDropOverlay extends Overlay
 				if (xpDropInFlight.frame > threshold)
 				{
 					int point = (int)xpDropInFlight.frame - threshold;
-					float fade = point / (float) delta;
+					float fade = Math.max(0.0f, Math.min(1.0f, point / (float) delta));
 					xpDropInFlight.alpha = Math.max(0, 0xff - fade * 0xff);
 				}
 			}

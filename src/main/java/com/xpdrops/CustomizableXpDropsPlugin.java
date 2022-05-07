@@ -13,6 +13,7 @@ import net.runelite.api.SpritePixels;
 import net.runelite.api.events.FakeXpDrop;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.InteractingChanged;
+import net.runelite.api.events.ScriptPostFired;
 import net.runelite.api.events.ScriptPreFired;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.widgets.Widget;
@@ -51,7 +52,8 @@ public class CustomizableXpDropsPlugin extends Plugin
 	@Inject
 	private XpDropOverlay xpDropOverlay;
 
-	@Inject XpTrackerOverlay xpTrackerOverlay;
+	@Inject
+	private XpTrackerOverlay xpTrackerOverlay;
 
 	@Inject
 	private XpDropsConfig config;
@@ -82,12 +84,16 @@ public class CustomizableXpDropsPlugin extends Plugin
 	private final HashSet<String> filteredSkills = new HashSet<>();
 	@Getter
 	private final HashSet<String> filteredSkillsPredictedHits = new HashSet<>();
+	private static final int XP_TRACKER_SCRIPT_ID = 997;
+	private static final int XP_TRACKER_WIDGET_GROUP_ID = 122;
+	private static final int XP_TRACKER_WIDGET_CHILD_ID = 4;
 	private static final int[] previous_exp = new int[Skill.values().length - 1];
 	private static final int[] SKILL_ICON_ORDINAL_ICONS = new int[]{197, 199, 198, 203, 200, 201, 202, 212, 214, 208,
-		211, 213, 207, 210, 209, 205, 204, 206, 216, 217, 215, 220, 221};
+		211, 213, 207, 210, 209, 205, 204, 206, 216, 217, 215, 220, 221, 898};
 	private int lastOpponentId = -1;
 	private boolean lastOpponentIsPlayer = false;
 	private Actor lastOpponent;
+	private boolean resetXpTrackerLingerTimerFlag = false;
 
 	@Override
 	protected void startUp()
@@ -125,12 +131,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 			filteredSkills.add("runecraft");
 		}
 
-		if(config.useXpTracker())
-		{
-			final Widget xpTracker = client.getWidget(122,0);
-			assert xpTracker != null;
-			xpTracker.setHidden(true);
-		}
+		setXpTrackerHidden(config.useXpTracker());
 
 		xpDropDamageCalculator.populateMap();
 	}
@@ -140,9 +141,19 @@ public class CustomizableXpDropsPlugin extends Plugin
 	{
 		overlayManager.remove(xpTrackerOverlay);
 		overlayManager.remove(xpDropOverlay);
-		final Widget xpTracker = client.getWidget(122,0);
-		assert xpTracker != null;
-		xpTracker.setHidden(false);
+		setXpTrackerHidden(true);
+	}
+
+	protected void setXpTrackerHidden(boolean hidden)
+	{
+		clientThread.invokeLater(() ->
+		{
+			final Widget xpTracker = client.getWidget(XP_TRACKER_WIDGET_GROUP_ID,XP_TRACKER_WIDGET_CHILD_ID);
+			if (xpTracker != null)
+			{
+				xpTracker.setHidden(hidden);
+			}
+		});
 	}
 
 	@Subscribe
@@ -172,16 +183,9 @@ public class CustomizableXpDropsPlugin extends Plugin
 				}
 			}
 
-			final Widget xpTracker = client.getWidget(122,0);
-			if(config.useXpTracker())
+			if ("useXpTracker".equals(configChanged.getKey()))
 			{
-				assert xpTracker != null;
-				xpTracker.setHidden(true);
-			}
-			else
-			{
-				assert xpTracker != null;
-				xpTracker.setHidden(false);
+				setXpTrackerHidden(config.useXpTracker());
 			}
 		}
 	}
@@ -215,7 +219,6 @@ public class CustomizableXpDropsPlugin extends Plugin
 		}
 	}
 
-	//TODO: When the XPTrackerWidget gets hidden, this onScriptPreFired no longer gets called
 	@Subscribe
 	public void onScriptPreFired(ScriptPreFired scriptPreFired)
 	{
@@ -236,11 +239,30 @@ public class CustomizableXpDropsPlugin extends Plugin
 	}
 
 	@Subscribe
+	public void onScriptPostFired(ScriptPostFired scriptPostFired)
+	{
+		if (scriptPostFired.getScriptId() == XP_TRACKER_SCRIPT_ID)
+		{
+			final Widget xpTracker = client.getWidget(XP_TRACKER_WIDGET_GROUP_ID,XP_TRACKER_WIDGET_CHILD_ID);
+			if (xpTracker != null)
+			{
+				xpTracker.setHidden(config.useXpTracker());
+			}
+		}
+	}
+
+	@Subscribe
 	protected void onGameStateChanged(GameStateChanged gameStateChanged)
 	{
 		if (gameStateChanged.getGameState() == GameState.LOGIN_SCREEN || gameStateChanged.getGameState() == GameState.HOPPING)
 		{
 			Arrays.fill(previous_exp, 0);
+			resetXpTrackerLingerTimerFlag = true;
+		}
+		if (gameStateChanged.getGameState() == GameState.LOGGED_IN && resetXpTrackerLingerTimerFlag)
+		{
+			resetXpTrackerLingerTimerFlag = false;
+			xpTrackerOverlay.setLastSkillSetMillis(System.currentTimeMillis());
 		}
 	}
 
