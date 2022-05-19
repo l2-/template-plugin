@@ -17,6 +17,7 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - Replace the XP tracker widget with a minimalistic one.
 
 # Change log
+- v1.5.1 - Bugfix for target or player attached overlay location.
 - v1.5 - Added XP Tracker. This minimalistic widget replaces the in-game XP tracker. Credit to @TylerHarding for the initial implementation.
 - v1.4.1 - Added filter for predicted hits.
 - v1.4 - Add attach to NPC option. Add icon size override. Add attach overlay offset config options. Default font now follow italic and bold style settings.

@@ -106,6 +106,7 @@ public class XpDropOverlay extends Overlay
 		if (config.attachToPlayer() || config.attachToTarget())
 		{
 			setPosition(OverlayPosition.DYNAMIC);
+			setPreferredLocation(new java.awt.Point(client.getViewportXOffset(), client.getViewportYOffset()));
 			setLayer(OverlayLayer.ABOVE_WIDGETS);
 
 			if (client.getLocalPlayer() == null)
@@ -118,6 +119,7 @@ public class XpDropOverlay extends Overlay
 		else
 		{
 			setLayer(OverlayLayer.ABOVE_WIDGETS);
+			setPreferredLocation(null);
 			setPosition(OverlayPosition.TOP_RIGHT);
 
 			drawXpDrops(graphics);
