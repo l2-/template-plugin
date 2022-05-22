@@ -105,9 +105,12 @@ public class XpDropOverlay extends Overlay
 
 		if (config.attachToPlayer() || config.attachToTarget())
 		{
-			setPosition(OverlayPosition.DYNAMIC);
-			setPreferredLocation(new java.awt.Point(client.getViewportXOffset(), client.getViewportYOffset()));
-			setLayer(OverlayLayer.ABOVE_WIDGETS);
+			if (getPosition() != OverlayPosition.DYNAMIC)
+			{
+				setPosition(OverlayPosition.DYNAMIC);
+				setLayer(OverlayLayer.ABOVE_WIDGETS);
+				setPreferredLocation(new java.awt.Point(client.getViewportXOffset(), client.getViewportYOffset()));
+			}
 
 			if (client.getLocalPlayer() == null)
 			{
@@ -118,9 +121,12 @@ public class XpDropOverlay extends Overlay
 		}
 		else
 		{
-			setLayer(OverlayLayer.ABOVE_WIDGETS);
-			setPreferredLocation(null);
-			setPosition(OverlayPosition.TOP_RIGHT);
+			if (getPosition() == OverlayPosition.DYNAMIC)
+			{
+				setLayer(OverlayLayer.ABOVE_WIDGETS);
+				setPosition(OverlayPosition.TOP_RIGHT);
+				setPreferredLocation(null);
+			}
 
 			drawXpDrops(graphics);
 
