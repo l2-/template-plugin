@@ -502,7 +502,6 @@ public class XpDropOverlay extends Overlay
 
 		int totalHit = 0;
 		Actor target = null;
-		if (config.showPredictedHit())
 		{
 			Hit hit = plugin.getHitBuffer().poll();
 			while (hit != null)
@@ -511,6 +510,11 @@ public class XpDropOverlay extends Overlay
 				target = hit.attachedActor;
 				hit = plugin.getHitBuffer().poll();
 			}
+		}
+
+		if (!config.showPredictedHit())
+		{
+			totalHit = 0;
 		}
 
 		boolean filteredHit = false;
