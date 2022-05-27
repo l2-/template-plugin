@@ -21,8 +21,8 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 
-public class XpTrackerOverlay extends Overlay {
-
+public class XpTrackerOverlay extends Overlay
+{
     protected static final String pattern = "#,###,###,###";
     protected static final DecimalFormat xpFormatter = new DecimalFormat(pattern);
     protected static final BufferedImage[] STAT_ICONS = new BufferedImage[Skill.values().length];
@@ -224,7 +224,6 @@ public class XpTrackerOverlay extends Overlay {
     private Dimension drawIcon(Graphics2D graphics, BufferedImage image, int x, int y, int width, int height, float alpha)
     {
         int yOffset = graphics.getFontMetrics().getHeight() / 2 - height / 2;
-        int xOffset = width;
 
         Composite composite = graphics.getComposite();
         graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));

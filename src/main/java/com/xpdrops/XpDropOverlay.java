@@ -5,6 +5,9 @@ import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import net.runelite.api.Point;
 import net.runelite.api.Skill;
+import net.runelite.client.config.ConfigGroup;
+import net.runelite.client.config.ConfigManager;
+import net.runelite.client.config.RuneLiteConfig;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
@@ -51,6 +54,9 @@ public class XpDropOverlay extends Overlay
 
 	@Inject
 	private Client client;
+
+	@Inject
+	private ConfigManager configManager;
 
 	@Inject
 	protected XpDropOverlay(CustomizableXpDropsPlugin plugin, XpDropsConfig config)
@@ -107,9 +113,6 @@ public class XpDropOverlay extends Overlay
 		{
 			if (getPosition() != OverlayPosition.DYNAMIC)
 			{
-				setPosition(OverlayPosition.DYNAMIC);
-				setLayer(OverlayLayer.ABOVE_WIDGETS);
-				setPreferredLocation(new java.awt.Point(client.getViewportXOffset(), client.getViewportYOffset()));
 			}
 
 			if (client.getLocalPlayer() == null)
@@ -121,13 +124,6 @@ public class XpDropOverlay extends Overlay
 		}
 		else
 		{
-			if (getPosition() == OverlayPosition.DYNAMIC)
-			{
-				setLayer(OverlayLayer.ABOVE_WIDGETS);
-				setPosition(OverlayPosition.TOP_RIGHT);
-				setPreferredLocation(null);
-			}
-
 			drawXpDrops(graphics);
 
 			// Roughly estimate a bounding box that doesn't take icons into account.
@@ -593,5 +589,26 @@ public class XpDropOverlay extends Overlay
 			xpDropsInFlight.add(drop);
 			index++;
 		}
+	}
+
+	protected void attachOverlay()
+	{
+		setPosition(OverlayPosition.DYNAMIC);
+		setPreferredLocation(new java.awt.Point(client.getViewportXOffset(), client.getViewportYOffset()));
+	}
+
+	protected void detachOverlay()
+	{
+		setPosition(OverlayPosition.TOP_RIGHT);
+		setPreferredLocation(loadOverlayPosition());
+	}
+
+	protected java.awt.Point loadOverlayPosition()
+	{
+		// copied from OverlayManager::loadOverlayLocation
+		final String OVERLAY_CONFIG_PREFERRED_LOCATION = "_preferredLocation";
+		final String RUNELITE_CONFIG_GROUP_NAME = RuneLiteConfig.class.getAnnotation(ConfigGroup.class).value();
+		final String key = getName() + OVERLAY_CONFIG_PREFERRED_LOCATION;
+		return configManager.getConfiguration(RUNELITE_CONFIG_GROUP_NAME, key, java.awt.Point.class);
 	}
 }

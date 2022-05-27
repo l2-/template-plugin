@@ -134,6 +134,15 @@ public class CustomizableXpDropsPlugin extends Plugin
 		setXpTrackerHidden(config.useXpTracker());
 
 		xpDropDamageCalculator.populateMap();
+
+		if (config.attachToPlayer() || config.attachToTarget())
+		{
+			clientThread.invokeLater(() -> xpDropOverlay.attachOverlay());
+		}
+		else
+		{
+			clientThread.invokeLater(() -> xpDropOverlay.detachOverlay());
+		}
 	}
 
 	@Override
@@ -186,6 +195,18 @@ public class CustomizableXpDropsPlugin extends Plugin
 			if ("useXpTracker".equals(configChanged.getKey()))
 			{
 				setXpTrackerHidden(config.useXpTracker());
+			}
+
+			if ("attachToTarget".equals(configChanged.getKey()) || "attachToPlayer".equals(configChanged.getKey()))
+			{
+				if (config.attachToPlayer() || config.attachToTarget())
+				{
+					clientThread.invokeLater(() -> xpDropOverlay.attachOverlay());
+				}
+				else
+				{
+					clientThread.invokeLater(() -> xpDropOverlay.detachOverlay());
+				}
 			}
 		}
 	}
