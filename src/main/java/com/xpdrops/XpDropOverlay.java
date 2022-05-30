@@ -1,5 +1,7 @@
 package com.xpdrops;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Actor;
 import net.runelite.api.Client;
@@ -51,6 +53,9 @@ public class XpDropOverlay extends Overlay
 	protected Font font = null;
 	protected boolean firstRender = true;
 	protected long lastFrameTime = 0;
+	@Getter
+	@Setter
+	protected boolean shouldDraw = true;
 
 	@Inject
 	private Client client;
@@ -111,20 +116,20 @@ public class XpDropOverlay extends Overlay
 
 		if (config.attachToPlayer() || config.attachToTarget())
 		{
-			if (getPosition() != OverlayPosition.DYNAMIC)
+			if (client.getLocalPlayer() != null)
 			{
+				if (shouldDraw)
+				{
+					drawAttachedXpDrops(graphics);
+				}
 			}
-
-			if (client.getLocalPlayer() == null)
-			{
-				return null;
-			}
-
-			drawAttachedXpDrops(graphics);
 		}
 		else
 		{
-			drawXpDrops(graphics);
+			if (shouldDraw)
+			{
+				drawXpDrops(graphics);
+			}
 
 			// Roughly estimate a bounding box that doesn't take icons into account.
 			FontMetrics fontMetrics = graphics.getFontMetrics();
@@ -182,6 +187,12 @@ public class XpDropOverlay extends Overlay
 
 			int x = (int) (xStart + point.getX() - (graphics.getFontMetrics().stringWidth(text) / 2.0f));
 			int y = (int) (yStart + point.getY());
+
+			// Keep the xp drop within viewport. Maybe good for later but for now it is not ideal since the xp drops overlay.
+//			x = Math.max(client.getViewportXOffset(), x);
+//			y = Math.max(client.getViewportYOffset() + graphics.getFontMetrics().getMaxAscent(), y);
+//			x = Math.min(client.getViewportXOffset() + client.getViewportWidth() - graphics.getFontMetrics().stringWidth(text), x);
+//			y = Math.min(client.getViewportYOffset() + client.getViewportHeight(), y);
 
 			Color _color = getColor(xpDropInFlight);
 			Color backgroundColor = new Color(0, 0, 0, (int)xpDropInFlight.alpha);
@@ -598,12 +609,14 @@ public class XpDropOverlay extends Overlay
 	protected void attachOverlay()
 	{
 		setPosition(OverlayPosition.DYNAMIC);
+		//setLayer(OverlayLayer.ABOVE_SCENE); needs to be accompanied by OverlayManager::rebuildOverlayLayers to change. Maybe useful for later.
 		setPreferredLocation(new java.awt.Point(client.getViewportXOffset(), client.getViewportYOffset()));
 	}
 
 	protected void detachOverlay()
 	{
 		setPosition(OverlayPosition.TOP_RIGHT);
+		//setLayer(OverlayLayer.ABOVE_WIDGETS); needs to be accompanied by OverlayManager::rebuildOverlayLayers to change. Maybe useful for later.
 		setPreferredLocation(loadOverlayPosition());
 	}
 

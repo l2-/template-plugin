@@ -10,12 +10,14 @@ import net.runelite.api.NPC;
 import net.runelite.api.Player;
 import net.runelite.api.Skill;
 import net.runelite.api.SpritePixels;
+import net.runelite.api.Varbits;
 import net.runelite.api.events.FakeXpDrop;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.InteractingChanged;
 import net.runelite.api.events.ScriptPostFired;
 import net.runelite.api.events.ScriptPreFired;
 import net.runelite.api.events.StatChanged;
+import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
@@ -84,6 +86,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 	private final HashSet<String> filteredSkills = new HashSet<>();
 	@Getter
 	private final HashSet<String> filteredSkillsPredictedHits = new HashSet<>();
+	private static final int EXPERIENCE_TRACKER_TOGGLE = 4702;
 	private static final int XP_TRACKER_SCRIPT_ID = 997;
 	private static final int XP_TRACKER_WIDGET_GROUP_ID = 122;
 	private static final int XP_TRACKER_WIDGET_CHILD_ID = 4;
@@ -111,6 +114,8 @@ public class CustomizableXpDropsPlugin extends Plugin
 			Arrays.fill(previous_exp, 0);
 		}
 		queue.clear();
+		xpDropOverlay.firstRender = true;
+		xpTrackerOverlay.firstRender = true;
 
 		overlayManager.add(xpTrackerOverlay);
 		overlayManager.add(xpDropOverlay);
@@ -166,6 +171,14 @@ public class CustomizableXpDropsPlugin extends Plugin
 	}
 
 	@Subscribe
+	protected void onVarbitChanged(VarbitChanged varbitChanged)
+	{
+		boolean shouldDraw = client.getVarbitValue(EXPERIENCE_TRACKER_TOGGLE) == 1;
+		xpDropOverlay.setShouldDraw(shouldDraw);
+		xpTrackerOverlay.setShouldDraw(shouldDraw);
+	}
+
+	@Subscribe
 	protected void onConfigChanged(ConfigChanged configChanged)
 	{
 		if ("CustomizableXPDrops".equals(configChanged.getGroup()))
@@ -207,6 +220,12 @@ public class CustomizableXpDropsPlugin extends Plugin
 				{
 					clientThread.invokeLater(() -> xpDropOverlay.detachOverlay());
 				}
+			}
+
+			if ("iconOverride".equals(configChanged.getKey()))
+			{
+				xpDropOverlay.firstRender = true;
+				xpTrackerOverlay.firstRender = true;
 			}
 		}
 	}
@@ -347,6 +366,10 @@ public class CustomizableXpDropsPlugin extends Plugin
 		if (client == null)
 		{
 			return null;
+		}
+		if (config.iconOverride() && client.getSpriteOverrides().containsKey(icon))
+		{
+			return client.getSpriteOverrides().get(icon).toBufferedImage();
 		}
 		SpritePixels[] pixels = client.getSprites(client.getIndexSprites(), icon, 0);
 		if (pixels != null && pixels.length >= spriteIndex + 1 && pixels[spriteIndex] != null)

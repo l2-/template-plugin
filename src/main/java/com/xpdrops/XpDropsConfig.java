@@ -181,6 +181,18 @@ public interface XpDropsConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "iconOverride",
+		name = "Allow icons override",
+		description = "Allow icons to be overridden by other plugins such as resource packs",
+		position = 5,
+		section = xp_drop_settings
+	)
+	default boolean iconOverride()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		keyName = "showFakeIcon",
 		name = "Show fake icon",
 		description = "Show the fake icon for a fake XP drop",

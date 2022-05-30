@@ -37,6 +37,9 @@ public class XpTrackerOverlay extends Overlay
     protected XpDropsConfig.FontStyle lastFontStyle = XpDropsConfig.FontStyle.DEFAULT;
     protected Font font = null;
     protected boolean firstRender = true;
+    @Getter
+    @Setter
+    protected boolean shouldDraw = true;
 
     protected Skill lastSkill = Skill.OVERALL;
     @Setter
@@ -108,8 +111,13 @@ public class XpTrackerOverlay extends Overlay
             Skill currentSkill = lastSkill;
             long xp = getSkillExperience(currentSkill);
             int icon = getSkillIconIndex(currentSkill);
-            int width = drawXpTracker(graphics, icon, xp);
+            int width = fontMetrics.stringWidth(pattern);;
+            if (shouldDraw)
+            {
+                width = drawXpTracker(graphics, icon, xp);
+            }
             int height = fontMetrics.getHeight();
+
             height += Math.abs(config.xpTrackerFontSize() - fontMetrics.getHeight());
 
             dimension = new Dimension(width, height);
