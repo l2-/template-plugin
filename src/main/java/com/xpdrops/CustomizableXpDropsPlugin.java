@@ -10,7 +10,6 @@ import net.runelite.api.NPC;
 import net.runelite.api.Player;
 import net.runelite.api.Skill;
 import net.runelite.api.SpritePixels;
-import net.runelite.api.Varbits;
 import net.runelite.api.events.FakeXpDrop;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.InteractingChanged;

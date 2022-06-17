@@ -17,6 +17,7 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - Replace the XP tracker widget with a minimalistic one.
 
 # Change log
+- v1.5.5 - Fixed fake xp drops being split in ungrouped settings.
 - v1.5.4 - Allow icons to be overridden by other plugins such as resource packs. Show/Hide xp drops based on the in-game setting (following the xp orb button next to the minimap).
 - v1.5.3 - Bugfix for target attached overlay without having predicted hits enabled. Load old overlay position when swapping between attached or detached overlay setting.
 - v1.5.2 - Fix another overlay location bug introduced by v1.5.1.

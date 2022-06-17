@@ -27,6 +27,7 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 @Slf4j
 public class XpDropOverlay extends Overlay
@@ -573,6 +574,8 @@ public class XpDropOverlay extends Overlay
 		else
 		{
 			XpDrop xpDrop = plugin.getQueue().poll();
+			HashMap<Skill, XpDropInFlight> dropsInFlightMap = new HashMap<>();
+			ArrayList<XpDropInFlight> dropsInFlight = new ArrayList<>();
 			while (xpDrop != null)
 			{
 				int icons = 1 << SKILL_PRIORITY[xpDrop.getSkill().ordinal()];
@@ -587,11 +590,21 @@ public class XpDropOverlay extends Overlay
 					icons |= 1 << 23;
 				}
 
-				XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, amount, style, 0, 0, 0xff, 0, 0, xpDrop.attachedActor);
-				drops.add(xpDropInFlight);
+				if (dropsInFlightMap.containsKey(xpDrop.getSkill()))
+				{
+					XpDropInFlight xpDropInFlight = dropsInFlightMap.get(xpDrop.getSkill());
+					xpDropInFlight.amount += amount;
+				}
+				else
+				{
+					XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, amount, style, 0, 0, 0xff, 0, 0, xpDrop.attachedActor);
+					dropsInFlightMap.put(xpDrop.getSkill(), xpDropInFlight);
+					dropsInFlight.add(xpDropInFlight);
+				}
 
 				xpDrop = plugin.getQueue().poll();
 			}
+			drops.addAll(dropsInFlight);
 		}
 
 		int index = 0;
