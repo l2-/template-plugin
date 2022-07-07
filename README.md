@@ -17,6 +17,7 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - Replace the XP tracker widget with a minimalistic one.
 
 # Change log
+- v1.5.6 - Fixed xp drop recoloring when long range or defensive cast styles are used. Updated README with info about installing custom fonts.
 - v1.5.5 - Fixed fake xp drops being split in ungrouped settings.
 - v1.5.4 - Allow icons to be overridden by other plugins such as resource packs. Show/Hide xp drops based on the in-game setting (following the xp orb button next to the minimap).
 - v1.5.3 - Bugfix for target attached overlay without having predicted hits enabled. Load old overlay position when swapping between attached or detached overlay setting.
@@ -52,3 +53,9 @@ From https://github.com/ruchir90 \
 ![pic3](https://i.imgur.com/sSabp2c.gif)
 
 Feel free to open an issue or pull request with your screenshot or gif of XP drop if you want it added here (preferably a link to imgur).
+
+# Installing custom fonts
+When installing custom fonts on Windows make sure to use "Install for all users" otherwise the plugin might not be able to find the font.
+Once installed, enter the name of the font under Font in the plugin settings. This field is case-insensitive.
+Fonts that are shipped with Windows should not need to be installed.\
+![installforallusers](https://i.imgur.com/MXzOKjH.png)

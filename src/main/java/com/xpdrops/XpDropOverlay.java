@@ -28,6 +28,7 @@ import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 @Slf4j
 public class XpDropOverlay extends Overlay
@@ -510,8 +511,6 @@ public class XpDropOverlay extends Overlay
 
 		ArrayList<XpDropInFlight> drops = new ArrayList<>();
 
-		XpDropStyle style = XpDropStyle.DEFAULT;
-
 		int totalHit = 0;
 		Actor target = null;
 		{
@@ -538,23 +537,27 @@ public class XpDropOverlay extends Overlay
 		if (config.showPredictedHit() && (config.neverGroupPredictedHit() || !config.isGrouped()) && totalHit > 0 && !filteredHit)
 		{
 			int icons = 1 << 24;
-			XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, totalHit, style, 0, 0, 0xff, 0, 0, target);
+			XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, totalHit, XpDropStyle.DEFAULT, 0, 0, 0xff, 0, 0, target);
 			drops.add(xpDropInFlight);
 		}
 
+		XpDropStyle style;
 		if (config.isGrouped())
 		{
 			int amount = 0;
 			int icons = 0;
+			HashSet<Skill> skills = new HashSet<>();
+			HashSet<XpDropStyle> styles = new HashSet<>();
 
 			XpDrop xpDrop = plugin.getQueue().poll();
 			while (xpDrop != null)
 			{
 				amount += xpDrop.getExperience();
 				icons |= 1 << SKILL_PRIORITY[xpDrop.getSkill().ordinal()];
+				skills.add(xpDrop.getSkill());
 				if (xpDrop.getStyle() != XpDropStyle.DEFAULT)
 				{
-					style = xpDrop.getStyle();
+					styles.add(xpDrop.getStyle());
 				}
 
 				if (xpDrop.fake)
@@ -567,22 +570,26 @@ public class XpDropOverlay extends Overlay
 			if (amount > 0)
 			{
 				int hit = config.neverGroupPredictedHit() || filteredHit ? 0 : totalHit;
-				XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, amount, style, 0, 0, 0xff, 0, hit, target);
+				XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, amount, XpDropStyle.DEFAULT, 0, 0, 0xff, 0, hit, target);
 				drops.add(xpDropInFlight);
 			}
+			style = matchPrayerStyle(skills, styles);
 		}
 		else
 		{
+			HashSet<Skill> skills = new HashSet<>();
+			HashSet<XpDropStyle> styles = new HashSet<>();
 			XpDrop xpDrop = plugin.getQueue().poll();
 			HashMap<Skill, XpDropInFlight> dropsInFlightMap = new HashMap<>();
 			ArrayList<XpDropInFlight> dropsInFlight = new ArrayList<>();
 			while (xpDrop != null)
 			{
 				int icons = 1 << SKILL_PRIORITY[xpDrop.getSkill().ordinal()];
+				skills.add(xpDrop.getSkill());
 				int amount = xpDrop.getExperience();
 				if (xpDrop.getStyle() != XpDropStyle.DEFAULT)
 				{
-					style = xpDrop.getStyle();
+					styles.add(xpDrop.getStyle());
 				}
 
 				if (xpDrop.fake)
@@ -597,13 +604,14 @@ public class XpDropOverlay extends Overlay
 				}
 				else
 				{
-					XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, amount, style, 0, 0, 0xff, 0, 0, xpDrop.attachedActor);
+					XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, amount, XpDropStyle.DEFAULT, 0, 0, 0xff, 0, 0, xpDrop.attachedActor);
 					dropsInFlightMap.put(xpDrop.getSkill(), xpDropInFlight);
 					dropsInFlight.add(xpDropInFlight);
 				}
 
 				xpDrop = plugin.getQueue().poll();
 			}
+			style = matchPrayerStyle(skills, styles);
 			drops.addAll(dropsInFlight);
 		}
 
@@ -617,6 +625,25 @@ public class XpDropOverlay extends Overlay
 			xpDropsInFlight.add(drop);
 			index++;
 		}
+	}
+
+	// Second pass prayer matching in case multiple match.
+	protected XpDropStyle matchPrayerStyle(HashSet<Skill> skills, HashSet<XpDropStyle> prayers)
+	{
+		XpDropStyle style = XpDropStyle.DEFAULT;
+		if (skills.contains(Skill.RANGED))
+		{
+			if (prayers.contains(XpDropStyle.RANGE)) style = XpDropStyle.RANGE;
+		}
+		else if (skills.contains(Skill.MAGIC))
+		{
+			if (prayers.contains(XpDropStyle.MAGE)) style = XpDropStyle.MAGE;
+		}
+		else if (skills.contains(Skill.ATTACK) || skills.contains(Skill.STRENGTH) || skills.contains(Skill.DEFENCE))
+		{
+			if (prayers.contains(XpDropStyle.MELEE)) style = XpDropStyle.MELEE;
+		}
+		return style;
 	}
 
 	protected void attachOverlay()
