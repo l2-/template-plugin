@@ -1,6 +1,8 @@
 package com.xpdrops;
 
 import com.google.inject.Provides;
+import com.xpdrops.attackstyles.AttackStyle;
+import com.xpdrops.attackstyles.WeaponType;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Actor;
@@ -10,6 +12,8 @@ import net.runelite.api.NPC;
 import net.runelite.api.Player;
 import net.runelite.api.Skill;
 import net.runelite.api.SpritePixels;
+import net.runelite.api.VarPlayer;
+import net.runelite.api.Varbits;
 import net.runelite.api.events.FakeXpDrop;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.InteractingChanged;
@@ -68,7 +72,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 	@Provides
 	XpDropsConfig provideConfig(ConfigManager configManager)
 	{
-		return (XpDropsConfig)configManager.getConfig(XpDropsConfig.class);
+		return (XpDropsConfig) configManager.getConfig(XpDropsConfig.class);
 	}
 
 	int skillPriorityComparator(XpDrop x1, XpDrop x2)
@@ -90,12 +94,20 @@ public class CustomizableXpDropsPlugin extends Plugin
 	private static final int XP_TRACKER_WIDGET_GROUP_ID = 122;
 	private static final int XP_TRACKER_WIDGET_CHILD_ID = 4;
 	private static final int[] previous_exp = new int[Skill.values().length - 1];
-	private static final int[] SKILL_ICON_ORDINAL_ICONS = new int[]{197, 199, 198, 203, 200, 201, 202, 212, 214, 208,
-		211, 213, 207, 210, 209, 205, 204, 206, 216, 217, 215, 220, 221, 898};
+	private static final int[] SKILL_ICON_ORDINAL_ICONS = new int[]{
+		197, 199, 198, 203, 200, 201, 202, 212, 214, 208,
+		211, 213, 207, 210, 209, 205, 204, 206, 216, 217, 215, 220, 221, 898
+	};
 	private int lastOpponentId = -1;
 	private boolean lastOpponentIsPlayer = false;
 	private Actor lastOpponent;
 	private boolean resetXpTrackerLingerTimerFlag = false;
+
+	private int attackStyleVarbit = -1;
+	private int equippedWeaponTypeVarbit = -1;
+	private int castingModeVarbit = -1;
+	@Getter
+	private AttackStyle attackStyle;
 
 	@Override
 	protected void startUp()
@@ -106,6 +118,8 @@ public class CustomizableXpDropsPlugin extends Plugin
 			{
 				int[] xps = client.getSkillExperiences();
 				System.arraycopy(xps, 0, previous_exp, 0, previous_exp.length);
+
+				initAttackStyles();
 			});
 		}
 		else
@@ -149,6 +163,31 @@ public class CustomizableXpDropsPlugin extends Plugin
 		}
 	}
 
+	private void initAttackStyles()
+	{
+		attackStyleVarbit = client.getVar(VarPlayer.ATTACK_STYLE);
+		equippedWeaponTypeVarbit = client.getVarbitValue(Varbits.EQUIPPED_WEAPON_TYPE);
+		castingModeVarbit = client.getVarbitValue(Varbits.DEFENSIVE_CASTING_MODE);
+		updateAttackStyle(equippedWeaponTypeVarbit, attackStyleVarbit, castingModeVarbit);
+	}
+
+	private void updateAttackStyle(int equippedWeaponType, int attackStyleIndex, int castingMode)
+	{
+		AttackStyle[] attackStyles = WeaponType.getWeaponType(equippedWeaponType).getAttackStyles();
+		if (attackStyleIndex < attackStyles.length)
+		{
+			attackStyle = attackStyles[attackStyleIndex];
+			if (attackStyle == null)
+			{
+				attackStyle = AttackStyle.OTHER;
+			}
+			else if ((attackStyle == AttackStyle.CASTING) && (castingMode == 1))
+			{
+				attackStyle = AttackStyle.DEFENSIVE_CASTING;
+			}
+		}
+	}
+
 	@Override
 	protected void shutDown()
 	{
@@ -161,7 +200,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 	{
 		clientThread.invokeLater(() ->
 		{
-			final Widget xpTracker = client.getWidget(XP_TRACKER_WIDGET_GROUP_ID,XP_TRACKER_WIDGET_CHILD_ID);
+			final Widget xpTracker = client.getWidget(XP_TRACKER_WIDGET_GROUP_ID, XP_TRACKER_WIDGET_CHILD_ID);
 			if (xpTracker != null)
 			{
 				xpTracker.setHidden(hidden);
@@ -175,6 +214,19 @@ public class CustomizableXpDropsPlugin extends Plugin
 		boolean shouldDraw = client.getVarbitValue(EXPERIENCE_TRACKER_TOGGLE) == 1;
 		xpDropOverlay.setShouldDraw(shouldDraw);
 		xpTrackerOverlay.setShouldDraw(shouldDraw);
+
+		int currentAttackStyleVarbit = client.getVar(VarPlayer.ATTACK_STYLE);
+		int currentEquippedWeaponTypeVarbit = client.getVarbitValue(Varbits.EQUIPPED_WEAPON_TYPE);
+		int currentCastingModeVarbit = client.getVarbitValue(Varbits.DEFENSIVE_CASTING_MODE);
+
+		if (attackStyleVarbit != currentAttackStyleVarbit || equippedWeaponTypeVarbit != currentEquippedWeaponTypeVarbit || castingModeVarbit != currentCastingModeVarbit)
+		{
+			attackStyleVarbit = currentAttackStyleVarbit;
+			equippedWeaponTypeVarbit = currentEquippedWeaponTypeVarbit;
+			castingModeVarbit = currentCastingModeVarbit;
+
+			updateAttackStyle(equippedWeaponTypeVarbit, attackStyleVarbit, castingModeVarbit);
+		}
 	}
 
 	@Subscribe
@@ -282,7 +334,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 	{
 		if (scriptPostFired.getScriptId() == XP_TRACKER_SCRIPT_ID)
 		{
-			final Widget xpTracker = client.getWidget(XP_TRACKER_WIDGET_GROUP_ID,XP_TRACKER_WIDGET_CHILD_ID);
+			final Widget xpTracker = client.getWidget(XP_TRACKER_WIDGET_GROUP_ID, XP_TRACKER_WIDGET_CHILD_ID);
 			if (xpTracker != null)
 			{
 				xpTracker.setHidden(config.useXpTracker());
@@ -378,13 +430,13 @@ public class CustomizableXpDropsPlugin extends Plugin
 		return null;
 	}
 
-	private XpDropStyle getActivePrayerType()
+	private XpPrayer getActivePrayer()
 	{
 		for (XpPrayer prayer : XpPrayer.values())
 		{
 			if (client.isPrayerActive(prayer.getPrayer()))
 			{
-				return prayer.getType();
+				return prayer;
 			}
 		}
 		return null;
@@ -392,31 +444,11 @@ public class CustomizableXpDropsPlugin extends Plugin
 
 	protected XpDropStyle matchPrayerStyle(Skill skill)
 	{
-		XpDropStyle style = XpDropStyle.DEFAULT;
-		XpDropStyle active = getActivePrayerType();
-		switch (skill)
+		XpPrayer activePrayer = getActivePrayer();
+		if (activePrayer != null && activePrayer.getStyles().contains(attackStyle))
 		{
-			case MAGIC:
-				if (active == XpDropStyle.MAGE)
-				{
-					style = active;
-				}
-				break;
-			case RANGED:
-				if (active == XpDropStyle.RANGE)
-				{
-					style = active;
-				}
-				break;
-			case ATTACK:
-			case STRENGTH:
-			case DEFENCE:
-				if (active == XpDropStyle.MELEE)
-				{
-					style = active;
-				}
-				break;
+			return activePrayer.getType();
 		}
-		return style;
+		return XpDropStyle.DEFAULT;
 	}
 }
