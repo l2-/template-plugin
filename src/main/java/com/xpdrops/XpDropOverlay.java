@@ -28,7 +28,6 @@ import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 
 @Slf4j
 public class XpDropOverlay extends Overlay

@@ -445,9 +445,20 @@ public class CustomizableXpDropsPlugin extends Plugin
 	protected XpDropStyle matchPrayerStyle(Skill skill)
 	{
 		XpPrayer activePrayer = getActivePrayer();
-		if (activePrayer != null && activePrayer.getStyles().contains(attackStyle))
+		if (activePrayer != null)
 		{
-			return activePrayer.getType();
+			if (activePrayer.getStyles().contains(attackStyle))
+			{
+				for (Skill attackStyleSkill : attackStyle.getSkills())
+				{
+					if (attackStyleSkill == skill) return activePrayer.getType();
+				}
+			}
+			// Fallback. Triggered for example when manually casting a spell with a non mage weapon equipped.
+			if (skill == Skill.MAGIC && activePrayer.getType() == XpDropStyle.MAGE)
+			{
+				return XpDropStyle.MAGE;
+			}
 		}
 		return XpDropStyle.DEFAULT;
 	}
