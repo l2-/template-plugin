@@ -86,6 +86,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 	private final PriorityQueue<XpDrop> queue = new PriorityQueue<>(this::skillPriorityComparator);
 	@Getter
 	private final ArrayDeque<Hit> hitBuffer = new ArrayDeque<>();
+	@Getter
 	private final HashSet<String> filteredSkills = new HashSet<>();
 	@Getter
 	private final HashSet<String> filteredSkillsPredictedHits = new HashSet<>();
@@ -374,11 +375,8 @@ public class CustomizableXpDropsPlugin extends Plugin
 			hitBuffer.add(new Hit(hit, lastOpponent));
 		}
 
-		if (!filteredSkills.contains(event.getSkill().getName().toLowerCase()))
-		{
-			XpDrop xpDrop = new XpDrop(event.getSkill(), currentXp, matchPrayerStyle(event.getSkill()), true, lastOpponent);
-			queue.add(xpDrop);
-		}
+		XpDrop xpDrop = new XpDrop(event.getSkill(), currentXp, matchPrayerStyle(event.getSkill()), true, lastOpponent);
+		queue.add(xpDrop);
 	}
 
 	@Subscribe
@@ -395,11 +393,8 @@ public class CustomizableXpDropsPlugin extends Plugin
 				hitBuffer.add(new Hit(hit, lastOpponent));
 			}
 
-			if (!filteredSkills.contains(event.getSkill().getName().toLowerCase()))
-			{
-				XpDrop xpDrop = new XpDrop(event.getSkill(), currentXp - previousXp, matchPrayerStyle(event.getSkill()), false, lastOpponent);
-				queue.add(xpDrop);
-			}
+			XpDrop xpDrop = new XpDrop(event.getSkill(), currentXp - previousXp, matchPrayerStyle(event.getSkill()), false, lastOpponent);
+			queue.add(xpDrop);
 		}
 
 		previous_exp[event.getSkill().ordinal()] = event.getXp();

@@ -528,19 +528,25 @@ public class XpDropOverlay extends Overlay
 		}
 
 		boolean filteredHit = false;
+		XpDropStyle style = XpDropStyle.DEFAULT;
 		for (XpDrop xpDrop : plugin.getQueue())
 		{
 			filteredHit |= plugin.getFilteredSkillsPredictedHits().contains(xpDrop.getSkill().getName().toLowerCase());
+
+			// We track this even for ignored skills.
+			if (xpDrop.getStyle() != XpDropStyle.DEFAULT)
+			{
+				style = xpDrop.getStyle();
+			}
 		}
 
 		if (config.showPredictedHit() && (config.neverGroupPredictedHit() || !config.isGrouped()) && totalHit > 0 && !filteredHit)
 		{
 			int icons = 1 << 24;
-			XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, totalHit, XpDropStyle.DEFAULT, 0, 0, 0xff, 0, 0, target);
+			XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, totalHit, style, 0, 0, 0xff, 0, 0, target);
 			drops.add(xpDropInFlight);
 		}
 
-		XpDropStyle style = XpDropStyle.DEFAULT;
 		if (config.isGrouped())
 		{
 			int amount = 0;
@@ -549,16 +555,15 @@ public class XpDropOverlay extends Overlay
 			XpDrop xpDrop = plugin.getQueue().poll();
 			while (xpDrop != null)
 			{
-				amount += xpDrop.getExperience();
-				icons |= 1 << SKILL_PRIORITY[xpDrop.getSkill().ordinal()];
-				if (xpDrop.getStyle() != XpDropStyle.DEFAULT)
+				if (!plugin.getFilteredSkills().contains(xpDrop.getSkill().getName().toLowerCase()))
 				{
-					style = xpDrop.getStyle();
-				}
+					amount += xpDrop.getExperience();
+					icons |= 1 << SKILL_PRIORITY[xpDrop.getSkill().ordinal()];
 
-				if (xpDrop.fake)
-				{
-					icons |= 1 << 23;
+					if (xpDrop.fake)
+					{
+						icons |= 1 << 23;
+					}
 				}
 
 				xpDrop = plugin.getQueue().poll();
@@ -566,7 +571,7 @@ public class XpDropOverlay extends Overlay
 			if (amount > 0)
 			{
 				int hit = config.neverGroupPredictedHit() || filteredHit ? 0 : totalHit;
-				XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, amount, XpDropStyle.DEFAULT, 0, 0, 0xff, 0, hit, target);
+				XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, amount, style, 0, 0, 0xff, 0, hit, target);
 				drops.add(xpDropInFlight);
 			}
 		}
@@ -577,28 +582,27 @@ public class XpDropOverlay extends Overlay
 			ArrayList<XpDropInFlight> dropsInFlight = new ArrayList<>();
 			while (xpDrop != null)
 			{
-				int icons = 1 << SKILL_PRIORITY[xpDrop.getSkill().ordinal()];
-				int amount = xpDrop.getExperience();
-				if (xpDrop.getStyle() != XpDropStyle.DEFAULT)
+				if (!plugin.getFilteredSkills().contains(xpDrop.getSkill().getName().toLowerCase()))
 				{
-					style = xpDrop.getStyle();
-				}
+					int icons = 1 << SKILL_PRIORITY[xpDrop.getSkill().ordinal()];
+					int amount = xpDrop.getExperience();
 
-				if (xpDrop.fake)
-				{
-					icons |= 1 << 23;
-				}
+					if (xpDrop.fake)
+					{
+						icons |= 1 << 23;
+					}
 
-				if (dropsInFlightMap.containsKey(xpDrop.getSkill()))
-				{
-					XpDropInFlight xpDropInFlight = dropsInFlightMap.get(xpDrop.getSkill());
-					xpDropInFlight.amount += amount;
-				}
-				else
-				{
-					XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, amount, XpDropStyle.DEFAULT, 0, 0, 0xff, 0, 0, xpDrop.attachedActor);
-					dropsInFlightMap.put(xpDrop.getSkill(), xpDropInFlight);
-					dropsInFlight.add(xpDropInFlight);
+					if (dropsInFlightMap.containsKey(xpDrop.getSkill()))
+					{
+						XpDropInFlight xpDropInFlight = dropsInFlightMap.get(xpDrop.getSkill());
+						xpDropInFlight.amount += amount;
+					}
+					else
+					{
+						XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, amount, style, 0, 0, 0xff, 0, 0, xpDrop.attachedActor);
+						dropsInFlightMap.put(xpDrop.getSkill(), xpDropInFlight);
+						dropsInFlight.add(xpDropInFlight);
+					}
 				}
 
 				xpDrop = plugin.getQueue().poll();
@@ -610,7 +614,6 @@ public class XpDropOverlay extends Overlay
 		for (XpDropInFlight drop : drops)
 		{
 			int frameOffset = -index * config.groupedDelay();
-			drop.setStyle(style);
 			drop.setFrame(Math.min(frameOffset, lastFrame));
 
 			xpDropsInFlight.add(drop);

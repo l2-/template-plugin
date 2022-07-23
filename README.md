@@ -17,7 +17,7 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - Replace the XP tracker widget with a minimalistic one.
 
 # Change log
-- v1.5.7 - Recolor xp drop based on attack style. Update npc multipliers.
+- v1.5.7 - Recolor xp drop based on attack style. Update npc multipliers. Recolor predicted hit according to prayer even if the skill is filtered.
 - v1.5.6 - Fixed xp drop recoloring when long range or defensive cast styles are used. Updated README with info about installing custom fonts.
 - v1.5.5 - Fixed fake xp drops being split in ungrouped settings.
 - v1.5.4 - Allow icons to be overridden by other plugins such as resource packs. Show/Hide xp drops based on the in-game setting (following the xp orb button next to the minimap).
