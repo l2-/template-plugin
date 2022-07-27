@@ -446,7 +446,10 @@ public class CustomizableXpDropsPlugin extends Plugin
 			{
 				for (Skill attackStyleSkill : attackStyle.getSkills())
 				{
-					if (attackStyleSkill == skill) return activePrayer.getType();
+					if (attackStyleSkill == skill)
+					{
+						return activePrayer.getType();
+					}
 				}
 			}
 			// Fallback. Triggered for example when manually casting a spell with a non mage weapon equipped.
