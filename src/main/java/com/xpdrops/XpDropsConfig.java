@@ -1,6 +1,6 @@
 package com.xpdrops;
 
-import net.runelite.api.Skill;
+import lombok.Getter;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -8,21 +8,25 @@ import net.runelite.client.config.ConfigSection;
 import net.runelite.client.config.Range;
 
 import java.awt.Color;
+import java.awt.Font;
 
 @ConfigGroup("CustomizableXPDrops")
 public interface XpDropsConfig extends Config
 {
 	enum FontStyle
 	{
-		BOLD("Bold"),
-		ITALICS("Italics"),
-		BOLD_ITALICS("Bold and italics"),
-		DEFAULT("Default");
+		BOLD("Bold", Font.BOLD),
+		ITALICS("Italics", Font.ITALIC),
+		BOLD_ITALICS("Bold and italics", Font.BOLD | Font.ITALIC),
+		DEFAULT("Default", Font.PLAIN);
 
 		String name;
+		@Getter
+		private int style;
 
-		FontStyle(String name)
+		FontStyle(String name, int style)
 		{
+			this.style = style;
 			this.name = name;
 		}
 

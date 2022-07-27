@@ -21,10 +21,13 @@ import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,6 +46,29 @@ public class XpDropOverlay extends Overlay
 	protected static BufferedImage FAKE_SKILL_ICON;
 	protected static BufferedImage HITSPLAT_ICON;
 	protected static final float CONSTANT_FRAME_TIME = 1000.0f / FRAMES_PER_SECOND;
+	protected static final Font RUNESCAPE_BOLD_FONT;
+
+	static
+	{
+		Font boldFont;
+
+		try (InputStream inRunescapeBold = XpDropOverlay.class.getResourceAsStream("RuneScape-Bold-12.ttf"))
+		{
+			boldFont = Font.createFont(Font.TRUETYPE_FONT, inRunescapeBold)
+				.deriveFont(Font.PLAIN, 16);
+		}
+		catch (FontFormatException ex)
+		{
+			log.warn("Font loaded, but format incorrect.", ex);
+			boldFont = new Font(Font.DIALOG, Font.BOLD, 16);
+		}
+		catch (IOException ex)
+		{
+			log.warn("Font file not found.", ex);
+			boldFont = new Font(Font.DIALOG, Font.BOLD, 16);
+		}
+		RUNESCAPE_BOLD_FONT = boldFont;
+	}
 
 	protected CustomizableXpDropsPlugin plugin;
 	protected XpDropsConfig config;
@@ -403,9 +429,11 @@ public class XpDropOverlay extends Overlay
 			lastFontSize = config.fontSize();
 			lastFontStyle = config.fontStyle();
 
+			int style = config.fontStyle().getStyle();
 			// default to runescape fonts
 			if ("".equals(config.fontName()))
 			{
+
 				if (config.fontSize() < 16)
 				{
 					font = FontManager.getRunescapeSmallFont();
@@ -413,50 +441,22 @@ public class XpDropOverlay extends Overlay
 				else if (config.fontStyle() == XpDropsConfig.FontStyle.BOLD
 					|| config.fontStyle() == XpDropsConfig.FontStyle.BOLD_ITALICS)
 				{
-					font = FontManager.getRunescapeBoldFont();
+					font = RUNESCAPE_BOLD_FONT;
+					style ^= Font.BOLD; // Bold is implicit for this Font object, we do not want to derive using bold again.
 				}
 				else
 				{
 					font = FontManager.getRunescapeFont();
 				}
 
-				if (config.fontSize() > 16)
-				{
-					font = font.deriveFont((float)config.fontSize());
-				}
-
-				if (config.fontStyle() == XpDropsConfig.FontStyle.BOLD)
-				{
-					font = font.deriveFont(Font.BOLD);
-				}
-				if (config.fontStyle() == XpDropsConfig.FontStyle.ITALICS)
-				{
-					font = font.deriveFont(Font.ITALIC);
-				}
-				if (config.fontStyle() == XpDropsConfig.FontStyle.BOLD_ITALICS)
-				{
-					font = font.deriveFont(Font.ITALIC | Font.BOLD);
-				}
+				float size = Math.max(16.0f, config.fontSize());
+				font = font.deriveFont(style, size);
 
 				useRunescapeFont = true;
 				return;
 			}
 
 			// use a system wide font
-			int style = Font.PLAIN;
-			switch (config.fontStyle())
-			{
-				case BOLD:
-					style = Font.BOLD;
-					break;
-				case ITALICS:
-					style = Font.ITALIC;
-					break;
-				case BOLD_ITALICS:
-					style = Font.BOLD | Font.ITALIC;
-					break;
-			}
-
 			font = new Font(config.fontName(), style, config.fontSize());
 			useRunescapeFont = false;
 		}
