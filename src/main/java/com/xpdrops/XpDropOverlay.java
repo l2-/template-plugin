@@ -54,8 +54,16 @@ public class XpDropOverlay extends Overlay
 
 		try (InputStream inRunescapeBold = XpDropOverlay.class.getResourceAsStream("RuneScape-Bold-12.ttf"))
 		{
-			boldFont = Font.createFont(Font.TRUETYPE_FONT, inRunescapeBold)
-				.deriveFont(Font.PLAIN, 16);
+			if (inRunescapeBold == null)
+			{
+				log.warn("Font file could not be loaded.");
+				boldFont = new Font(Font.DIALOG, Font.BOLD, 16);
+			}
+			else
+			{
+				boldFont = Font.createFont(Font.TRUETYPE_FONT, inRunescapeBold)
+					.deriveFont(Font.PLAIN, 16);
+			}
 		}
 		catch (FontFormatException ex)
 		{
