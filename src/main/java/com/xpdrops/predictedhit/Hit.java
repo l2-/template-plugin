@@ -1,4 +1,4 @@
-package com.xpdrops;
+package com.xpdrops.predictedhit;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,6 +8,6 @@ import net.runelite.api.Actor;
 @AllArgsConstructor
 public class Hit
 {
-	int hit;
-	Actor attachedActor;
+	private int hit;
+	private Actor attachedActor;
 }

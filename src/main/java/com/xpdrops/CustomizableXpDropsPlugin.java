@@ -3,6 +3,10 @@ package com.xpdrops;
 import com.google.inject.Provides;
 import com.xpdrops.attackstyles.AttackStyle;
 import com.xpdrops.attackstyles.WeaponType;
+import com.xpdrops.config.XpDropsConfig;
+import com.xpdrops.overlay.XpDropOverlayManager;
+import com.xpdrops.predictedhit.Hit;
+import com.xpdrops.predictedhit.XpDropDamageCalculator;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Actor;
@@ -11,9 +15,9 @@ import net.runelite.api.GameState;
 import net.runelite.api.NPC;
 import net.runelite.api.Player;
 import net.runelite.api.Skill;
-import net.runelite.api.SpritePixels;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.Varbits;
+import net.runelite.api.events.BeforeRender;
 import net.runelite.api.events.FakeXpDrop;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.InteractingChanged;
@@ -28,11 +32,9 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.Text;
 
 import javax.inject.Inject;
-import java.awt.image.BufferedImage;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -41,6 +43,7 @@ import java.util.stream.Collectors;
 
 import static net.runelite.api.ScriptID.XPDROPS_SETDROPSIZE;
 
+// Plugin class and xp drop manager
 @PluginDescriptor(
 	name = "Customizable XP drops",
 	description = "Allows one to use fully customizable xp drops independent of the in-game ones"
@@ -48,17 +51,13 @@ import static net.runelite.api.ScriptID.XPDROPS_SETDROPSIZE;
 @Slf4j
 public class CustomizableXpDropsPlugin extends Plugin
 {
+	public static final int[] SKILL_PRIORITY = new int[] {1, 5, 2, 6, 3, 7, 4, 15, 17, 18, 0, 16, 11, 14, 13, 9, 8, 10, 19, 20, 12, 22, 21};
+
 	@Inject
 	private Client client;
 
 	@Inject
-	private OverlayManager overlayManager;
-
-	@Inject
-	private XpDropOverlay xpDropOverlay;
-
-	@Inject
-	private XpTrackerOverlay xpTrackerOverlay;
+	private XpDropOverlayManager xpDropOverlayManager;
 
 	@Inject
 	private XpDropsConfig config;
@@ -72,13 +71,13 @@ public class CustomizableXpDropsPlugin extends Plugin
 	@Provides
 	XpDropsConfig provideConfig(ConfigManager configManager)
 	{
-		return (XpDropsConfig) configManager.getConfig(XpDropsConfig.class);
+		return configManager.getConfig(XpDropsConfig.class);
 	}
 
 	int skillPriorityComparator(XpDrop x1, XpDrop x2)
 	{
-		int priority1 = XpDropOverlay.SKILL_PRIORITY[x1.getSkill().ordinal()];
-		int priority2 = XpDropOverlay.SKILL_PRIORITY[x2.getSkill().ordinal()];
+		int priority1 = SKILL_PRIORITY[x1.getSkill().ordinal()];
+		int priority2 = SKILL_PRIORITY[x2.getSkill().ordinal()];
 		return Integer.compare(priority1, priority2);
 	}
 
@@ -95,10 +94,6 @@ public class CustomizableXpDropsPlugin extends Plugin
 	private static final int XP_TRACKER_WIDGET_GROUP_ID = 122;
 	private static final int XP_TRACKER_WIDGET_CHILD_ID = 4;
 	private static final int[] previous_exp = new int[Skill.values().length - 1];
-	private static final int[] SKILL_ICON_ORDINAL_ICONS = new int[]{
-		197, 199, 198, 203, 200, 201, 202, 212, 214, 208,
-		211, 213, 207, 210, 209, 205, 204, 206, 216, 217, 215, 220, 221, 898
-	};
 	private int lastOpponentId = -1;
 	private boolean lastOpponentIsPlayer = false;
 	private Actor lastOpponent;
@@ -113,6 +108,8 @@ public class CustomizableXpDropsPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
+		long time = System.currentTimeMillis();
+
 		if (client.getGameState() == GameState.LOGGED_IN)
 		{
 			clientThread.invokeLater(() ->
@@ -121,6 +118,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 				System.arraycopy(xps, 0, previous_exp, 0, previous_exp.length);
 
 				initAttackStyles();
+				initShouldDraw();
 			});
 		}
 		else
@@ -128,11 +126,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 			Arrays.fill(previous_exp, 0);
 		}
 		queue.clear();
-		xpDropOverlay.firstRender = true;
-		xpTrackerOverlay.firstRender = true;
-
-		overlayManager.add(xpTrackerOverlay);
-		overlayManager.add(xpDropOverlay);
+		xpDropOverlayManager.startup();
 
 		filteredSkillsPredictedHits.clear();
 		filteredSkillsPredictedHits.addAll(Text.fromCSV(config.skillsToFilterForPredictedHits()).stream().map(String::toLowerCase).collect(Collectors.toList()));
@@ -154,19 +148,19 @@ public class CustomizableXpDropsPlugin extends Plugin
 
 		xpDropDamageCalculator.populateMap();
 
-		if (config.attachToPlayer() || config.attachToTarget())
-		{
-			clientThread.invokeLater(() -> xpDropOverlay.attachOverlay());
-		}
-		else
-		{
-			clientThread.invokeLater(() -> xpDropOverlay.detachOverlay());
-		}
+		long totalTime = System.currentTimeMillis() - time;
+		log.debug("Plugin took {}ms to start.", totalTime);
+	}
+
+	private void initShouldDraw()
+	{
+		boolean shouldDraw = client.getVarbitValue(EXPERIENCE_TRACKER_TOGGLE) == 1;
+		xpDropOverlayManager.setShouldDraw(shouldDraw);
 	}
 
 	private void initAttackStyles()
 	{
-		attackStyleVarbit = client.getVar(VarPlayer.ATTACK_STYLE);
+		attackStyleVarbit = client.getVarpValue(VarPlayer.ATTACK_STYLE);
 		equippedWeaponTypeVarbit = client.getVarbitValue(Varbits.EQUIPPED_WEAPON_TYPE);
 		castingModeVarbit = client.getVarbitValue(Varbits.DEFENSIVE_CASTING_MODE);
 		updateAttackStyle(equippedWeaponTypeVarbit, attackStyleVarbit, castingModeVarbit);
@@ -192,9 +186,8 @@ public class CustomizableXpDropsPlugin extends Plugin
 	@Override
 	protected void shutDown()
 	{
-		overlayManager.remove(xpTrackerOverlay);
-		overlayManager.remove(xpDropOverlay);
-		setXpTrackerHidden(true);
+		xpDropOverlayManager.shutdown();
+		setXpTrackerHidden(false); // should be according to varbit?
 	}
 
 	protected void setXpTrackerHidden(boolean hidden)
@@ -213,10 +206,9 @@ public class CustomizableXpDropsPlugin extends Plugin
 	protected void onVarbitChanged(VarbitChanged varbitChanged)
 	{
 		boolean shouldDraw = client.getVarbitValue(EXPERIENCE_TRACKER_TOGGLE) == 1;
-		xpDropOverlay.setShouldDraw(shouldDraw);
-		xpTrackerOverlay.setShouldDraw(shouldDraw);
+		xpDropOverlayManager.setShouldDraw(shouldDraw);
 
-		int currentAttackStyleVarbit = client.getVar(VarPlayer.ATTACK_STYLE);
+		int currentAttackStyleVarbit = client.getVarpValue(VarPlayer.ATTACK_STYLE);
 		int currentEquippedWeaponTypeVarbit = client.getVarbitValue(Varbits.EQUIPPED_WEAPON_TYPE);
 		int currentCastingModeVarbit = client.getVarbitValue(Varbits.DEFENSIVE_CASTING_MODE);
 
@@ -264,20 +256,12 @@ public class CustomizableXpDropsPlugin extends Plugin
 
 			if ("attachToTarget".equals(configChanged.getKey()) || "attachToPlayer".equals(configChanged.getKey()))
 			{
-				if (config.attachToPlayer() || config.attachToTarget())
-				{
-					clientThread.invokeLater(() -> xpDropOverlay.attachOverlay());
-				}
-				else
-				{
-					clientThread.invokeLater(() -> xpDropOverlay.detachOverlay());
-				}
+				xpDropOverlayManager.overlayConfigChanged();
 			}
 
 			if ("iconOverride".equals(configChanged.getKey()))
 			{
-				xpDropOverlay.firstRender = true;
-				xpTrackerOverlay.firstRender = true;
+				xpDropOverlayManager.setReInitIconsFlag(true);
 			}
 		}
 	}
@@ -354,7 +338,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 		if (gameStateChanged.getGameState() == GameState.LOGGED_IN && resetXpTrackerLingerTimerFlag)
 		{
 			resetXpTrackerLingerTimerFlag = false;
-			xpTrackerOverlay.setLastSkillSetMillis(System.currentTimeMillis());
+			xpDropOverlayManager.setLastSkillSetMillis(System.currentTimeMillis());
 		}
 	}
 
@@ -400,29 +384,10 @@ public class CustomizableXpDropsPlugin extends Plugin
 		previous_exp[event.getSkill().ordinal()] = event.getXp();
 	}
 
-	protected BufferedImage getSkillIcon(Skill skill)
+	@Subscribe
+	protected void onBeforeRender(BeforeRender beforeRender)
 	{
-		int index = skill.ordinal();
-		int icon = SKILL_ICON_ORDINAL_ICONS[index];
-		return getIcon(icon, 0);
-	}
-
-	protected BufferedImage getIcon(int icon, int spriteIndex)
-	{
-		if (client == null)
-		{
-			return null;
-		}
-		if (config.iconOverride() && client.getSpriteOverrides().containsKey(icon))
-		{
-			return client.getSpriteOverrides().get(icon).toBufferedImage();
-		}
-		SpritePixels[] pixels = client.getSprites(client.getIndexSprites(), icon, 0);
-		if (pixels != null && pixels.length >= spriteIndex + 1 && pixels[spriteIndex] != null)
-		{
-			return pixels[spriteIndex].toBufferedImage();
-		}
-		return null;
+		xpDropOverlayManager.update();
 	}
 
 	private XpPrayer getActivePrayer()

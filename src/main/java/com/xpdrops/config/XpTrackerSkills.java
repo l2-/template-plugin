@@ -1,4 +1,4 @@
-package com.xpdrops;
+package com.xpdrops.config;
 
 import lombok.Getter;
 import net.runelite.api.Skill;

@@ -9,9 +9,9 @@ import net.runelite.api.Skill;
 @AllArgsConstructor
 public class XpDrop
 {
-	Skill skill;
-	int experience;
-	XpDropStyle style;
-	boolean fake;
-	Actor attachedActor;
+	private Skill skill;
+	private int experience;
+	private XpDropStyle style;
+	private boolean fake;
+	private Actor attachedActor;
 }
