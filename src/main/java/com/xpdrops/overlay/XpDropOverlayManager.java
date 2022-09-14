@@ -271,7 +271,7 @@ public class XpDropOverlayManager
 			}
 		}
 
-		if (config.showPredictedHit() && (config.neverGroupPredictedHit() || !config.isGrouped()) && totalHit > 0 && !filteredHit)
+		if (config.showPredictedHit() && config.neverGroupPredictedHit() && totalHit > 0 && !filteredHit)
 		{
 			int icons = 1 << 24;
 			XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, totalHit, style, 0, 0, 0xff, 0, 0, target);
@@ -325,12 +325,15 @@ public class XpDropOverlayManager
 
 					if (dropsInFlightMap.containsKey(xpDrop.getSkill()))
 					{
+						int hit = config.neverGroupPredictedHit() || filteredHit ? 0 : totalHit;
 						XpDropInFlight xpDropInFlight = dropsInFlightMap.get(xpDrop.getSkill());
+						xpDropInFlight.setHit(hit);
 						xpDropInFlight.setAmount(xpDropInFlight.getAmount() + amount);
 					}
 					else
 					{
-						XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, amount, style, 0, 0, 0xff, 0, 0, xpDrop.getAttachedActor());
+						int hit = config.neverGroupPredictedHit() || filteredHit ? 0 : totalHit;
+						XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, amount, style, 0, 0, 0xff, 0, hit, xpDrop.getAttachedActor());
 						dropsInFlightMap.put(xpDrop.getSkill(), xpDropInFlight);
 						dropsInFlight.add(xpDropInFlight);
 					}

@@ -17,16 +17,17 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - Replace the XP tracker widget with a minimalistic one.
 
 # Change log
-- v1.5.9 - Fixed bug where xp tracker would sometimes not work correctly.
+- v1.5.10 - Using `Group XP drops = False` and `Never group predicted hit = False` now groups the predicted hit with every XP drop (previously `Never group predicted hit` had no effect in this configuration). To revert to old behaviour with `Group XP drops = False` simply switch `Never group predicted hit` to `True`.
+- v1.5.9 - Fixed bug where xp tracker would sometimes not work correctly. 
 - v1.5.8 - Changed OSRS bold font to the in-game bold font.
 - v1.5.7 - Recolor xp drop based on attack style. Update npc multipliers. Recolor predicted hit according to prayer even if the skill is filtered.
 - v1.5.6 - Fixed xp drop recoloring when long range or defensive cast styles are used. Updated README with info about installing custom fonts.
 - v1.5.5 - Fixed fake xp drops being split in ungrouped settings.
 - v1.5.4 - Allow icons to be overridden by other plugins such as resource packs. Show/Hide xp drops based on the in-game setting (following the xp orb button next to the minimap).
 - v1.5.3 - Bugfix for target attached overlay without having predicted hits enabled. Load old overlay position when swapping between attached or detached overlay setting.
-- v1.5.2 - Fix another overlay location bug introduced by v1.5.1.
+- v1.5.2 - Fix another overlay location bug introduced by `v1.5.1`.
 - v1.5.1 - Bugfix for target or player attached overlay location.
-- v1.5 - Added XP Tracker. This minimalistic widget replaces the in-game XP tracker. Credit to @TylerHarding for the initial implementation.
+- v1.5 - Added XP Tracker. This minimalistic widget replaces the in-game XP tracker. Credit to `@TylerHarding` for the initial implementation.
 - v1.4.1 - Added filter for predicted hits.
 - v1.4 - Add attach to NPC option. Add icon size override. Add attach overlay offset config options. Default font now follow italic and bold style settings.
 - v1.3.3 - Show predicted hit when Hitpoints skill is filtered. Allow for larger default(Runescape) font size.
