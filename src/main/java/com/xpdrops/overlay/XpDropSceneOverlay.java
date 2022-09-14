@@ -13,7 +13,6 @@ import javax.inject.Inject;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 
 @Slf4j
 public class XpDropSceneOverlay extends Overlay
@@ -38,6 +37,8 @@ public class XpDropSceneOverlay extends Overlay
 	public Dimension render(Graphics2D graphics)
 	{
 		xpDropFontHandler.updateFont(config.fontName(), config.fontSize(), config.fontStyle());
+		XpDropOverlayUtilities.setGraphicsProperties(graphics);
+		xpDropFontHandler.handleFont(graphics);
 
 		if (client.getLocalPlayer() != null)
 		{
@@ -46,6 +47,7 @@ public class XpDropSceneOverlay extends Overlay
 				drawAttachedXpDrops(graphics);
 			}
 		}
+
 		return null;
 	}
 
@@ -57,10 +59,6 @@ public class XpDropSceneOverlay extends Overlay
 
 	private void drawAttachedXpDrops(Graphics2D graphics)
 	{
-		graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-
-		xpDropFontHandler.handleFont(graphics);
-
 		for (XpDropInFlight xpDropInFlight : xpDropOverlayManager.getXpDropsInFlight())
 		{
 			if (xpDropInFlight.getFrame() < 0)

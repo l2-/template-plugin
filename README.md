@@ -17,6 +17,7 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - Replace the XP tracker widget with a minimalistic one.
 
 # Change log
+- v1.6.0 - Added progress bar to the xp tracker similar to the vanilla xp tracker progress bar using the xp tracker plugin(must be enabled). This feature is disabled by default.
 - v1.5.10 - Using `Group XP drops = False` and `Never group predicted hit = False` now groups the predicted hit with every XP drop (previously `Never group predicted hit` had no effect in this configuration). To revert to old behaviour with `Group XP drops = False` simply switch `Never group predicted hit` to `True`.
 - v1.5.9 - Fixed bug where xp tracker would sometimes not work correctly. 
 - v1.5.8 - Changed OSRS bold font to the in-game bold font.
@@ -48,8 +49,9 @@ Icons turned off. Attach to player selected. Custom font, size and style. "+" pr
 Damage prediction never grouped(left) and grouped(right).\
 ![damageprediction](https://i.imgur.com/MPdFFvy.png)
 
-Customizable XP tracker.\
+Customizable XP tracker. With optional progress bar.\
 ![xptracker](https://i.imgur.com/4UKHxPe.png)
+![xptrackerprogress](https://i.imgur.com/d9lKvQK.png)
 
 From https://github.com/ruchir90 \
 ![pic1](https://i.imgur.com/8W9zE8g.png)

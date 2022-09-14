@@ -11,7 +11,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 
 @Slf4j
 public class XpDropOverlay extends Overlay
@@ -33,6 +32,8 @@ public class XpDropOverlay extends Overlay
 	public Dimension render(Graphics2D graphics)
 	{
 		xpDropFontHandler.updateFont(config.fontName(), config.fontSize(), config.fontStyle());
+		XpDropOverlayUtilities.setGraphicsProperties(graphics);
+		xpDropFontHandler.handleFont(graphics);
 
 		if (xpDropOverlayManager.isShouldDraw())
 		{
@@ -51,10 +52,6 @@ public class XpDropOverlay extends Overlay
 
 	private void drawXpDrops(Graphics2D graphics)
 	{
-		graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-
-		xpDropFontHandler.handleFont(graphics);
-
 		int width = graphics.getFontMetrics().stringWidth(XpDropOverlayManager.XP_FORMAT_PATTERN);
 		int totalWidth = width + (int) Math.abs(config.framesPerDrop() * config.xPixelsPerSecond() / XpDropOverlayManager.FRAMES_PER_SECOND);
 		int height = graphics.getFontMetrics().getHeight();

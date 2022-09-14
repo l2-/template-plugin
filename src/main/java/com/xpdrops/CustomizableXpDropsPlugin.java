@@ -31,7 +31,9 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
+import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.xptracker.XpTrackerPlugin;
 import net.runelite.client.util.Text;
 
 import javax.inject.Inject;
@@ -43,6 +45,7 @@ import java.util.stream.Collectors;
 
 import static net.runelite.api.ScriptID.XPDROPS_SETDROPSIZE;
 
+@PluginDependency(XpTrackerPlugin.class)
 // Plugin class and xp drop manager
 @PluginDescriptor(
 	name = "Customizable XP drops",

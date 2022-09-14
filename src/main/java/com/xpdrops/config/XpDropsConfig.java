@@ -475,10 +475,22 @@ public interface XpDropsConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "showXpTrackerProgressBar",
+		name = "Show progress bar",
+		description = "Show a progress bar in the tracker similar to the progress bar in the vanilla tracker. Configure the start and goal in game.",
+		position = 25,
+		section = xp_tracker_settings
+	)
+	default boolean showXpTrackerProgressBar()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "showIconsXpTracker",
 		name = "Show icons xp tracker",
 		description = "Turn on skill icons for xp tracker",
-		position = 25,
+		position = 26,
 		section = xp_tracker_settings
 	)
 	default boolean showIconsXpTracker()
@@ -490,7 +502,7 @@ public interface XpDropsConfig extends Config
 		keyName = "xpTrackerSkill",
 		name = "Xp tracker skill",
 		description = "Skill to display within the Xp Tracker",
-		position = 26,
+		position = 27,
 		section = xp_tracker_settings
 	)
 	default XpTrackerSkills xpTrackerSkill()
@@ -502,7 +514,7 @@ public interface XpDropsConfig extends Config
 		keyName = "xpTrackerFontName",
 		name = "Font",
 		description = "Name of the font to use for XP tracker. Leave blank to use RuneLite setting.",
-		position = 26,
+		position = 28,
 		section = xp_tracker_settings
 	)
 	default String xpTrackerFontName()
@@ -514,7 +526,7 @@ public interface XpDropsConfig extends Config
 		keyName = "xpTrackerFontStyle",
 		name = "Font style",
 		description = "Style of the font to use for XP tracker. Only works with custom font.",
-		position = 26,
+		position = 29,
 		section = xp_tracker_settings
 	)
 	default FontStyle xpTrackerFontStyle()
@@ -526,7 +538,7 @@ public interface XpDropsConfig extends Config
 		keyName = "xpTrackerFontSize",
 		name = "XP tracker font size",
 		description = "Size of font for the XP Tracker overlay",
-		position = 26,
+		position = 30,
 		section = xp_tracker_settings
 	)
 	default int xpTrackerFontSize()
@@ -538,7 +550,7 @@ public interface XpDropsConfig extends Config
 		keyName = "xpTrackerIconSizeOverride",
 		name = "Icon size override",
 		description = "When non zero indicates the size of the skill icons for the XP tracker.",
-		position = 26,
+		position = 31,
 		section = xp_tracker_settings
 	)
 	default int xpTrackerIconSizeOverride()
@@ -550,7 +562,7 @@ public interface XpDropsConfig extends Config
 		keyName = "xpTrackerColor",
 		name = "XP tracker color",
 		description = "Color for the Xp Tracker",
-		position = 27,
+		position = 32,
 		section = xp_tracker_settings
 	)
 	default Color xpTrackerColor()
@@ -562,7 +574,7 @@ public interface XpDropsConfig extends Config
 		keyName = "xpTrackerClientTicksToLinger",
 		name = "Time until disappearance",
 		description = "Never disappear when set to 0. The amount of frames (50 per second) the XP tracker will show for.",
-		position = 27,
+		position = 33,
 		section = xp_tracker_settings
 	)
 	default int xpTrackerClientTicksToLinger()
@@ -574,7 +586,7 @@ public interface XpDropsConfig extends Config
 		keyName = "xpTrackerFadeOut",
 		name = "Fade out",
 		description = "Should the XP tracker fade out",
-		position = 28,
+		position = 34,
 		section = xp_tracker_settings
 	)
 	default boolean xpTrackerFadeOut()
