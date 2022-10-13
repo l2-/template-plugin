@@ -5,9 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
+import net.runelite.client.util.Text;
 
 import javax.inject.Inject;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
@@ -87,13 +87,13 @@ public class XpDropOverlay extends Overlay
 				int imageWidth = drawIcons(graphics, xpDropInFlight.getIcons(), imageX, imageY, xpDropInFlight.getAlpha(), false);
 
 				textX = imageX + imageWidth;
-				drawText(graphics, text, textX, textY, xpDropInFlight);
+				XpDropOverlayUtilities.drawText(graphics, text, textX, textY, (int) xpDropInFlight.getAlpha(), config.xpDropBackground());
 			}
 			else
 			{
 				// Direction right to left, draw text first and icons second
-				textX = (int) (totalWidth + xStart - graphics.getFontMetrics().stringWidth(text));
-				drawText(graphics, text, textX, textY, xpDropInFlight);
+				textX = (int) (totalWidth + xStart - graphics.getFontMetrics().stringWidth(Text.removeTags(text)));
+				XpDropOverlayUtilities.drawText(graphics, text, textX, textY, (int) xpDropInFlight.getAlpha(), config.xpDropBackground());
 
 				int imageX = textX - 2;
 				int imageY = textY - graphics.getFontMetrics().getMaxAscent();
@@ -107,24 +107,8 @@ public class XpDropOverlay extends Overlay
 		return XpDropOverlayUtilities.getDropText(xpDropInFlight, config);
 	}
 
-	private void drawText(Graphics2D graphics, String text, int textX, int textY, XpDropInFlight xpDropInFlight)
-	{
-		Color _color = getColor(xpDropInFlight);
-		Color backgroundColor = new Color(0, 0, 0, (int) xpDropInFlight.getAlpha());
-		Color color = new Color(_color.getRed(), _color.getGreen(), _color.getBlue(), (int) xpDropInFlight.getAlpha());
-		graphics.setColor(backgroundColor);
-		graphics.drawString(text, textX + 1, textY + 1);
-		graphics.setColor(color);
-		graphics.drawString(text, textX, textY);
-	}
-
 	private int drawIcons(Graphics2D graphics, int icons, int x, int y, float alpha, boolean rightToLeft)
 	{
 		return XpDropOverlayUtilities.drawIcons(graphics, icons, x, y, alpha, rightToLeft, config);
-	}
-
-	private Color getColor(XpDropInFlight xpDropInFlight)
-	{
-		return XpDropOverlayUtilities.getColor(xpDropInFlight, config);
 	}
 }

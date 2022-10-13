@@ -7,11 +7,10 @@ import net.runelite.client.plugins.xptracker.XpTrackerService;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
+import net.runelite.client.util.Text;
 
 import javax.inject.Inject;
-import java.awt.AlphaComposite;
 import java.awt.Color;
-import java.awt.Composite;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -117,10 +116,11 @@ public class XpTrackerOverlay extends Overlay
 
 	private Dimension drawXpTracker(Graphics2D graphics, int icon, long experience)
 	{
+		String xpTrackerColor = XpDropOverlayUtilities.RGBToHex(config.xpTrackerColor().getRGB());
 		String text = XpDropOverlayManager.XP_FORMATTER.format(experience);
 
 		int textY = graphics.getFontMetrics().getMaxAscent();
-		int textWidth = graphics.getFontMetrics().stringWidth(text);
+		int textWidth = graphics.getFontMetrics().stringWidth(Text.removeTags(text));
 
 		int imageY = textY - graphics.getFontMetrics().getMaxAscent(); // 0
 
@@ -129,7 +129,7 @@ public class XpTrackerOverlay extends Overlay
 		Dimension iconDimensions = drawIcon(graphics, icon, 0, imageY, alpha);
 		int imageWidth = (int) (iconDimensions.getWidth() + 5);
 
-		drawText(graphics, text, imageWidth, textY, alpha);
+		XpDropOverlayUtilities.drawText(graphics, XpDropOverlayUtilities.wrapWithTags(xpTrackerColor) + text, imageWidth, textY, alpha, config.xpTrackerBackground());
 
 		return new Dimension(textWidth + imageWidth, (int)Math.max(graphics.getFontMetrics().getHeight(), iconDimensions.getHeight()));
 	}
@@ -187,32 +187,10 @@ public class XpTrackerOverlay extends Overlay
 			int _iconSize = Math.max(iconSize, 18);
 			int iconWidth = image.getWidth() * _iconSize / 25;
 			int iconHeight = image.getHeight() * _iconSize / 25;
-			Dimension dimension = drawIcon(graphics, image, x, y, iconWidth, iconHeight, alpha / 0xff);
+			Dimension dimension = XpDropOverlayUtilities.drawIcon(graphics, image, x, y, iconWidth, iconHeight, alpha / 0xff, false);
 
 			return dimension;
 		}
 		return new Dimension(0,0);
-	}
-
-	private Dimension drawIcon(Graphics2D graphics, BufferedImage image, int x, int y, int width, int height, float alpha)
-	{
-		int yOffset = graphics.getFontMetrics().getHeight() / 2 - height / 2;
-
-		Composite composite = graphics.getComposite();
-		graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
-		graphics.drawImage(image, x, y + yOffset, width, height, null);
-		graphics.setComposite(composite);
-		return new Dimension(width, height);
-	}
-
-	private void drawText(Graphics2D graphics, String text, int textX, int textY, int alpha)
-	{
-		Color _color = config.xpTrackerColor();
-		Color backgroundColor = new Color(0, 0, 0, alpha);
-		Color color = new Color(_color.getRed(), _color.getGreen(), _color.getBlue(), alpha);
-		graphics.setColor(backgroundColor);
-		graphics.drawString(text, textX + 1, textY + 1);
-		graphics.setColor(color);
-		graphics.drawString(text, textX, textY);
 	}
 }

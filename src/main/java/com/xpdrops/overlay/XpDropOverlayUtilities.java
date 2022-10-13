@@ -10,6 +10,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -49,6 +50,11 @@ public class XpDropOverlayUtilities
 		return boldFont;
 	}
 
+	public static String wrapWithTags(String hex)
+	{
+		return "<col=" + hex + ">";
+	}
+
 	public static String getDropText(XpDropInFlight xpDropInFlight, XpDropsConfig config)
 	{
 		String text = XpDropOverlayManager.XP_FORMATTER.format(xpDropInFlight.getAmount());
@@ -56,18 +62,28 @@ public class XpDropOverlayUtilities
 		boolean isPredictedHit = ((xpDropInFlight.getIcons() >> 24) & 0x1) == 0x1;
 		if (isPredictedHit)
 		{
+			if (config.predictedHitColorOverride())
+			{
+				text = wrapWithTags(RGBToHex(config.predictedHitColor().getRGB())) + text;
+			}
 			text = config.predictedHitPrefix() + text;
 			text = text + config.predictedHitSuffix();
 		}
 		else
 		{
+			text = wrapWithTags(RGBToHex(getColor(xpDropInFlight, config).getRGB())) + text;
 			text = config.xpDropPrefix() + text;
 			text = text + config.xpDropSuffix();
 		}
 
 		if (xpDropInFlight.getHit() > 0)
 		{
-			text += " (" + config.predictedHitPrefix() + xpDropInFlight.getHit() + config.predictedHitSuffix() + ")";
+			String predictedHitColor = "";
+			if (config.predictedHitColorOverride())
+			{
+				predictedHitColor = wrapWithTags(RGBToHex(config.predictedHitColor().getRGB()));
+			}
+			text += predictedHitColor + " (" + config.predictedHitPrefix() + xpDropInFlight.getHit() + config.predictedHitSuffix() + ")";
 		}
 		return text;
 	}
@@ -133,7 +149,7 @@ public class XpDropOverlayUtilities
 		return width;
 	}
 
-	private static Dimension drawIcon(Graphics2D graphics, BufferedImage image, int x, int y, int width, int height, float alpha, boolean rightToLeft)
+	public static Dimension drawIcon(Graphics2D graphics, BufferedImage image, int x, int y, int width, int height, float alpha, boolean rightToLeft)
 	{
 		int yOffset = graphics.getFontMetrics().getHeight() / 2 - height / 2;
 		int xOffset = rightToLeft ? width : 0;
@@ -164,5 +180,21 @@ public class XpDropOverlayUtilities
 	public static void setGraphicsProperties(Graphics2D graphics)
 	{
 		graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+	}
+
+	public static Dimension drawText(Graphics2D graphics, String text, int textX, int textY, int alpha, TextComponentWithAlpha.Background background)
+	{
+		TextComponentWithAlpha textComponent = new TextComponentWithAlpha();
+		textComponent.setText(text);
+		textComponent.setAlpha(alpha);
+		textComponent.setPosition(new Point(textX, textY));
+		textComponent.setBackground(background);
+		return textComponent.render(graphics);
+	}
+
+	public static String RGBToHex(int rgb)
+	{
+		String hex = Integer.toHexString(rgb);
+		return hex.substring(Math.max(0, hex.length() - 6));
 	}
 }

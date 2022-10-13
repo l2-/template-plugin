@@ -1,5 +1,6 @@
 package com.xpdrops.config;
 
+import com.xpdrops.overlay.TextComponentWithAlpha;
 import lombok.Getter;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
@@ -293,6 +294,18 @@ public interface XpDropsConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "xpDropBackground",
+		name = "Background",
+		description = "Background of the XP drop text",
+		position = 13,
+		section = font_settings
+	)
+	default TextComponentWithAlpha.Background xpDropBackground()
+	{
+		return TextComponentWithAlpha.Background.SHADOW;
+	}
+
+	@ConfigItem(
 		keyName = "iconSizeOverride",
 		name = "Icon size override",
 		description = "When non zero indicates the size of the skill icons in the xp drop.",
@@ -463,6 +476,30 @@ public interface XpDropsConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "predictedHitColor",
+		name = "Predicted hit color",
+		description = "Color of predicted hit, only works with Predicted hit color override enabled",
+		position = 24,
+		section = predicted_hit
+	)
+	default Color predictedHitColor()
+	{
+		return Color.WHITE;
+	}
+
+	@ConfigItem(
+		keyName = "predictedHitColorOverride",
+		name = "Predicted hit color override",
+		description = "Override the predicted hit text color with custom color",
+		position = 25,
+		section = predicted_hit
+	)
+	default boolean predictedHitColorOverride()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "useXpTracker",
 		name = "Use xp tracker",
 		description = "Turn custom xp tracker on or off",
@@ -537,13 +574,25 @@ public interface XpDropsConfig extends Config
 	@ConfigItem(
 		keyName = "xpTrackerFontSize",
 		name = "XP tracker font size",
-		description = "Size of font for the XP Tracker overlay",
+		description = "Size of font for the XP tracker overlay",
 		position = 30,
 		section = xp_tracker_settings
 	)
 	default int xpTrackerFontSize()
 	{
-		return 12;
+		return 16;
+	}
+
+	@ConfigItem(
+		keyName = "xpTrackerBackground",
+		name = "XP tracker text background",
+		description = "Background of the XP tracker text",
+		position = 30,
+		section = xp_tracker_settings
+	)
+	default TextComponentWithAlpha.Background xpTrackerBackground()
+	{
+		return TextComponentWithAlpha.Background.SHADOW;
 	}
 
 	@ConfigItem(

@@ -17,6 +17,7 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - Replace the XP tracker widget with a minimalistic one.
 
 # Change log
+- v1.6.1 - Added options to customize text background. Added option to color predicted hit separately.
 - v1.6.0 - Added progress bar to the xp tracker similar to the vanilla xp tracker progress bar using the xp tracker plugin(must be enabled). This feature is disabled by default.
 - v1.5.10 - Using `Group XP drops = False` and `Never group predicted hit = False` now groups the predicted hit with every XP drop (previously `Never group predicted hit` had no effect in this configuration). To revert to old behaviour with `Group XP drops = False` simply switch `Never group predicted hit` to `True`.
 - v1.5.9 - Fixed bug where xp tracker would sometimes not work correctly. 
@@ -37,10 +38,10 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - v1.3 - Add damage prediction based on XP drop.
 - v1.2 - Add config options for prefix and suffix for XP drop text.
 - v1.1 - Updated positioning logic and make sure shortly subsequent XP drops are evenly spaced.
-- v1.0 - Initial release
+- v1.0 - Initial release.
 
 # Screenshots
-Default in game XP drops (left) compared to this plugin with similar settings (right).\
+Default in game XP drops (left) compared to this plugin with similar settings (right). Settings: Font size 12, Font style default, icon size override 0.\
 ![comparison](https://i.imgur.com/UV0b0dJ.png)
 
 Icons turned off. Attach to player selected. Custom font, size and style. "+" prefix and " xp" suffix.\
@@ -49,8 +50,10 @@ Icons turned off. Attach to player selected. Custom font, size and style. "+" pr
 Damage prediction never grouped(left) and grouped(right).\
 ![damageprediction](https://i.imgur.com/MPdFFvy.png)
 
-Customizable XP tracker. With optional progress bar.\
+Customizable XP tracker (Settings: Font size 16, Font style default, icon size override 0).\
 ![xptracker](https://i.imgur.com/4UKHxPe.png)
+
+With optional progress bar (Settings: Font size 16, Font style bold, icon size override 25).\
 ![xptrackerprogress](https://i.imgur.com/d9lKvQK.png)
 
 From https://github.com/ruchir90 \

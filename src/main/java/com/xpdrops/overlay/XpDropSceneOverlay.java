@@ -8,6 +8,7 @@ import net.runelite.api.Point;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
+import net.runelite.client.util.Text;
 
 import javax.inject.Inject;
 import java.awt.Color;
@@ -86,7 +87,7 @@ public class XpDropSceneOverlay extends Overlay
 			float xStart = xpDropInFlight.getXOffset();
 			float yStart = xpDropInFlight.getYOffset();
 
-			int x = (int) (xStart + point.getX() - (graphics.getFontMetrics().stringWidth(text) / 2.0f));
+			int x = (int) (xStart + point.getX() - (graphics.getFontMetrics().stringWidth(Text.removeTags(text)) / 2.0f));
 			int y = (int) (yStart + point.getY());
 
 			// Keep the xp drop within viewport. Maybe good for later but for now it is not ideal since the xp drops overlay.
