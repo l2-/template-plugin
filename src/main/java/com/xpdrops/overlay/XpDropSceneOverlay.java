@@ -96,13 +96,7 @@ public class XpDropSceneOverlay extends Overlay
 //			x = Math.min(client.getViewportXOffset() + client.getViewportWidth() - graphics.getFontMetrics().stringWidth(text), x);
 //			y = Math.min(client.getViewportYOffset() + client.getViewportHeight(), y);
 
-			Color _color = XpDropOverlayUtilities.getColor(xpDropInFlight, config);
-			Color backgroundColor = new Color(0, 0, 0, (int) xpDropInFlight.getAlpha());
-			Color color = new Color(_color.getRed(), _color.getGreen(), _color.getBlue(), (int) xpDropInFlight.getAlpha());
-			graphics.setColor(backgroundColor);
-			graphics.drawString(text, x + 1, y + 1);
-			graphics.setColor(color);
-			graphics.drawString(text, x, y);
+			XpDropOverlayUtilities.drawText(graphics, text, x, y, (int) xpDropInFlight.getAlpha(), config.xpDropBackground());
 
 			int imageX = x - 2;
 			int imageY = y - graphics.getFontMetrics().getMaxAscent();
