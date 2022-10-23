@@ -17,6 +17,7 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - Replace the XP tracker widget with a minimalistic one.
 
 # Change log
+- v1.6.1.2 - Fix XP drops and predicted hit color encoding when using prefix and suffix settings.
 - v1.6.1.1 - Fix XP drops color encoding bug for in scene overlay.
 - v1.6.1 - Added options to customize text background. Added option to color predicted hit separately.
 - v1.6.0 - Added progress bar to the xp tracker similar to the vanilla xp tracker progress bar using the xp tracker plugin(must be enabled). This feature is disabled by default.

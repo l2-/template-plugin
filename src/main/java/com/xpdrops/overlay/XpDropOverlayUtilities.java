@@ -62,22 +62,22 @@ public class XpDropOverlayUtilities
 		boolean isPredictedHit = ((xpDropInFlight.getIcons() >> 24) & 0x1) == 0x1;
 		if (isPredictedHit)
 		{
-			if (config.predictedHitColorOverride())
-			{
-				text = wrapWithTags(RGBToHex(config.predictedHitColor().getRGB())) + text;
-			}
-			text = config.predictedHitPrefix() + text;
-			text = text + config.predictedHitSuffix();
+			// This line of text is a predicted hit without xp drop.
+			String colorTag = config.predictedHitColorOverride() ?
+				wrapWithTags(RGBToHex(config.predictedHitColor().getRGB())) :
+				wrapWithTags(RGBToHex(getColor(xpDropInFlight, config).getRGB()));
+			text = colorTag + config.predictedHitPrefix() + text + config.predictedHitSuffix();
 		}
 		else
 		{
-			text = wrapWithTags(RGBToHex(getColor(xpDropInFlight, config).getRGB())) + text;
-			text = config.xpDropPrefix() + text;
-			text = text + config.xpDropSuffix();
+			// This line of text is an XP drop.
+			String colorTag = wrapWithTags(RGBToHex(getColor(xpDropInFlight, config).getRGB()));
+			text = colorTag + config.xpDropPrefix() + text + config.xpDropSuffix();
 		}
 
 		if (xpDropInFlight.getHit() > 0)
 		{
+			// Add predicted hit to the XP drop line of text.
 			String predictedHitColor = "";
 			if (config.predictedHitColorOverride())
 			{
