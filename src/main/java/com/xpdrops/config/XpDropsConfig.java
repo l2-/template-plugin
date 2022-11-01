@@ -49,6 +49,14 @@ public interface XpDropsConfig extends Config
 		RIGHT
 	}
 
+	enum PredictedHitIconStyle
+	{
+		NO_ICON,
+		HITSPLAT,
+		HITSPLAT_SKILL,
+		SKILL
+	}
+
 	@ConfigSection(
 		name = "xp drop settings",
 		description = "Settings relating to xp drops",
@@ -176,7 +184,7 @@ public interface XpDropsConfig extends Config
 	@ConfigItem(
 		keyName = "showIcons",
 		name = "Show skill icons",
-		description = "Show the skill icons next to the XP drop",
+		description = "Show the skill icons next to the XP drop or predicted hit",
 		position = 5,
 		section = xp_drop_settings
 	)
@@ -331,7 +339,7 @@ public interface XpDropsConfig extends Config
 
 	@ConfigItem(
 		keyName = "attachToTarget",
-		name = "Attach to Target",
+		name = "Attach to target",
 		description = "Attaches the XP drop location to the targeted Actor(NPC/Player)",
 		position = 14,
 		section = xp_drop_settings
@@ -344,7 +352,7 @@ public interface XpDropsConfig extends Config
 	@Range(min = Integer.MIN_VALUE)
 	@ConfigItem(
 		keyName = "attachToOffsetX",
-		name = "(x)Attach to offset",
+		name = "Attach to x offset",
 		description = "Change the attach to overlay x position with relation to the target",
 		position = 15,
 		section = xp_drop_settings
@@ -357,7 +365,7 @@ public interface XpDropsConfig extends Config
 	@Range(min = Integer.MIN_VALUE)
 	@ConfigItem(
 		keyName = "attachToOffsetY",
-		name = "(y)Attach to offset",
+		name = "Attach to y offset",
 		description = "Change the attach to overlay y position with relation to the target",
 		position = 15,
 		section = xp_drop_settings
@@ -497,6 +505,18 @@ public interface XpDropsConfig extends Config
 	default boolean predictedHitColorOverride()
 	{
 		return false;
+	}
+
+	@ConfigItem(
+		keyName = "predictedHitIcon",
+		name = "Predicted hit icon",
+		description = "The style of the predicted hit icon. Only applicable when `Never group predicted hit` is ON.",
+		position = 26,
+		section = predicted_hit
+	)
+	default PredictedHitIconStyle predictedHitIcon()
+	{
+		return PredictedHitIconStyle.HITSPLAT;
 	}
 
 	@ConfigItem(

@@ -359,7 +359,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 		{
 			int hit = xpDropDamageCalculator.calculateHitOnNpc(lastOpponentId, currentXp, lastOpponentIsPlayer, config.xpMultiplier());
 			log.debug("Hit npc with fake hp xp drop xp:{} hit:{} npc_id:{}", currentXp, hit, lastOpponentId);
-			hitBuffer.add(new Hit(hit, lastOpponent));
+			hitBuffer.add(new Hit(hit, lastOpponent, attackStyle));
 		}
 
 		XpDrop xpDrop = new XpDrop(event.getSkill(), currentXp, matchPrayerStyle(event.getSkill()), true, lastOpponent);
@@ -377,7 +377,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 			{
 				int hit = xpDropDamageCalculator.calculateHitOnNpc(lastOpponentId, currentXp - previousXp, lastOpponentIsPlayer, config.xpMultiplier());
 				log.debug("Hit npc with hp xp drop xp:{} hit:{} npc_id:{}", currentXp - previousXp, hit, lastOpponentId);
-				hitBuffer.add(new Hit(hit, lastOpponent));
+				hitBuffer.add(new Hit(hit, lastOpponent, attackStyle));
 			}
 
 			XpDrop xpDrop = new XpDrop(event.getSkill(), currentXp - previousXp, matchPrayerStyle(event.getSkill()), false, lastOpponent);

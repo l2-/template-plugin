@@ -59,8 +59,7 @@ public class XpDropOverlayUtilities
 	{
 		String text = XpDropOverlayManager.XP_FORMATTER.format(xpDropInFlight.getAmount());
 
-		boolean isPredictedHit = ((xpDropInFlight.getIcons() >> 24) & 0x1) == 0x1;
-		if (isPredictedHit)
+		if (xpDropInFlight.isPredictedHit())
 		{
 			// This line of text is a predicted hit without xp drop.
 			String colorTag = config.predictedHitColorOverride() ?
@@ -96,54 +95,52 @@ public class XpDropOverlayUtilities
 		{
 			iconSize = config.iconSizeOverride();
 		}
-		if (config.showIcons())
+
+		for (int i = XpDropOverlayManager.SKILL_INDICES.length - 1; i >= 0; i--)
 		{
-			for (int i = XpDropOverlayManager.SKILL_INDICES.length - 1; i >= 0; i--)
+			int icon = (icons >> i) & 0x1;
+			if (icon == 0x1)
 			{
-				int icon = (icons >> i) & 0x1;
-				if (icon == 0x1)
-				{
-					int index = XpDropOverlayManager.SKILL_INDICES[i];
-					BufferedImage image = XpDropOverlayManager.getSTAT_ICONS()[index];
-					int _iconSize = Math.max(iconSize, 18);
-					int iconWidth = image.getWidth() * _iconSize / 25;
-					int iconHeight = image.getHeight() * _iconSize / 25;
-					Dimension dimension = drawIcon(graphics, image, x, y, iconWidth, iconHeight, alpha / 0xff, rightToLeft);
+				int index = XpDropOverlayManager.SKILL_INDICES[i];
+				BufferedImage image = XpDropOverlayManager.getSTAT_ICONS()[index];
+				int _iconSize = Math.max(iconSize, 18);
+				int iconWidth = image.getWidth() * _iconSize / 25;
+				int iconHeight = image.getHeight() * _iconSize / 25;
+				Dimension dimension = drawIcon(graphics, image, x, y, iconWidth, iconHeight, alpha / 0xff, rightToLeft);
 
-					if (rightToLeft)
-					{
-						x -= dimension.getWidth() + 2;
-					}
-					else
-					{
-						x += dimension.getWidth() + 2;
-					}
-					width += dimension.getWidth() + 2;
+				if (rightToLeft)
+				{
+					x -= dimension.getWidth() + 2;
 				}
+				else
+				{
+					x += dimension.getWidth() + 2;
+				}
+				width += dimension.getWidth() + 2;
 			}
+		}
 
-			if (config.showFakeIcon())
+		{
+			// FAKE/BLOCKED XP DROP ICON
+			int icon = (icons >> 23) & 0x1;
+			if (icon == 0x1)
 			{
-				int icon = (icons >> 23) & 0x1;
-				if (icon == 0x1)
-				{
-					BufferedImage image = XpDropOverlayManager.getFAKE_SKILL_ICON();
-					int _iconSize = Math.max(iconSize - 4, 14);
-					Dimension dimension = drawIcon(graphics, image, x, y, _iconSize, _iconSize, alpha / 0xff, rightToLeft);
-					width += dimension.getWidth() + 2;
-				}
+				BufferedImage image = XpDropOverlayManager.getFAKE_SKILL_ICON();
+				int _iconSize = Math.max(iconSize - 4, 14);
+				Dimension dimension = drawIcon(graphics, image, x, y, _iconSize, _iconSize, alpha / 0xff, rightToLeft);
+				width += dimension.getWidth() + 2;
 			}
+		}
 
+		{
+			// HIT SPLAT ICON
+			int icon = (icons >> 24) & 0x1;
+			if (icon == 0x1)
 			{
-				// HIT SPLAT ICON
-				int icon = (icons >> 24) & 0x1;
-				if (icon == 0x1)
-				{
-					BufferedImage image = XpDropOverlayManager.getHITSPLAT_ICON();
-					int _iconSize = Math.max(iconSize - 4, 14);
-					Dimension dimension = drawIcon(graphics, image, x, y, _iconSize, _iconSize, alpha / 0xff, rightToLeft);
-					width += dimension.getWidth() + 2;
-				}
+				BufferedImage image = XpDropOverlayManager.getHITSPLAT_ICON();
+				int _iconSize = Math.max(iconSize - 4, 14);
+				Dimension dimension = drawIcon(graphics, image, x, y, _iconSize, _iconSize, alpha / 0xff, rightToLeft);
+				width += dimension.getWidth() + 2;
 			}
 		}
 		return width;

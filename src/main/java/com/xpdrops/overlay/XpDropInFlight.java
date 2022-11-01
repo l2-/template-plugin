@@ -18,4 +18,6 @@ public class XpDropInFlight
 	private float frame;
 	private int hit;
 	private Actor attachTo;
+	// Can include predicted hit but is not 'just' a predicted hit.
+	boolean isPredictedHit;
 }
