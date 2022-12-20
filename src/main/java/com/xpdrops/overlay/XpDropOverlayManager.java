@@ -373,10 +373,11 @@ public class XpDropOverlayManager
 		}
 
 		int index = 0;
+		lastFrame = Math.min(0, lastFrame);
 		for (XpDropInFlight drop : drops)
 		{
-			int frameOffset = -index * config.groupedDelay();
-			drop.setFrame(Math.min(frameOffset, lastFrame));
+			float frameOffset = -index * config.groupedDelay() + lastFrame;
+			drop.setFrame(frameOffset);
 
 			xpDropsInFlight.add(drop);
 			index++;
