@@ -11,7 +11,6 @@ import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.util.Text;
 
 import javax.inject.Inject;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 
