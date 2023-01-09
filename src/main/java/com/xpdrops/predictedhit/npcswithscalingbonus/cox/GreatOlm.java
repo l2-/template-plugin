@@ -19,4 +19,11 @@ public class GreatOlm extends CoXNPC
 	{
 		return 1.0;
 	}
+
+	@Override
+	protected double calculateModifier(int raidType, int partySize)
+	{
+		// From testing, it seems Olm does not ever have xp bonus even though the sheet suggests otherwise.
+		return 1.0;
+	}
 }
