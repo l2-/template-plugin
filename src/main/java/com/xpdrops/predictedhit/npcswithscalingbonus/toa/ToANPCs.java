@@ -85,7 +85,7 @@ public enum ToANPCs
 		ZEBAK(new CoreBoss(58, 250, 140, 70, 100, 120, 160, 100, 160, 160, 260, 200, 110)),
 		T_WARDEN_489(new RoomLevelInvariant.RoomLevelInvariant5x(28, 300, 150, 100, 190, 190, 0, 25, 70, 70, 70, -30, 70)),
 		T_WARDEN_544(new RoomLevelInvariant.RoomLevelInvariant10x(88, 150, 150, 150, 150, 150, 0, 40, 40, 40, 20, 20, 20)),
-		T_WARDEN_544_ENRAGED(new RoomLevelInvariant.RoomLevelInvariant10x(88, 150, 150, 180, 150, 150, 0, 40, 40, 40, 20, 20, 20)),
+		//T_WARDEN_544_ENRAGED(new RoomLevelInvariant.RoomLevelInvariant10x(88, 150, 150, 180, 150, 150, 0, 40, 40, 40, 20, 20, 20)),
 		E_WARDEN_489(new RoomLevelInvariant.RoomLevelInvariant5x(28, 300, 150, 100, 190, 190, 0, 10, 70, 70, 70, -30, 70)),
 		E_WARDEN_544(new RoomLevelInvariant.RoomLevelInvariant10x(88, 150, 150, 150, 150, 150, 0, 40, 40, 40, 20, 20, 20)),
 		//E_WARDEN_544_ENRAGED(new RoomLevelInvariant.RoomLevelInvariant10x(88, 150, 150, 180, 150, 150, 0, 40, 40, 40, 20, 20, 20)), // Maps to the same ids but also leads to same xp bonus

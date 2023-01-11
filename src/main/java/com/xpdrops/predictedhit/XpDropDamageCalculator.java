@@ -2,6 +2,7 @@ package com.xpdrops.predictedhit;
 
 import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
+import com.xpdrops.predictedhit.npcswithscalingbonus.ChambersLayoutSolver;
 import com.xpdrops.predictedhit.npcswithscalingbonus.cox.CoXNPCs;
 import com.xpdrops.predictedhit.npcswithscalingbonus.toa.ToANPCs;
 import com.xpdrops.predictedhit.npcswithscalingbonus.tob.ToBNPCs;
@@ -34,14 +35,20 @@ public class XpDropDamageCalculator
 	private static final int ROOM_LEVEL_WIDGET_ID = WidgetInfo.PACK(481, 45);
 	private static final int RAID_MEMBERS_WIDGET_ID = WidgetInfo.PACK(481, 4);
 
+	private int lastToARaidLevel = 0;
+	private int lastToARaidPartySize = 1;
+	private int lastToARaidRoomLevel = 0;
+
 	private final Gson GSON;
 	private Client client;
+	private ChambersLayoutSolver chambersLayoutSolver;
 
 	@Inject
-	protected XpDropDamageCalculator(Gson gson, Client client)
+	protected XpDropDamageCalculator(Gson gson, Client client, ChambersLayoutSolver chambersLayoutSolver)
 	{
 		this.GSON = gson;
 		this.client = client;
+		this.chambersLayoutSolver = chambersLayoutSolver;
 	}
 
 	public void populateMap()
@@ -84,7 +91,7 @@ public class XpDropDamageCalculator
 				return (int) Arrays.stream(children).filter(c -> c != null && !c.isHidden()).count();
 			}
 		}
-		return 1;
+		return -1;
 	}
 
 	private int getToARaidLevel()
@@ -102,7 +109,7 @@ public class XpDropDamageCalculator
 				catch (Exception ignored) {}
 			}
 		}
-		return 0;
+		return -1;
 	}
 
 	private int getToARoomLevel()
@@ -116,7 +123,7 @@ public class XpDropDamageCalculator
 			}
 			catch (Exception ignored) {}
 		}
-		return 0;
+		return -1;
 	}
 
 	private int calculateHit(int hpXpDiff, double modifier, double configModifier)
@@ -146,7 +153,8 @@ public class XpDropDamageCalculator
 		{
 			int partySize = getCoXPartySize();
 			// Wrong. only follows the setting of the player's board
-			int raidType = client.getVarbitValue(6385) > 0 ? 1 : 0;
+//			int raidType = client.getVarbitValue(6385) > 0 ? 1 : 0;
+			int raidType = chambersLayoutSolver.isCM() ? 1 : 0;
 			modifier = CoXNPCs.getModifier(id, partySize, raidType);
 			log.info("COX modifier {} {} party size {} raid type {}", id, modifier, partySize, raidType);
 			//TODO: change back //log.debug("COX modifier {} {} party size {} raid type {}", id, modifier, partySize, raidType);
@@ -163,6 +171,10 @@ public class XpDropDamageCalculator
 			int partySize = getToAPartySize();
 			int roomLevel = getToARoomLevel();
 			int raidLevel = getToARaidLevel();
+			// If we cannot determine any of the above; use last known settings.
+			if (partySize < 0) partySize = lastToARaidPartySize; else lastToARaidPartySize = partySize;
+			if (roomLevel < 0) roomLevel = lastToARaidRoomLevel; else lastToARaidRoomLevel = roomLevel;
+			if (raidLevel < 0) raidLevel = lastToARaidLevel; else lastToARaidLevel = raidLevel;
 			modifier = ToANPCs.getModifier(id, partySize, raidLevel, roomLevel);
 			log.info("TOA modifier {} {} party size {} raid level {} room level {}", id, modifier, partySize, raidLevel, roomLevel);
 			//TODO: change back //log.debug("TOA modifier {} {} party size {} raid level {} room level {}", id, modifier, partySize, raidLevel, roomLevel);

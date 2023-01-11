@@ -7,6 +7,7 @@ import com.xpdrops.config.XpDropsConfig;
 import com.xpdrops.overlay.XpDropOverlayManager;
 import com.xpdrops.predictedhit.Hit;
 import com.xpdrops.predictedhit.XpDropDamageCalculator;
+import com.xpdrops.predictedhit.npcswithscalingbonus.ChambersLayoutSolver;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Actor;
@@ -20,6 +21,7 @@ import net.runelite.api.Varbits;
 import net.runelite.api.events.BeforeRender;
 import net.runelite.api.events.FakeXpDrop;
 import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.GameTick;
 import net.runelite.api.events.InteractingChanged;
 import net.runelite.api.events.ScriptPostFired;
 import net.runelite.api.events.ScriptPreFired;
@@ -70,6 +72,9 @@ public class CustomizableXpDropsPlugin extends Plugin
 
 	@Inject
 	private XpDropDamageCalculator xpDropDamageCalculator;
+
+	@Inject
+	private ChambersLayoutSolver chambersLayoutSolver;
 
 	@Provides
 	XpDropsConfig provideConfig(ConfigManager configManager)
@@ -223,6 +228,14 @@ public class CustomizableXpDropsPlugin extends Plugin
 
 			updateAttackStyle(equippedWeaponTypeVarbit, attackStyleVarbit, castingModeVarbit);
 		}
+
+		chambersLayoutSolver.onVarbitChanged(varbitChanged);
+	}
+
+	@Subscribe
+	protected void onGameTick(GameTick gameTick)
+	{
+		chambersLayoutSolver.onGameTick(gameTick);
 	}
 
 	@Subscribe
@@ -343,6 +356,8 @@ public class CustomizableXpDropsPlugin extends Plugin
 			resetXpTrackerLingerTimerFlag = false;
 			xpDropOverlayManager.setLastSkillSetMillis(System.currentTimeMillis());
 		}
+
+		chambersLayoutSolver.onGameStateChanged(gameStateChanged);
 	}
 
 	@Subscribe
