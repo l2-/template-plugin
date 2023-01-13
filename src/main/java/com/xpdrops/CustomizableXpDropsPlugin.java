@@ -381,8 +381,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 			{
 				hit = xpDropDamageCalculator.calculateHitOnNpc(lastOpponentId, currentXp, config.xpMultiplier());
 			}
-			log.info("Hit npc with fake hp xp drop xp:{} hit:{} npc_id:{}", currentXp, hit, lastOpponentId);
-			//TODO: change back //log.debug("Hit npc with fake hp xp drop xp:{} hit:{} npc_id:{}", currentXp, hit, lastOpponentId);
+			log.debug("Hit npc with fake hp xp drop xp:{} hit:{} npc_id:{}", currentXp, hit, lastOpponentId);
 			hitBuffer.add(new Hit(hit, lastOpponent, attackStyle));
 		}
 
@@ -408,8 +407,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 				{
 					hit = xpDropDamageCalculator.calculateHitOnNpc(lastOpponentId, currentXp - previousXp, config.xpMultiplier());
 				}
-				log.info("Hit npc with hp xp drop xp:{} hit:{} npc_id:{}", currentXp - previousXp, hit, lastOpponentId);
-				//TODO: change back //log.debug("Hit npc with hp xp drop xp:{} hit:{} npc_id:{}", currentXp - previousXp, hit, lastOpponentId);
+				log.debug("Hit npc with hp xp drop xp:{} hit:{} npc_id:{}", currentXp - previousXp, hit, lastOpponentId);
 				hitBuffer.add(new Hit(hit, lastOpponent, attackStyle));
 			}
 

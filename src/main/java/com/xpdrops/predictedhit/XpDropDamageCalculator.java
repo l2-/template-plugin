@@ -156,15 +156,13 @@ public class XpDropDamageCalculator
 //			int raidType = client.getVarbitValue(6385) > 0 ? 1 : 0;
 			int raidType = chambersLayoutSolver.isCM() ? 1 : 0;
 			modifier = CoXNPCs.getModifier(id, partySize, raidType);
-			log.info("COX modifier {} {} party size {} raid type {}", id, modifier, partySize, raidType);
-			//TODO: change back //log.debug("COX modifier {} {} party size {} raid type {}", id, modifier, partySize, raidType);
+			log.debug("COX modifier {} {} party size {} raid type {}", id, modifier, partySize, raidType);
 		}
 		else if (ToBNPCs.isTOBNPC(id))
 		{
 			int partySize = getToBPartySize();
 			modifier = ToBNPCs.getModifier(id, partySize);
-			log.info("TOB modifier {} {} part size {}", id, modifier, partySize);
-			//TODO: change back //log.debug("TOB modifier {} {} part size {}", id, modifier, partySize);
+			log.debug("TOB modifier {} {} part size {}", id, modifier, partySize);
 		}
 		else if (ToANPCs.isToANPC(id))
 		{
@@ -176,8 +174,7 @@ public class XpDropDamageCalculator
 			if (roomLevel < 0) roomLevel = lastToARaidRoomLevel; else lastToARaidRoomLevel = roomLevel;
 			if (raidLevel < 0) raidLevel = lastToARaidLevel; else lastToARaidLevel = raidLevel;
 			modifier = ToANPCs.getModifier(id, partySize, raidLevel, roomLevel);
-			log.info("TOA modifier {} {} party size {} raid level {} room level {}", id, modifier, partySize, raidLevel, roomLevel);
-			//TODO: change back //log.debug("TOA modifier {} {} party size {} raid level {} room level {}", id, modifier, partySize, raidLevel, roomLevel);
+			log.debug("TOA modifier {} {} party size {} raid level {} room level {}", id, modifier, partySize, raidLevel, roomLevel);
 		}
 		else if (XP_BONUS_MAPPING.containsKey(id))
 		{
