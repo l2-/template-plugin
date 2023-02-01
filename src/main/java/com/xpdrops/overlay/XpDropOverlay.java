@@ -109,6 +109,6 @@ public class XpDropOverlay extends Overlay
 
 	private int drawIcons(Graphics2D graphics, int icons, int x, int y, float alpha, boolean rightToLeft)
 	{
-		return XpDropOverlayUtilities.drawIcons(graphics, icons, x, y, alpha, rightToLeft, config);
+		return XpDropOverlayUtilities.drawIcons(graphics, icons, x, y, alpha, rightToLeft, config, xpDropOverlayManager);
 	}
 }

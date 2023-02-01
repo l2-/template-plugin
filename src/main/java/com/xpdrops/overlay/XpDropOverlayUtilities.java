@@ -87,7 +87,7 @@ public class XpDropOverlayUtilities
 		return text;
 	}
 
-	public static int drawIcons(Graphics2D graphics, int icons, int x, int y, float alpha, boolean rightToLeft, XpDropsConfig config)
+	public static int drawIcons(Graphics2D graphics, int icons, int x, int y, float alpha, boolean rightToLeft, XpDropsConfig config, XpDropOverlayManager xpDropOverlayManager)
 	{
 		int width = 0;
 		int iconSize = graphics.getFontMetrics().getHeight();
@@ -102,7 +102,8 @@ public class XpDropOverlayUtilities
 			if (icon == 0x1)
 			{
 				int index = XpDropOverlayManager.SKILL_INDICES[i];
-				BufferedImage image = XpDropOverlayManager.getSTAT_ICONS()[index];
+				BufferedImage image = xpDropOverlayManager.getStatIcon(index);
+				if (image == null) continue;
 				int _iconSize = Math.max(iconSize, 18);
 				int iconWidth = image.getWidth() * _iconSize / 25;
 				int iconHeight = image.getHeight() * _iconSize / 25;
@@ -125,7 +126,7 @@ public class XpDropOverlayUtilities
 			int icon = (icons >> 23) & 0x1;
 			if (icon == 0x1)
 			{
-				BufferedImage image = XpDropOverlayManager.getFAKE_SKILL_ICON();
+				BufferedImage image = xpDropOverlayManager.getFakeSkillIcon();
 				int _iconSize = Math.max(iconSize - 4, 14);
 				Dimension dimension = drawIcon(graphics, image, x, y, _iconSize, _iconSize, alpha / 0xff, rightToLeft);
 				width += dimension.getWidth() + 2;
@@ -137,7 +138,7 @@ public class XpDropOverlayUtilities
 			int icon = (icons >> 24) & 0x1;
 			if (icon == 0x1)
 			{
-				BufferedImage image = XpDropOverlayManager.getHITSPLAT_ICON();
+				BufferedImage image = xpDropOverlayManager.getHitsplatIcon();
 				int _iconSize = Math.max(iconSize - 4, 14);
 				Dimension dimension = drawIcon(graphics, image, x, y, _iconSize, _iconSize, alpha / 0xff, rightToLeft);
 				width += dimension.getWidth() + 2;

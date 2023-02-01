@@ -183,13 +183,15 @@ public class XpTrackerOverlay extends Overlay
 
 		if (config.showIconsXpTracker())
 		{
-			image = XpDropOverlayManager.getSTAT_ICONS()[icon];
-			int _iconSize = Math.max(iconSize, 18);
-			int iconWidth = image.getWidth() * _iconSize / 25;
-			int iconHeight = image.getHeight() * _iconSize / 25;
-			Dimension dimension = XpDropOverlayUtilities.drawIcon(graphics, image, x, y, iconWidth, iconHeight, alpha / 0xff, false);
+			image = xpDropOverlayManager.getStatIcon(icon);
+			if (image != null)
+			{
+				int _iconSize = Math.max(iconSize, 18);
+				int iconWidth = image.getWidth() * _iconSize / 25;
+				int iconHeight = image.getHeight() * _iconSize / 25;
 
-			return dimension;
+				return XpDropOverlayUtilities.drawIcon(graphics, image, x, y, iconWidth, iconHeight, alpha / 0xff, false);
+			}
 		}
 		return new Dimension(0,0);
 	}

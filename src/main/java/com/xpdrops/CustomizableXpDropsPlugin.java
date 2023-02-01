@@ -277,7 +277,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 
 			if ("iconOverride".equals(configChanged.getKey()))
 			{
-				xpDropOverlayManager.setReInitIconsFlag(true);
+				xpDropOverlayManager.clearIconCache();
 			}
 		}
 	}

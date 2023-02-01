@@ -17,6 +17,7 @@ import net.runelite.api.SpritePixels;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayManager;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.awt.Font;
@@ -30,17 +31,14 @@ import java.util.HashMap;
 public class XpDropOverlayManager
 {
 	private static final int RED_HIT_SPLAT_SPRITE_ID = 1359;
+	private static final int FAKE_SKILL_ICON_ID = 423; //sprite index 11
 	private static final int[] SKILL_ICON_ORDINAL_ICONS = new int[]{
 		197, 199, 198, 203, 200, 201, 202, 212, 214, 208,
 		211, 213, 207, 210, 209, 205, 204, 206, 216, 217, 215, 220, 221, 898
 	};
 
-	@Getter
-	private static final BufferedImage[] STAT_ICONS = new BufferedImage[Skill.values().length];
-	@Getter
-	private static BufferedImage FAKE_SKILL_ICON;
-	@Getter
-	private static BufferedImage HITSPLAT_ICON;
+	// key: icon + spriteIndex << 16
+	private static final HashMap<Integer, BufferedImage> ICON_CACHE = new HashMap<>();
 
 	public static final String XP_FORMAT_PATTERN = "###,###,###";
 	public static final float FRAMES_PER_SECOND = 50;
@@ -74,9 +72,6 @@ public class XpDropOverlayManager
 	@Setter
 	@Getter
 	private long lastSkillSetMillis = 0;
-	@Setter
-	@Getter
-	private boolean reInitIconsFlag = false;
 
 	private Overlay currentXpDropOverlay;
 	private Overlay currentXpTrackerOverlay;
@@ -91,15 +86,23 @@ public class XpDropOverlayManager
 		this.config = xpDropsConfig;
 	}
 
-	// Has to happen on client thread.
-	private void initIcons()
+	@Nullable
+	public BufferedImage getStatIcon(int index)
 	{
-		for (int i = 0; i < STAT_ICONS.length; i++)
-		{
-			STAT_ICONS[i] = getSkillIcon(Skill.values()[i]);
-		}
-		FAKE_SKILL_ICON = getIcon(423, 11);
-		HITSPLAT_ICON = getIcon(RED_HIT_SPLAT_SPRITE_ID, 0);
+		int icon = SKILL_ICON_ORDINAL_ICONS[index];
+		return getIcon(icon, 0);
+	}
+
+	@Nullable
+	public BufferedImage getFakeSkillIcon()
+	{
+		return getIcon(FAKE_SKILL_ICON_ID, 11);
+	}
+
+	@Nullable
+	public BufferedImage getHitsplatIcon()
+	{
+		return getIcon(RED_HIT_SPLAT_SPRITE_ID, 0);
 	}
 
 	public void overlayConfigChanged()
@@ -126,7 +129,7 @@ public class XpDropOverlayManager
 
 	public void startup()
 	{
-		reInitIconsFlag = true;
+		clearIconCache();
 
 		if (config.attachToTarget() || config.attachToPlayer())
 		{
@@ -152,12 +155,6 @@ public class XpDropOverlayManager
 
 	public void update()
 	{
-		if (reInitIconsFlag)
-		{
-			initIcons();
-			reInitIconsFlag = false;
-		}
-
 		if (lastFrameTime <= 0)
 		{
 			lastFrameTime = System.currentTimeMillis() - 20; // set last frame 20 ms ago.
@@ -182,9 +179,12 @@ public class XpDropOverlayManager
 		if (config.xpTrackerSkill().equals(XpTrackerSkills.MOST_RECENT))
 		{
 			XpDrop topDrop = plugin.getQueue().peek();
-			if (topDrop != null)
+			for (XpDrop xpDrop : plugin.getQueue())
 			{
-				return topDrop.getSkill();
+				if (xpDrop != null && !plugin.getFilteredSkills().contains(xpDrop.getSkill().toString().toLowerCase()))
+				{
+					return xpDrop.getSkill();
+				}
 			}
 		}
 		else
@@ -384,27 +384,34 @@ public class XpDropOverlayManager
 		}
 	}
 
-	private BufferedImage getSkillIcon(Skill skill)
+	public void clearIconCache()
 	{
-		int index = skill.ordinal();
-		int icon = SKILL_ICON_ORDINAL_ICONS[index];
-		return getIcon(icon, 0);
+		ICON_CACHE.clear();
 	}
 
 	private BufferedImage getIcon(int icon, int spriteIndex)
 	{
+		int key = icon + spriteIndex << 16;
+		if (ICON_CACHE.containsKey(key) && ICON_CACHE.get(key) != null)
+		{
+			return ICON_CACHE.get(key);
+		}
 		if (client == null)
 		{
 			return null;
 		}
 		if (config.iconOverride() && client.getSpriteOverrides().containsKey(icon))
 		{
-			return client.getSpriteOverrides().get(icon).toBufferedImage();
+			BufferedImage img = client.getSpriteOverrides().get(icon).toBufferedImage();
+			ICON_CACHE.put(key, img);
+			return img;
 		}
 		SpritePixels[] pixels = client.getSprites(client.getIndexSprites(), icon, 0);
 		if (pixels != null && pixels.length >= spriteIndex + 1 && pixels[spriteIndex] != null)
 		{
-			return pixels[spriteIndex].toBufferedImage();
+			BufferedImage img = pixels[spriteIndex].toBufferedImage();
+			ICON_CACHE.put(key, img);
+			return img;
 		}
 		return null;
 	}

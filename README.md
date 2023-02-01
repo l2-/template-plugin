@@ -18,6 +18,7 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - Replace the XP tracker widget with a minimalistic one.
 
 #### Change log
+- v1.7.1 - Fix bug where xp drop icons were not properly loaded. Xp tracker most recent will now respect the filtered skills.
 - v1.7.0.1 - Update xp bonuses file for wilderness boss update.
 - v1.7.0 - Now using xp bonus formulae for monsters in CoX, ToB and ToA. Predicted hits should be more accurate for these monsters now.
 - v1.6.3 - Fix XP drop overlapping issue by properly calculating delay based on previous XP drops.
