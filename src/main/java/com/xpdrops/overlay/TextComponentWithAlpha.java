@@ -25,9 +25,9 @@ public class TextComponentWithAlpha implements RenderableEntity
 		OUTLINE
 	}
 
-	int alpha = 255;
+	int alphaOverride = 255;
 
-	private static final String COL_TAG_REGEX = "(<col=([0-9a-fA-F]){2,6}>)";
+	private static final String COL_TAG_REGEX = "(<col=([0-9a-fA-F]){2,8}>)";
 	private static final Pattern COL_TAG_PATTERN_W_LOOKAHEAD = Pattern.compile("(?=" + COL_TAG_REGEX + ")");
 
 	String text;
@@ -39,6 +39,21 @@ public class TextComponentWithAlpha implements RenderableEntity
 	 */
 	@Nullable
 	Font font;
+
+	// If color string has >6 hex digits use first 2 as alpha and calculate the minimum alpha using the given default value.
+	private static int calculateAlpha(String colorString, int _defaultAlpha)
+	{
+		int alpha = _defaultAlpha;
+		if (colorString.length() > 6)
+		{
+			try
+			{
+				alpha = Math.min(Integer.decode("#" + colorString.substring(0, 2)), alpha);
+			}
+			catch (NumberFormatException ignored) { }
+		}
+		return alpha;
+	}
 
 	@Override
 	public Dimension render(Graphics2D graphics)
@@ -60,7 +75,9 @@ public class TextComponentWithAlpha implements RenderableEntity
 			for (String textSplitOnCol : parts)
 			{
 				final String textWithoutCol = Text.removeTags(textSplitOnCol);
-				final String colColor = textSplitOnCol.substring(textSplitOnCol.indexOf("=") + 1, textSplitOnCol.indexOf(">"));
+				final String argbString = textSplitOnCol.substring(textSplitOnCol.indexOf("=") + 1, textSplitOnCol.indexOf(">"));
+				final String rgbString = argbString.length() > 6 ? argbString.substring(2) : argbString;
+				final int alpha = calculateAlpha(argbString, alphaOverride);
 
 				graphics.setColor(ColorUtil.colorWithAlpha(Color.BLACK, alpha));
 
@@ -84,7 +101,7 @@ public class TextComponentWithAlpha implements RenderableEntity
 				}
 
 				// actual text
-				graphics.setColor(ColorUtil.colorWithAlpha(Color.decode("#" + colColor), alpha));
+				graphics.setColor(ColorUtil.colorWithAlpha(Color.decode("#" + rgbString), alpha));
 				graphics.drawString(textWithoutCol, x, position.y);
 
 				x += fontMetrics.stringWidth(textWithoutCol);
@@ -92,7 +109,7 @@ public class TextComponentWithAlpha implements RenderableEntity
 		}
 		else
 		{
-			graphics.setColor(ColorUtil.colorWithAlpha(Color.BLACK, alpha));
+			graphics.setColor(ColorUtil.colorWithAlpha(Color.BLACK, alphaOverride));
 
 			switch (background)
 			{
@@ -114,7 +131,7 @@ public class TextComponentWithAlpha implements RenderableEntity
 			}
 
 			// actual text
-			graphics.setColor(ColorUtil.colorWithAlpha(color, alpha));
+			graphics.setColor(ColorUtil.colorWithAlpha(color, alphaOverride));
 			graphics.drawString(text, position.x, position.y);
 		}
 

@@ -2,6 +2,7 @@ package com.xpdrops.config;
 
 import com.xpdrops.overlay.TextComponentWithAlpha;
 import lombok.Getter;
+import net.runelite.client.config.Alpha;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -217,6 +218,7 @@ public interface XpDropsConfig extends Config
 		return true;
 	}
 
+	@Alpha
 	@ConfigItem(
 		keyName = "xpDropColor",
 		name = "Xp drop color",
@@ -229,6 +231,7 @@ public interface XpDropsConfig extends Config
 		return Color.WHITE;
 	}
 
+	@Alpha
 	@ConfigItem(
 		keyName = "xpDropColorMelee",
 		name = "Xp drop color melee",
@@ -241,6 +244,7 @@ public interface XpDropsConfig extends Config
 		return Color.WHITE;
 	}
 
+	@Alpha
 	@ConfigItem(
 		keyName = "xpDropColorMage",
 		name = "Xp drop color mage",
@@ -253,6 +257,7 @@ public interface XpDropsConfig extends Config
 		return Color.WHITE;
 	}
 
+	@Alpha
 	@ConfigItem(
 		keyName = "xpDropColorRange",
 		name = "Xp drop color range",
@@ -483,6 +488,7 @@ public interface XpDropsConfig extends Config
 		return 1;
 	}
 
+	@Alpha
 	@ConfigItem(
 		keyName = "predictedHitColor",
 		name = "Predicted hit color",
@@ -627,6 +633,7 @@ public interface XpDropsConfig extends Config
 		return 0;
 	}
 
+	@Alpha
 	@ConfigItem(
 		keyName = "xpTrackerColor",
 		name = "XP tracker color",

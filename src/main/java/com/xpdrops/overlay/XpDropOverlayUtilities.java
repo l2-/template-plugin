@@ -184,7 +184,7 @@ public class XpDropOverlayUtilities
 	{
 		TextComponentWithAlpha textComponent = new TextComponentWithAlpha();
 		textComponent.setText(text);
-		textComponent.setAlpha(alpha);
+		textComponent.setAlphaOverride(alpha);
 		textComponent.setPosition(new Point(textX, textY));
 		textComponent.setBackground(background);
 		return textComponent.render(graphics);
@@ -192,7 +192,8 @@ public class XpDropOverlayUtilities
 
 	public static String RGBToHex(int rgb)
 	{
-		String hex = Integer.toHexString(rgb);
-		return hex.substring(Math.max(0, hex.length() - 6));
+		StringBuilder hex = new StringBuilder(Integer.toHexString(rgb)); // Apparently never contains more than 8 hex digits.
+		if (hex.length() < 8) while (hex.length() < 8) hex.insert(0, "0");
+		return hex.toString();
 	}
 }
