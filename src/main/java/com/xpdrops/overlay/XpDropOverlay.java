@@ -24,7 +24,7 @@ public class XpDropOverlay extends Overlay
 	{
 		this.config = config;
 		this.xpDropOverlayManager = xpDropOverlayManager;
-		setLayer(OverlayLayer.ABOVE_WIDGETS);
+		setLayer(OverlayLayer.UNDER_WIDGETS);
 		setPosition(OverlayPosition.TOP_RIGHT);
 	}
 
