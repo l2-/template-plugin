@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
+import net.runelite.client.ui.overlay.OverlayPriority;
 import net.runelite.client.util.Text;
 
 import javax.inject.Inject;
@@ -26,6 +27,7 @@ public class XpDropOverlay extends Overlay
 		this.xpDropOverlayManager = xpDropOverlayManager;
 		setLayer(OverlayLayer.UNDER_WIDGETS);
 		setPosition(OverlayPosition.TOP_RIGHT);
+		setPriority(OverlayPriority.HIGH);
 	}
 
 	@Override
