@@ -18,6 +18,7 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - Replace the XP tracker widget with a minimalistic one.
 
 #### Change log
+- v1.7.3 - Update Npc stats to account for Jagex xp bonus change.
 - v1.7.2.3 - Update for RuneLite api change.
 - v1.7.2.2 - Set overlay priority explicitly to force correct ordering.
 - v1.7.2.1 - Change xp drop overlay layer to UNDER_WIDGETS - `@Jbleezy`

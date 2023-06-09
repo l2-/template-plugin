@@ -31,9 +31,12 @@ public class NPCStats
 	{
 	}
 
+	private static final int MAX_HP_FOR_MULTIPLIER = 2000;
+
 	protected static double modifierFromStats(NPCStats npcStats)
 	{
-		double averageLevel = Math.floor((npcStats.getHp() + npcStats.getAtt() + npcStats.getStr() + npcStats.getDef()) / 4.0);
+		int hp = Math.min(npcStats.hp, MAX_HP_FOR_MULTIPLIER);
+		double averageLevel = Math.floor((hp + npcStats.getAtt() + npcStats.getStr() + npcStats.getDef()) / 4.0);
 		double averageDefBonus = Math.floor((npcStats.getDefensiveStab() + npcStats.getDefensiveSlash() + npcStats.getDefensiveCrush()) / 3.0);
 		return 1.0 + 0.025 * Math.floor((averageLevel * (averageDefBonus + npcStats.getOffensiveStr() + npcStats.getOffensiveAtt())) / 5120.0);
 	}
