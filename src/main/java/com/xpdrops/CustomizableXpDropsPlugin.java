@@ -428,7 +428,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 	{
 		for (XpPrayer prayer : XpPrayer.values())
 		{
-			if (client.isPrayerActive(prayer.getPrayer()))
+			if (client.getServerVarbitValue(prayer.getPrayer().getVarbit()) == 1)
 			{
 				return prayer;
 			}
