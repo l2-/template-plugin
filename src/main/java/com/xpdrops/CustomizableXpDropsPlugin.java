@@ -363,59 +363,63 @@ public class CustomizableXpDropsPlugin extends Plugin
 	@Subscribe
 	protected void onFakeXpDrop(FakeXpDrop event)
 	{
-		int currentXp = event.getXp();
-		if (event.getXp() >= 20000000)
-		{
-			// fake-fake xp drop?
-			return;
-		}
-
-		if (event.getSkill() == Skill.HITPOINTS)
-		{
-			int hit;
-			if (lastOpponentIsPlayer)
+		clientThread.invokeLater(() -> {
+			int currentXp = event.getXp();
+			if (event.getXp() >= 20000000)
 			{
-				hit = xpDropDamageCalculator.calculateHitOnPlayer(lastOpponentId, currentXp, config.xpMultiplier());
+				// fake-fake xp drop?
+				return;
 			}
-			else
-			{
-				hit = xpDropDamageCalculator.calculateHitOnNpc(lastOpponentId, currentXp, config.xpMultiplier());
-			}
-			log.debug("Hit npc with fake hp xp drop xp:{} hit:{} npc_id:{}", currentXp, hit, lastOpponentId);
-			hitBuffer.add(new Hit(hit, lastOpponent, attackStyle));
-		}
 
-		XpDrop xpDrop = new XpDrop(event.getSkill(), currentXp, matchPrayerStyle(event.getSkill()), true, lastOpponent);
-		queue.add(xpDrop);
-	}
-
-	@Subscribe
-	protected void onStatChanged(StatChanged event)
-	{
-		int currentXp = event.getXp();
-		int previousXp = previous_exp[event.getSkill().ordinal()];
-		if (previousXp > 0 && currentXp - previousXp > 0)
-		{
 			if (event.getSkill() == Skill.HITPOINTS)
 			{
 				int hit;
 				if (lastOpponentIsPlayer)
 				{
-					hit = xpDropDamageCalculator.calculateHitOnPlayer(lastOpponentId, currentXp - previousXp, config.xpMultiplier());
+					hit = xpDropDamageCalculator.calculateHitOnPlayer(lastOpponentId, currentXp, config.xpMultiplier());
 				}
 				else
 				{
-					hit = xpDropDamageCalculator.calculateHitOnNpc(lastOpponentId, currentXp - previousXp, config.xpMultiplier());
+					hit = xpDropDamageCalculator.calculateHitOnNpc(lastOpponentId, currentXp, config.xpMultiplier());
 				}
-				log.debug("Hit npc with hp xp drop xp:{} hit:{} npc_id:{}", currentXp - previousXp, hit, lastOpponentId);
+				log.debug("Hit npc with fake hp xp drop xp:{} hit:{} npc_id:{}", currentXp, hit, lastOpponentId);
 				hitBuffer.add(new Hit(hit, lastOpponent, attackStyle));
 			}
 
-			XpDrop xpDrop = new XpDrop(event.getSkill(), currentXp - previousXp, matchPrayerStyle(event.getSkill()), false, lastOpponent);
+			XpDrop xpDrop = new XpDrop(event.getSkill(), currentXp, matchPrayerStyle(event.getSkill()), true, lastOpponent);
 			queue.add(xpDrop);
-		}
+		});
+	}
 
-		previous_exp[event.getSkill().ordinal()] = event.getXp();
+	@Subscribe
+	protected void onStatChanged(StatChanged event)
+	{
+		clientThread.invokeLater(() -> {
+			int currentXp = event.getXp();
+			int previousXp = previous_exp[event.getSkill().ordinal()];
+			if (previousXp > 0 && currentXp - previousXp > 0)
+			{
+				if (event.getSkill() == Skill.HITPOINTS)
+				{
+					int hit;
+					if (lastOpponentIsPlayer)
+					{
+						hit = xpDropDamageCalculator.calculateHitOnPlayer(lastOpponentId, currentXp - previousXp, config.xpMultiplier());
+					}
+					else
+					{
+						hit = xpDropDamageCalculator.calculateHitOnNpc(lastOpponentId, currentXp - previousXp, config.xpMultiplier());
+					}
+					log.debug("Hit npc with hp xp drop xp:{} hit:{} npc_id:{}", currentXp - previousXp, hit, lastOpponentId);
+					hitBuffer.add(new Hit(hit, lastOpponent, attackStyle));
+				}
+
+				XpDrop xpDrop = new XpDrop(event.getSkill(), currentXp - previousXp, matchPrayerStyle(event.getSkill()), false, lastOpponent);
+				queue.add(xpDrop);
+			}
+
+			previous_exp[event.getSkill().ordinal()] = event.getXp();
+		});
 	}
 
 	@Subscribe
