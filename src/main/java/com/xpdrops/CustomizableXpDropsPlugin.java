@@ -15,7 +15,6 @@ import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.NPC;
 import net.runelite.api.Player;
-import net.runelite.api.Skill;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.BeforeRender;
@@ -370,7 +369,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 			return;
 		}
 
-		if (event.getSkill() == Skill.HITPOINTS)
+		if (event.getSkill() == net.runelite.api.Skill.HITPOINTS)
 		{
 			int hit;
 			if (lastOpponentIsPlayer)
@@ -385,7 +384,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 			hitBuffer.add(new Hit(hit, lastOpponent, attackStyle));
 		}
 
-		XpDrop xpDrop = new XpDrop(event.getSkill(), currentXp, matchPrayerStyle(event.getSkill()), true, lastOpponent);
+		XpDrop xpDrop = new XpDrop(Skill.fromSkill(event.getSkill()), currentXp, matchPrayerStyle(Skill.fromSkill(event.getSkill())), true, lastOpponent);
 		queue.add(xpDrop);
 	}
 
@@ -396,7 +395,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 		int previousXp = previous_exp[event.getSkill().ordinal()];
 		if (previousXp > 0 && currentXp - previousXp > 0)
 		{
-			if (event.getSkill() == Skill.HITPOINTS)
+			if (event.getSkill() == net.runelite.api.Skill.HITPOINTS)
 			{
 				int hit;
 				if (lastOpponentIsPlayer)
@@ -411,7 +410,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 				hitBuffer.add(new Hit(hit, lastOpponent, attackStyle));
 			}
 
-			XpDrop xpDrop = new XpDrop(event.getSkill(), currentXp - previousXp, matchPrayerStyle(event.getSkill()), false, lastOpponent);
+			XpDrop xpDrop = new XpDrop(Skill.fromSkill(event.getSkill()), currentXp - previousXp, matchPrayerStyle(Skill.fromSkill(event.getSkill())), false, lastOpponent);
 			queue.add(xpDrop);
 		}
 

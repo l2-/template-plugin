@@ -1,7 +1,7 @@
 package com.xpdrops.config;
 
+import com.xpdrops.Skill;
 import lombok.Getter;
-import net.runelite.api.Skill;
 
 public enum XpTrackerSkills
 {
@@ -32,7 +32,7 @@ public enum XpTrackerSkills
 	FARMING(Skill.FARMING);
 
 	@Getter
-	private Skill associatedSkill;
+	private final Skill associatedSkill;
 
 	XpTrackerSkills(Skill skill)
 	{

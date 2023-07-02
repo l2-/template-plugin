@@ -1,6 +1,7 @@
 package com.xpdrops.overlay;
 
 import com.xpdrops.CustomizableXpDropsPlugin;
+import com.xpdrops.Skill;
 import com.xpdrops.XpDrop;
 import com.xpdrops.XpDropStyle;
 import com.xpdrops.attackstyles.AttackStyle;
@@ -12,7 +13,6 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Actor;
 import net.runelite.api.Client;
-import net.runelite.api.Skill;
 import net.runelite.api.SpritePixels;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayManager;

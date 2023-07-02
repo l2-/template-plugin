@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, honeyhoney <https://github.com/honeyhoney>
+ * Copyright (c) 2016-2017, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,31 +22,66 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.xpdrops.attackstyles;
 
-import com.xpdrops.Skill;
-import lombok.Getter;
+package com.xpdrops;
 
-public enum AttackStyle
+/**
+ * An enumeration of skills that a player can level.
+ */
+public enum Skill
 {
-	ACCURATE("Accurate", Skill.ATTACK),
-	AGGRESSIVE("Aggressive", Skill.STRENGTH),
-	DEFENSIVE("Defensive", Skill.DEFENCE),
-	CONTROLLED("Controlled", Skill.ATTACK, Skill.STRENGTH, Skill.DEFENCE),
-	RANGING("Ranging", Skill.RANGED),
-	LONGRANGE("Longrange", Skill.RANGED, Skill.DEFENCE),
-	CASTING("Casting", Skill.MAGIC),
-	DEFENSIVE_CASTING("Defensive Casting", Skill.MAGIC, Skill.DEFENCE),
-	OTHER("Other");
+	ATTACK("Attack"),
+	DEFENCE("Defence"),
+	STRENGTH("Strength"),
+	HITPOINTS("Hitpoints"),
+	RANGED("Ranged"),
+	PRAYER("Prayer"),
+	MAGIC("Magic"),
+	COOKING("Cooking"),
+	WOODCUTTING("Woodcutting"),
+	FLETCHING("Fletching"),
+	FISHING("Fishing"),
+	FIREMAKING("Firemaking"),
+	CRAFTING("Crafting"),
+	SMITHING("Smithing"),
+	MINING("Mining"),
+	HERBLORE("Herblore"),
+	AGILITY("Agility"),
+	THIEVING("Thieving"),
+	SLAYER("Slayer"),
+	FARMING("Farming"),
+	RUNECRAFT("Runecraft"),
+	HUNTER("Hunter"),
+	CONSTRUCTION("Construction"),
+	/**
+	 * The level of all skills added together.
+	 */
+	OVERALL("Overall");
 
-	@Getter
 	private final String name;
-	@Getter
-	private final Skill[] skills;
 
-	AttackStyle(String name, Skill... skills)
+	Skill(String name)
 	{
 		this.name = name;
-		this.skills = skills;
+	}
+
+	/**
+	 * Gets the name of the skill.
+	 *
+	 * @return the skill name
+	 */
+	public String getName()
+	{
+		return name;
+	}
+
+	public static Skill fromSkill(net.runelite.api.Skill skill) {
+		return skill.ordinal() < Skill.values().length ? Skill.values()[skill.ordinal()] : null;
+//		return Skill.valueOf(skill.getName().toUpperCase());
+	}
+
+	public net.runelite.api.Skill toSkill() {
+		return ordinal() < net.runelite.api.Skill.values().length ? net.runelite.api.Skill.values()[ordinal()] : null;
+//		return net.runelite.api.Skill.valueOf(getName().toUpperCase());
 	}
 }

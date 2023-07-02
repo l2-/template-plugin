@@ -1,8 +1,8 @@
 package com.xpdrops.overlay;
 
+import com.xpdrops.Skill;
 import com.xpdrops.config.XpDropsConfig;
 import net.runelite.api.Client;
-import net.runelite.api.Skill;
 import net.runelite.client.plugins.xptracker.XpTrackerService;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
@@ -60,10 +60,10 @@ public class XpTrackerOverlay extends Overlay
 			{
 				Dimension trackerDimensions = drawXpTracker(graphics, icon, xp);
 				width = (int) trackerDimensions.getWidth();
-				if (config.showXpTrackerProgressBar())
+				if (config.showXpTrackerProgressBar() && !Skill.OVERALL.equals(currentSkill))
 				{
-					final int startGoalXp = xpTrackerService.getStartGoalXp(currentSkill);
-					final int endGoalXp = xpTrackerService.getEndGoalXp(currentSkill);
+					final int startGoalXp = xpTrackerService.getStartGoalXp(currentSkill.toSkill());
+					final int endGoalXp = xpTrackerService.getEndGoalXp(currentSkill.toSkill());
 					int barHeight = drawProgressBar(graphics, 0, (int) trackerDimensions.getHeight() + 1, width, startGoalXp, endGoalXp, xp);
 					height = (int) (trackerDimensions.getHeight() + barHeight);
 				}
@@ -83,7 +83,7 @@ public class XpTrackerOverlay extends Overlay
 		}
 		else
 		{
-			xp = client.getSkillExperience(skill);
+			xp = client.getSkillExperience(skill.toSkill());
 		}
 		return xp;
 	}
