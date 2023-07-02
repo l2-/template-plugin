@@ -18,6 +18,7 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - Replace the XP tracker widget with a minimalistic one.
 
 #### Change log
+- v1.7.3.2 - Fixes to account for Runelite api change.
 - v1.7.3.1 - Fix recolor xp drop to match up better with server. - `@hoheps`
 - v1.7.3 - Update Npc stats to account for Jagex xp bonus change.
 - v1.7.2.3 - Update for RuneLite api change.
