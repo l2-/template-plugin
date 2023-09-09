@@ -646,11 +646,24 @@ public interface XpDropsConfig extends Config
 		return Color.white;
 	}
 
+	@Alpha
+	@ConfigItem(
+		keyName = "xpTrackerBackgroundColor",
+		name = "XP tracker background color",
+		description = "Color for the Xp Tracker background",
+		position = 33,
+		section = xp_tracker_settings
+	)
+	default Color xpTrackerBackgroundColor()
+	{
+		return new Color(90, 82, 69);
+	}
+
 	@ConfigItem(
 		keyName = "xpTrackerClientTicksToLinger",
 		name = "Time until disappearance",
 		description = "Never disappear when set to 0. The amount of frames (50 per second) the XP tracker will show for.",
-		position = 33,
+		position = 34,
 		section = xp_tracker_settings
 	)
 	default int xpTrackerClientTicksToLinger()
@@ -662,7 +675,7 @@ public interface XpDropsConfig extends Config
 		keyName = "xpTrackerFadeOut",
 		name = "Fade out",
 		description = "Should the XP tracker fade out",
-		position = 34,
+		position = 35,
 		section = xp_tracker_settings
 	)
 	default boolean xpTrackerFadeOut()

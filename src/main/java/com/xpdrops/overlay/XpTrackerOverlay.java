@@ -9,7 +9,6 @@ import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
 import net.runelite.client.util.Text;
-import net.runelite.client.config.RuneLiteConfig;
 
 import javax.inject.Inject;
 import java.awt.Color;
@@ -28,15 +27,13 @@ public class XpTrackerOverlay extends Overlay
 	private Client client;
 
 	private final XpTrackerService xpTrackerService;
-	private final RuneLiteConfig runeLiteConfig;
 
 	@Inject
-	private XpTrackerOverlay(XpDropsConfig config, XpDropOverlayManager xpDropOverlayManager, XpTrackerService xpTrackerService, RuneLiteConfig runeLiteConfig)
+	private XpTrackerOverlay(XpDropsConfig config, XpDropOverlayManager xpDropOverlayManager, XpTrackerService xpTrackerService)
 	{
 		this.config = config;
 		this.xpDropOverlayManager = xpDropOverlayManager;
 		this.xpTrackerService = xpTrackerService;
-		this.runeLiteConfig = runeLiteConfig;
 		setLayer(OverlayLayer.UNDER_WIDGETS);
 		setPosition(OverlayPosition.TOP_RIGHT);
 		setPriority(OverlayPriority.HIGHEST);
@@ -160,7 +157,7 @@ public class XpTrackerOverlay extends Overlay
 		int progressBarWidth = (int) (ratio * (width - 4));
 		int barHeight = PROGRESS_BAR_HEIGHT;
 
-		Color backgroundColor = new Color(runeLiteConfig.overlayBackgroundColor().getRed(), runeLiteConfig.overlayBackgroundColor().getGreen(), runeLiteConfig.overlayBackgroundColor().getBlue(), alpha);
+		Color backgroundColor = new Color(config.xpTrackerBackgroundColor().getRed(), config.xpTrackerBackgroundColor().getGreen(), config.xpTrackerBackgroundColor().getBlue(), alpha);
 		graphics.setColor(backgroundColor);
 		graphics.fillRect(x, y, width, barHeight + 2);
 
