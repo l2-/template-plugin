@@ -59,30 +59,33 @@ public interface XpDropsConfig extends Config
 	}
 
 	@ConfigSection(
-		name = "xp drop settings",
+		name = "Xp drop settings",
 		description = "Settings relating to xp drops",
 		position = 1
 	)
 	String xp_drop_settings = "xp_drop_settings";
 
 	@ConfigSection(
-		name = "font settings",
+		name = "Font settings",
 		description = "Settings relating to fonts",
-		position = 2
+		position = 2,
+		closedByDefault = true
 	)
 	String font_settings = "font_settings";
 
 	@ConfigSection(
-		name = "predicted hit",
+		name = "Predicted hit",
 		description = "Settings relating to predicted hit",
-		position = 3
+		position = 3,
+		closedByDefault = true
 	)
 	String predicted_hit = "predicted_hit";
 
 	@ConfigSection(
-		name = "xp tracker overlay",
+		name = "Xp tracker overlay",
 		description = "Settings relating to the xp tracker",
-		position = 4
+		position = 4,
+		closedByDefault = true
 	)
 	String xp_tracker_settings = "xp_tracker_settings";
 
@@ -648,13 +651,13 @@ public interface XpDropsConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		keyName = "xpTrackerBackgroundColor",
-		name = "XP tracker background color",
-		description = "Color for the Xp Tracker background",
+		keyName = "xpTrackerBorderColor",
+		name = "XP tracker border color",
+		description = "Color for the Xp Tracker border",
 		position = 33,
 		section = xp_tracker_settings
 	)
-	default Color xpTrackerBackgroundColor()
+	default Color xpTrackerBorderColor()
 	{
 		return new Color(90, 82, 69);
 	}

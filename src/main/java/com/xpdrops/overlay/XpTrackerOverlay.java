@@ -157,8 +157,8 @@ public class XpTrackerOverlay extends Overlay
 		int progressBarWidth = (int) (ratio * (width - 4));
 		int barHeight = PROGRESS_BAR_HEIGHT;
 
-		Color backgroundColor = new Color(config.xpTrackerBackgroundColor().getRed(), config.xpTrackerBackgroundColor().getGreen(), config.xpTrackerBackgroundColor().getBlue(), alpha);
-		graphics.setColor(backgroundColor);
+		Color borderColor = new Color(config.xpTrackerBorderColor().getRed(), config.xpTrackerBorderColor().getGreen(), config.xpTrackerBorderColor().getBlue(), alpha);
+		graphics.setColor(borderColor);
 		graphics.fillRect(x, y, width, barHeight + 2);
 
 		Color blackBackgroundColor = new Color(0, 0, 0, alpha);
