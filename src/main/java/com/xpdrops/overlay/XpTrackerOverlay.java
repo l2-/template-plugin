@@ -22,7 +22,6 @@ public class XpTrackerOverlay extends Overlay
 	private final XpDropOverlayManager xpDropOverlayManager;
 	private final XpDropFontHandler xpDropFontHandler = new XpDropFontHandler();
 	private static final int PROGRESS_BAR_HEIGHT = 6;
-	private static final Color JAGEX_WIDGET_BACKGROUND_COLOR = new Color(90, 82, 69);
 
 	@Inject
 	private Client client;
@@ -158,8 +157,8 @@ public class XpTrackerOverlay extends Overlay
 		int progressBarWidth = (int) (ratio * (width - 4));
 		int barHeight = PROGRESS_BAR_HEIGHT;
 
-		Color jagexBackgroundColor = new Color(JAGEX_WIDGET_BACKGROUND_COLOR.getRed(), JAGEX_WIDGET_BACKGROUND_COLOR.getGreen(), JAGEX_WIDGET_BACKGROUND_COLOR.getBlue(), alpha);
-		graphics.setColor(jagexBackgroundColor);
+		Color borderColor = new Color(config.xpTrackerBorderColor().getRed(), config.xpTrackerBorderColor().getGreen(), config.xpTrackerBorderColor().getBlue(), alpha);
+		graphics.setColor(borderColor);
 		graphics.fillRect(x, y, width, barHeight + 2);
 
 		Color blackBackgroundColor = new Color(0, 0, 0, alpha);
