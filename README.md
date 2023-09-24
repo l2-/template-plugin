@@ -18,6 +18,7 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - Replace the XP tracker widget with a minimalistic one.
 
 #### Change log
+- v1.8.0 - Added a new settings category called Miscellaneous. This category has the following new settings: `Hide vanilla xp drops`, `Hide vanilla xp tracker`, `Force xp drops to be centered`, `Center xp drop on`, `Xp drop overlay priority`, `Xp tracker overlay priority`. `Xp drop overlay priority` and `Xp tracker overlay priority` can be used to sort the respective overlays after other overlays. For example to sort the xp drops below the xp globes overlay.
 - v1.7.5 - Added setting to customize the border color of the xp tracker. - `@iipom`
 - v1.7.4 - Update NPC stats with dt2 bosses.
 - v1.7.3.2 - Fixes to account for Runelite api change.
@@ -75,6 +76,15 @@ This plugin tries to use the same multipliers per monster but the list is incomp
 Try increasing the `Vertical XP drop speed` and/or lowering the `XP drop delay` settings. 
 The plugin uses these settings to determine by how much consecutive XP drops should be delayed to prevent overlapping.
 If these settings are configured in such way that xp drops do not clear the screen fast enough for new XP drops the queue of XP drops will keep backing up resulting in a delay.
+
+#### There is a gap between my overlays / XP drops overlay is sorted before x overlay (even when no xp drops are visible)
+This has to do with the sorting of the overlays that are in the same overlay group.
+Tune `Xp drop overlay priority` to a lower value until this is not a problem anymore OR do not snap the overlay to an overlay group (the boxes when you hold the alt key).
+
+#### The XP drops are off center
+When `Attach to player` and `Attach to target` are disabled you can enable `Force xp drops to be centered` under `Miscellaneous` and tune `Center xp drop on` to your liking.\
+When `Attach to player` or `Attach to target` is enabled the xp drops are centered on the position of the player or target on your screen. 
+You can use 'Center xp drop on', 'Attach to x offset' and 'Attach to y offset' to fine tune the position of the xp drop with relation to the player or target.
 
 ### Installing custom fonts
 When installing custom fonts on Windows make sure to use "Install for all users" otherwise the plugin might not be able to find the font.

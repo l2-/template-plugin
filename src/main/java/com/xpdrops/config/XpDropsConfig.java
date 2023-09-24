@@ -535,7 +535,7 @@ public interface XpDropsConfig extends Config
 	@ConfigItem(
 		keyName = "predictedHitIcon",
 		name = "Predicted hit icon",
-		description = "The style of the predicted hit icon. Only applicable when `Never group predicted hit` is ON.",
+		description = "The style of the predicted hit icon. Only applicable when `Never group predicted hit` is enabled.",
 		position = 26,
 		section = predicted_hit
 	)
@@ -547,7 +547,7 @@ public interface XpDropsConfig extends Config
 	@ConfigItem(
 		keyName = "useXpTracker",
 		name = "Use xp tracker",
-		description = "Turn custom xp tracker on or off",
+		description = "Enable or disable custom xp tracker",
 		position = 24,
 		section = xp_tracker_settings
 	)
@@ -571,7 +571,7 @@ public interface XpDropsConfig extends Config
 	@ConfigItem(
 		keyName = "showIconsXpTracker",
 		name = "Show icons xp tracker",
-		description = "Turn on skill icons for xp tracker",
+		description = "Enable or disable skill icons for xp tracker",
 		position = 26,
 		section = xp_tracker_settings
 	)
@@ -706,7 +706,7 @@ public interface XpDropsConfig extends Config
 	@ConfigItem(
 		keyName = "xpDropsHideVanilla",
 		name = "Hide vanilla xp drops",
-		description = "When turned on this plugin will hide the vanilla xp drops",
+		description = "When enabled this plugin will hide the vanilla xp drops",
 		position = 1,
 		section = xp_miscellaneous_settings
 	)
@@ -718,8 +718,8 @@ public interface XpDropsConfig extends Config
 	@ConfigItem(
 		keyName = "xpTrackerHideVanilla",
 		name = "Hide vanilla xp tracker",
-		description = "When turned on this plugin will hide the vanilla xp tracker",
-		position = 1,
+		description = "When enabled and when 'Use xp tracker' is enabled this plugin will hide the vanilla xp tracker",
+		position = 2,
 		section = xp_miscellaneous_settings
 	)
 	default boolean xpTrackerHideVanilla()
@@ -730,8 +730,9 @@ public interface XpDropsConfig extends Config
 	@ConfigItem(
 		keyName = "xpDropForceCentered",
 		name = "Force xp drops to be centered",
-		description = "Center xp drops within their overlay box",
-		position = 2,
+		description = "Center xp drops within their overlay box.<br>" +
+			"Note: if this settings is disabled the horizontal direction setting decides if the xp drops are left or right aligned.",
+		position = 3,
 		section = xp_miscellaneous_settings
 	)
 	default boolean xpDropForceCentered()
@@ -743,8 +744,9 @@ public interface XpDropsConfig extends Config
 		keyName = "xpDropCenterOn",
 		name = "Center xp drop on",
 		description = "Centers the xp drop on the xp drop text only or on the total width of the icon and text.<br>" +
-			"Works with attach to and without",
-		position = 3,
+			"Works with 'attach to x' enabled and without.<br>" +
+			"If 'attach to x' is disabled then this setting will only have any effect when 'Force xp drops to be centered' is enabled",
+		position = 4,
 		section = xp_miscellaneous_settings
 	)
 	default CenterOn xpDropCenterOn()
@@ -758,7 +760,7 @@ public interface XpDropsConfig extends Config
 		description = "The priority of the xp drop overlay with relation to the other overlays.<br>" +
 			"This impacts the sorting of the overlays attached to the same overlay group (eg. the top right corner overlay group).<br>" +
 			"Does NOT impact the overlay if it is not snapped to a group",
-		position = 4,
+		position = 5,
 		section = xp_miscellaneous_settings
 	)
 	default OverlayPriority xpDropOverlayPriority()
@@ -772,7 +774,7 @@ public interface XpDropsConfig extends Config
 		description = "The priority of the xp tracker overlay with relation to the other overlays.<br>" +
 			"This impacts the sorting of the overlays attached to the same overlay group (eg. the top right corner overlay group).<br>" +
 			"Does NOT impact the overlay if it is not snapped to a group",
-		position = 5,
+		position = 6,
 		section = xp_miscellaneous_settings
 	)
 	default OverlayPriority xpTrackerOverlayPriority()
