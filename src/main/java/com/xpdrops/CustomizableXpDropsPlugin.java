@@ -271,12 +271,27 @@ public class CustomizableXpDropsPlugin extends Plugin
 
 			if ("attachToTarget".equals(configChanged.getKey()) || "attachToPlayer".equals(configChanged.getKey()))
 			{
-				xpDropOverlayManager.overlayConfigChanged();
+				xpDropOverlayManager.overlayTypeConfigChanged();
 			}
 
 			if ("iconOverride".equals(configChanged.getKey()))
 			{
 				xpDropOverlayManager.clearIconCache();
+			}
+
+			if ("xpDropOverlayPriority".equals(configChanged.getKey()))
+			{
+				xpDropOverlayManager.xpDropOverlayPriorityChanged();
+			}
+
+			if ("xpTrackerOverlayPriority".equals(configChanged.getKey()))
+			{
+				xpDropOverlayManager.xpTrackerOverlayPriorityChanged();
+			}
+
+			if ("xpTrackerHideVanilla".equals(configChanged.getKey()))
+			{
+				setXpTrackerHidden(config.xpTrackerHideVanilla());
 			}
 		}
 	}
@@ -313,6 +328,8 @@ public class CustomizableXpDropsPlugin extends Plugin
 	@Subscribe
 	public void onScriptPreFired(ScriptPreFired scriptPreFired)
 	{
+		if (!config.xpDropsHideVanilla()) return;
+
 		if (scriptPreFired.getScriptId() == XPDROPS_SETDROPSIZE)
 		{
 			final int[] intStack = client.getIntStack();
@@ -332,6 +349,8 @@ public class CustomizableXpDropsPlugin extends Plugin
 	@Subscribe
 	public void onScriptPostFired(ScriptPostFired scriptPostFired)
 	{
+		if (!config.xpTrackerHideVanilla()) return;
+
 		if (scriptPostFired.getScriptId() == XP_TRACKER_SCRIPT_ID)
 		{
 			final Widget xpTracker = client.getWidget(XP_TRACKER_WIDGET_GROUP_ID, XP_TRACKER_WIDGET_CHILD_ID);

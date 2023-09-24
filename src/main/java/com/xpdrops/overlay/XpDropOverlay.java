@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.OverlayPriority;
 import net.runelite.client.util.Text;
 
 import javax.inject.Inject;
@@ -27,7 +26,7 @@ public class XpDropOverlay extends Overlay
 		this.xpDropOverlayManager = xpDropOverlayManager;
 		setLayer(OverlayLayer.UNDER_WIDGETS);
 		setPosition(OverlayPosition.TOP_RIGHT);
-		setPriority(OverlayPriority.HIGH);
+		setPriority(config.xpDropOverlayPriority());
 	}
 
 	@Override
@@ -81,7 +80,27 @@ public class XpDropOverlay extends Overlay
 			}
 
 			int textX;
-			if (config.xDirection() == XpDropsConfig.HorizontalDirection.RIGHT)
+			if (config.xpDropForceCentered())
+			{
+				// Center the xp drops inside the overlay box indicated by the dimension returned in the render function
+				int textWidth = graphics.getFontMetrics().stringWidth(Text.removeTags(text));
+				int x;
+				if (config.xpDropCenterOn() == XpDropsConfig.CenterOn.TEXT)
+				{
+					x = (int) (totalWidth / 2.0f - textWidth / 2.0f + xStart);
+				}
+				else
+				{
+					int iconsWidth = XpDropOverlayUtilities.getIconWidthForIcons(graphics, xpDropInFlight.getIcons(), config, xpDropOverlayManager);
+					x = (int)(totalWidth / 2.0f - (textWidth + iconsWidth) / 2.0f + iconsWidth + xStart);
+				}
+				XpDropOverlayUtilities.drawText(graphics, text, x, textY, (int) xpDropInFlight.getAlpha(), config.xpDropBackground());
+
+				int imageX = x - 2;
+				int imageY = textY - graphics.getFontMetrics().getMaxAscent();
+				XpDropOverlayUtilities.drawIcons(graphics, xpDropInFlight.getIcons(), imageX, imageY, xpDropInFlight.getAlpha(), true, config, xpDropOverlayManager);
+			}
+			else if (config.xDirection() == XpDropsConfig.HorizontalDirection.RIGHT)
 			{
 				// Direction left to right, draw icons first and text second
 				int imageX = (int) (xStart);

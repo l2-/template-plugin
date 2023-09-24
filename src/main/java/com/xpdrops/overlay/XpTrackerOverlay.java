@@ -7,7 +7,6 @@ import net.runelite.client.plugins.xptracker.XpTrackerService;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.OverlayPriority;
 import net.runelite.client.util.Text;
 
 import javax.inject.Inject;
@@ -36,7 +35,7 @@ public class XpTrackerOverlay extends Overlay
 		this.xpTrackerService = xpTrackerService;
 		setLayer(OverlayLayer.UNDER_WIDGETS);
 		setPosition(OverlayPosition.TOP_RIGHT);
-		setPriority(OverlayPriority.HIGHEST);
+		setPriority(config.xpTrackerOverlayPriority());
 	}
 
 	@Override

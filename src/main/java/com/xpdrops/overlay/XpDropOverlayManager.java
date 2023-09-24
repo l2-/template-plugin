@@ -105,7 +105,19 @@ public class XpDropOverlayManager
 		return getIcon(RED_HIT_SPLAT_SPRITE_ID, 0);
 	}
 
-	public void overlayConfigChanged()
+	public void xpDropOverlayPriorityChanged()
+	{
+		xpDropOverlay.setPriority(config.xpDropOverlayPriority());
+		overlayManager.saveOverlay(xpDropOverlay);
+	}
+
+	public void xpTrackerOverlayPriorityChanged()
+	{
+		xpTrackerOverlay.setPriority(config.xpTrackerOverlayPriority());
+		overlayManager.saveOverlay(xpTrackerOverlay);
+	}
+
+	public void overlayTypeConfigChanged()
 	{
 		if (config.attachToPlayer() || config.attachToTarget())
 		{

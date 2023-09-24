@@ -86,10 +86,21 @@ public class XpDropSceneOverlay extends Overlay
 			float xStart = xpDropInFlight.getXOffset();
 			float yStart = xpDropInFlight.getYOffset();
 
-			int x = (int) (xStart + point.getX() - (graphics.getFontMetrics().stringWidth(Text.removeTags(text)) / 2.0f));
+			int textWidth = graphics.getFontMetrics().stringWidth(Text.removeTags(text));
+			int x;
+			if (config.xpDropCenterOn() == XpDropsConfig.CenterOn.TEXT)
+			{
+				x = (int) (xStart + point.getX() - textWidth / 2.0f);
+			}
+			else
+			{
+				int iconsWidth = XpDropOverlayUtilities.getIconWidthForIcons(graphics, xpDropInFlight.getIcons(), config, xpDropOverlayManager);
+				int totalWidth = textWidth + iconsWidth;
+				x = (int)(xStart + point.getX() - totalWidth / 2.0f + iconsWidth);
+			}
 			int y = (int) (yStart + point.getY());
 
-			// Keep the xp drop within viewport. Maybe good for later but for now it is not ideal since the xp drops overlay.
+			// Keep the xp drop within viewport. Maybe good for later but for now it is not ideal.
 //			x = Math.max(client.getViewportXOffset(), x);
 //			y = Math.max(client.getViewportYOffset() + graphics.getFontMetrics().getMaxAscent(), y);
 //			x = Math.min(client.getViewportXOffset() + client.getViewportWidth() - graphics.getFontMetrics().stringWidth(text), x);

@@ -87,6 +87,55 @@ public class XpDropOverlayUtilities
 		return text;
 	}
 
+	public static int getIconWidthForIcons(Graphics2D graphics, int icons, XpDropsConfig config, XpDropOverlayManager xpDropOverlayManager)
+	{
+		int width = 0;
+		int iconSize = graphics.getFontMetrics().getHeight();
+		if (config.iconSizeOverride() > 0)
+		{
+			iconSize = config.iconSizeOverride();
+		}
+
+		for (int i = XpDropOverlayManager.SKILL_INDICES.length - 1; i >= 0; i--)
+		{
+			int icon = (icons >> i) & 0x1;
+			if (icon == 0x1)
+			{
+				int index = XpDropOverlayManager.SKILL_INDICES[i];
+				BufferedImage image = xpDropOverlayManager.getStatIcon(index);
+				if (image == null) continue;
+				int _iconSize = Math.max(iconSize, 18);
+				int iconWidth = image.getWidth() * _iconSize / 25;
+				int iconHeight = image.getHeight() * _iconSize / 25;
+				Dimension dimension = new Dimension(iconWidth, iconHeight);
+				width += dimension.getWidth() + 2;
+			}
+		}
+
+		{
+			// FAKE/BLOCKED XP DROP ICON
+			int icon = (icons >> 23) & 0x1;
+			if (icon == 0x1)
+			{
+				int _iconSize = Math.max(iconSize - 4, 14);
+				Dimension dimension = new Dimension(_iconSize, _iconSize);
+				width += dimension.getWidth() + 2;
+			}
+		}
+
+		{
+			// HIT SPLAT ICON
+			int icon = (icons >> 24) & 0x1;
+			if (icon == 0x1)
+			{
+				int _iconSize = Math.max(iconSize - 4, 14);
+				Dimension dimension = new Dimension(_iconSize, _iconSize);
+				width += dimension.getWidth() + 2;
+			}
+		}
+		return width;
+	}
+
 	public static int drawIcons(Graphics2D graphics, int icons, int x, int y, float alpha, boolean rightToLeft, XpDropsConfig config, XpDropOverlayManager xpDropOverlayManager)
 	{
 		int width = 0;

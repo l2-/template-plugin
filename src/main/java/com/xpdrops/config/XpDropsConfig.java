@@ -8,6 +8,7 @@ import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
 import net.runelite.client.config.Range;
+import net.runelite.client.ui.overlay.OverlayPriority;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -36,6 +37,12 @@ public interface XpDropsConfig extends Config
 		{
 			return name;
 		}
+	}
+
+	enum CenterOn
+	{
+		TEXT,
+		ICON_AND_TEXT,
 	}
 
 	enum VerticalDirection
@@ -88,6 +95,14 @@ public interface XpDropsConfig extends Config
 		closedByDefault = true
 	)
 	String xp_tracker_settings = "xp_tracker_settings";
+
+	@ConfigSection(
+		name = "Miscellaneous",
+		description = "Miscellaneous settings",
+		position = 5,
+		closedByDefault = true
+	)
+	String xp_miscellaneous_settings = "xp_miscellaneous_settings";
 
 	@ConfigItem(
 		keyName = "grouped",
@@ -276,7 +291,8 @@ public interface XpDropsConfig extends Config
 	@ConfigItem(
 		keyName = "fontName",
 		name = "Font",
-		description = "Name of the font to use for XP drops. Leave blank to use RuneLite setting.",
+		description = "Name of the font to use for XP drops. Leave blank to use RuneLite setting.<br>" +
+			"If the font does not seem to work checkout the 'Installing custom fonts' section on the support page of this plugin",
 		position = 11,
 		section = font_settings
 	)
@@ -579,7 +595,8 @@ public interface XpDropsConfig extends Config
 	@ConfigItem(
 		keyName = "xpTrackerFontName",
 		name = "Font",
-		description = "Name of the font to use for XP tracker. Leave blank to use RuneLite setting.",
+		description = "Name of the font to use for XP tracker. Leave blank to use RuneLite setting.<br>" +
+			"If the font does not seem to work checkout the 'Installing custom fonts' section on the support page of this plugin",
 		position = 28,
 		section = xp_tracker_settings
 	)
@@ -684,5 +701,82 @@ public interface XpDropsConfig extends Config
 	default boolean xpTrackerFadeOut()
 	{
 		return true;
+	}
+
+	@ConfigItem(
+		keyName = "xpDropsHideVanilla",
+		name = "Hide vanilla xp drops",
+		description = "When turned on this plugin will hide the vanilla xp drops",
+		position = 1,
+		section = xp_miscellaneous_settings
+	)
+	default boolean xpDropsHideVanilla()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "xpTrackerHideVanilla",
+		name = "Hide vanilla xp tracker",
+		description = "When turned on this plugin will hide the vanilla xp tracker",
+		position = 1,
+		section = xp_miscellaneous_settings
+	)
+	default boolean xpTrackerHideVanilla()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "xpDropForceCentered",
+		name = "Force xp drops to be centered",
+		description = "Center xp drops within their overlay box",
+		position = 2,
+		section = xp_miscellaneous_settings
+	)
+	default boolean xpDropForceCentered()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "xpDropCenterOn",
+		name = "Center xp drop on",
+		description = "Centers the xp drop on the xp drop text only or on the total width of the icon and text.<br>" +
+			"Works with attach to and without",
+		position = 3,
+		section = xp_miscellaneous_settings
+	)
+	default CenterOn xpDropCenterOn()
+	{
+		return CenterOn.ICON_AND_TEXT;
+	}
+
+	@ConfigItem(
+		keyName = "xpDropOverlayPriority",
+		name = "Xp drop overlay priority",
+		description = "The priority of the xp drop overlay with relation to the other overlays.<br>" +
+			"This impacts the sorting of the overlays attached to the same overlay group (eg. the top right corner overlay group).<br>" +
+			"Does NOT impact the overlay if it is not snapped to a group",
+		position = 4,
+		section = xp_miscellaneous_settings
+	)
+	default OverlayPriority xpDropOverlayPriority()
+	{
+		return OverlayPriority.HIGH;
+	}
+
+	@ConfigItem(
+		keyName = "xpTrackerOverlayPriority",
+		name = "Xp tracker overlay priority",
+		description = "The priority of the xp tracker overlay with relation to the other overlays.<br>" +
+			"This impacts the sorting of the overlays attached to the same overlay group (eg. the top right corner overlay group).<br>" +
+			"Does NOT impact the overlay if it is not snapped to a group",
+		position = 5,
+		section = xp_miscellaneous_settings
+	)
+	default OverlayPriority xpTrackerOverlayPriority()
+	{
+		return OverlayPriority.HIGHEST;
 	}
 }
