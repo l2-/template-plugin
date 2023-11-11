@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.Varbits;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.util.Text;
 
 import javax.inject.Inject;
@@ -31,9 +30,9 @@ public class XpDropDamageCalculator
 	private static final String NPC_JSON_FILE = "npcs.min.json";
 	private static final HashMap<Integer, Double> XP_BONUS_MAPPING = new HashMap<>();
 	private static final Pattern RAID_LEVEL_MATCHER = Pattern.compile("(\\d+)");
-	private static final int RAID_LEVEL_WIDGET_ID = WidgetInfo.PACK(481, 42);
-	private static final int ROOM_LEVEL_WIDGET_ID = WidgetInfo.PACK(481, 45);
-	private static final int RAID_MEMBERS_WIDGET_ID = WidgetInfo.PACK(481, 4);
+	private static final int RAID_LEVEL_WIDGET_ID = (481 << 16) | 42;
+	private static final int ROOM_LEVEL_WIDGET_ID = (481 << 16) | 45;
+	private static final int RAID_MEMBERS_WIDGET_ID = (481 << 16) | 4;
 
 	private int lastToARaidLevel = 0;
 	private int lastToARaidPartySize = 1;
