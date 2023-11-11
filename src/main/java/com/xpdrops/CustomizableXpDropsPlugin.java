@@ -12,7 +12,12 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Actor;
 import net.runelite.api.Client;
+import net.runelite.api.EquipmentInventorySlot;
 import net.runelite.api.GameState;
+import net.runelite.api.InventoryID;
+import net.runelite.api.Item;
+import net.runelite.api.ItemContainer;
+import net.runelite.api.ItemID;
 import net.runelite.api.NPC;
 import net.runelite.api.Player;
 import net.runelite.api.VarPlayer;
@@ -454,6 +459,14 @@ public class CustomizableXpDropsPlugin extends Plugin
 		return null;
 	}
 
+	protected boolean isVoidwakerEquipped()
+	{
+		ItemContainer equipment = client.getItemContainer(InventoryID.EQUIPMENT);
+		if (equipment == null) return false;
+		Item weapon = equipment.getItem(EquipmentInventorySlot.WEAPON.getSlotIdx());
+		return weapon != null && weapon.getId() == ItemID.VOIDWAKER;
+	}
+
 	protected XpDropStyle matchPrayerStyle(Skill skill)
 	{
 		XpPrayer activePrayer = getActivePrayer();
@@ -473,6 +486,11 @@ public class CustomizableXpDropsPlugin extends Plugin
 			if (skill == Skill.MAGIC && activePrayer.getType() == XpDropStyle.MAGE)
 			{
 				return XpDropStyle.MAGE;
+			}
+			// Voidwaker spec, even though a mage xp drop, should count towards melee style prayers.
+			if (skill == Skill.MAGIC && activePrayer.getType() == XpDropStyle.MELEE && isVoidwakerEquipped())
+			{
+				return XpDropStyle.MELEE;
 			}
 		}
 		return XpDropStyle.DEFAULT;
