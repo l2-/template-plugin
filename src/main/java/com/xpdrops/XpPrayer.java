@@ -7,6 +7,7 @@ import net.runelite.api.Prayer;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import static com.xpdrops.XpDropStyle.DEFAULT;
 import static com.xpdrops.XpDropStyle.MELEE;
 import static com.xpdrops.XpDropStyle.RANGE;
 import static com.xpdrops.XpDropStyle.MAGE;
@@ -23,6 +24,14 @@ import static net.runelite.api.Prayer.MYSTIC_MIGHT;
 import static net.runelite.api.Prayer.MYSTIC_WILL;
 import static net.runelite.api.Prayer.PIETY;
 import static net.runelite.api.Prayer.RIGOUR;
+import static net.runelite.api.Prayer.RP_ANCIENT_SIGHT;
+import static net.runelite.api.Prayer.RP_ANCIENT_STRENGTH;
+import static net.runelite.api.Prayer.RP_ANCIENT_WILL;
+import static net.runelite.api.Prayer.RP_ANNIHILATE;
+import static net.runelite.api.Prayer.RP_DECIMATE;
+import static net.runelite.api.Prayer.RP_INTENSIFY;
+import static net.runelite.api.Prayer.RP_TRINITAS;
+import static net.runelite.api.Prayer.RP_VAPORISE;
 import static net.runelite.api.Prayer.SHARP_EYE;
 import static net.runelite.api.Prayer.SUPERHUMAN_STRENGTH;
 import static net.runelite.api.Prayer.ULTIMATE_STRENGTH;
@@ -44,7 +53,16 @@ enum XpPrayer
 	XP_CHIVALRY(CHIVALRY, MELEE, AttackStyle.ACCURATE, AttackStyle.AGGRESSIVE, AttackStyle.CONTROLLED, AttackStyle.DEFENSIVE, AttackStyle.OTHER),
 	XP_PIETY(PIETY, MELEE, AttackStyle.ACCURATE, AttackStyle.AGGRESSIVE, AttackStyle.CONTROLLED, AttackStyle.DEFENSIVE, AttackStyle.OTHER),
 	XP_RIGOUR(RIGOUR, RANGE, AttackStyle.RANGING, AttackStyle.LONGRANGE, AttackStyle.OTHER),
-	XP_AUGURY(AUGURY, MAGE, AttackStyle.CASTING, AttackStyle.DEFENSIVE_CASTING, AttackStyle.OTHER);
+	XP_AUGURY(AUGURY, MAGE, AttackStyle.CASTING, AttackStyle.DEFENSIVE_CASTING, AttackStyle.OTHER),
+
+	XP_RP_ANCIENT_STRENGTH(RP_ANCIENT_STRENGTH, MELEE, AttackStyle.ACCURATE, AttackStyle.AGGRESSIVE, AttackStyle.CONTROLLED, AttackStyle.DEFENSIVE, AttackStyle.OTHER),
+	XP_RP_ANCIENT_SIGHT(RP_ANCIENT_SIGHT, RANGE, AttackStyle.RANGING, AttackStyle.LONGRANGE, AttackStyle.OTHER),
+	XP_RP_ANCIENT_WILL(RP_ANCIENT_WILL, MAGE, AttackStyle.CASTING, AttackStyle.DEFENSIVE_CASTING, AttackStyle.OTHER),
+	XP_RP_TRINITAS(RP_TRINITAS, DEFAULT),
+	XP_RP_DECIMATE(RP_DECIMATE, MELEE, AttackStyle.ACCURATE, AttackStyle.AGGRESSIVE, AttackStyle.CONTROLLED, AttackStyle.DEFENSIVE, AttackStyle.OTHER),
+	XP_RP_ANNIHILATE(RP_ANNIHILATE, RANGE, AttackStyle.RANGING, AttackStyle.LONGRANGE, AttackStyle.OTHER),
+	XP_RP_VAPORISE(RP_VAPORISE, MAGE, AttackStyle.CASTING, AttackStyle.DEFENSIVE_CASTING, AttackStyle.OTHER),
+	XP_RP_INTENSIFY(RP_INTENSIFY, DEFAULT);
 
 	@Getter
 	private final Prayer prayer;

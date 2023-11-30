@@ -121,6 +121,7 @@ public class XpTrackerOverlay extends Overlay
 
 		int textY = graphics.getFontMetrics().getMaxAscent();
 		int textWidth = graphics.getFontMetrics().stringWidth(Text.removeTags(text));
+		int monospacedTextWidth = XpDropOverlayManager.monospacedWidth(graphics, Text.removeTags(text));
 
 		int imageY = textY - graphics.getFontMetrics().getMaxAscent(); // 0
 
@@ -129,9 +130,9 @@ public class XpTrackerOverlay extends Overlay
 		Dimension iconDimensions = drawIcon(graphics, icon, 0, imageY, alpha);
 		int imageWidth = (int) (iconDimensions.getWidth() + 5);
 
-		XpDropOverlayUtilities.drawText(graphics, XpDropOverlayUtilities.wrapWithTags(xpTrackerColor) + text, imageWidth, textY, alpha, config.xpTrackerBackground());
+		XpDropOverlayUtilities.drawText(graphics, XpDropOverlayUtilities.wrapWithTags(xpTrackerColor) + text, imageWidth + monospacedTextWidth - textWidth, textY, alpha, config.xpTrackerBackground());
 
-		return new Dimension(textWidth + imageWidth, (int)Math.max(graphics.getFontMetrics().getHeight(), iconDimensions.getHeight()));
+		return new Dimension(monospacedTextWidth + imageWidth, (int)Math.max(graphics.getFontMetrics().getHeight(), iconDimensions.getHeight()));
 	}
 
 	// Returns height of drawn bar.

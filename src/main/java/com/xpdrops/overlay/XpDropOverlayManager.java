@@ -8,6 +8,8 @@ import com.xpdrops.attackstyles.AttackStyle;
 import com.xpdrops.config.XpDropsConfig;
 import com.xpdrops.config.XpTrackerSkills;
 import com.xpdrops.predictedhit.Hit;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +23,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -79,11 +82,22 @@ public class XpDropOverlayManager
 	private final CustomizableXpDropsPlugin plugin;
 	private final XpDropsConfig config;
 
+	private static MaxMonospaceDigit maxMonospaceDigit;
+
 	@Inject
 	private XpDropOverlayManager(CustomizableXpDropsPlugin plugin, XpDropsConfig xpDropsConfig)
 	{
 		this.plugin = plugin;
 		this.config = xpDropsConfig;
+	}
+
+	@Data
+	@AllArgsConstructor
+	static class MaxMonospaceDigit
+	{
+		int width;
+		String character;
+		Font font;
 	}
 
 	@Nullable
@@ -426,5 +440,27 @@ public class XpDropOverlayManager
 			return img;
 		}
 		return null;
+	}
+
+	// Since most fonts are not monospace we can use this function to determine the width for the given string when each
+	// digit is replaced with the widest digit.
+	public static int monospacedWidth(Graphics2D graphics, String text)
+	{
+		// maxMonospaceDigit is used for caching
+		if (maxMonospaceDigit == null || maxMonospaceDigit.getFont() == null || !maxMonospaceDigit.getFont().equals(graphics.getFont()))
+		{
+			maxMonospaceDigit = new MaxMonospaceDigit(0, "0", graphics.getFont());
+			char[] chars = new char[] {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
+			for (char aChar : chars)
+			{
+				if (graphics.getFontMetrics().charWidth(aChar) >= maxMonospaceDigit.getWidth())
+				{
+					maxMonospaceDigit.setCharacter(String.valueOf(aChar));
+					maxMonospaceDigit.setWidth(graphics.getFontMetrics().charWidth(aChar));
+				}
+			}
+		}
+
+		return graphics.getFontMetrics().stringWidth(text.replaceAll("[0-9]", maxMonospaceDigit.getCharacter()));
 	}
 }

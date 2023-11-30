@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -32,7 +31,6 @@ public class XpDropDamageCalculator
 	private static final Pattern RAID_LEVEL_MATCHER = Pattern.compile("(\\d+)");
 	private static final int RAID_LEVEL_WIDGET_ID = (481 << 16) | 42;
 	private static final int ROOM_LEVEL_WIDGET_ID = (481 << 16) | 45;
-	private static final int RAID_MEMBERS_WIDGET_ID = (481 << 16) | 4;
 
 	private int lastToARaidLevel = 0;
 	private int lastToARaidPartySize = 1;
@@ -81,34 +79,19 @@ public class XpDropDamageCalculator
 
 	private int getToAPartySize()
 	{
-		Widget memberParentWidget = client.getWidget(RAID_MEMBERS_WIDGET_ID);
-		if (memberParentWidget != null && !memberParentWidget.isHidden())
-		{
-			Widget[] children = memberParentWidget.getStaticChildren();
-			if (children != null && children.length > 0)
-			{
-				return (int) Arrays.stream(children).filter(c -> c != null && !c.isHidden()).count();
-			}
-		}
-		return -1;
+		return 1 +
+			(client.getVarbitValue(Varbits.TOA_MEMBER_1_HEALTH) != 0 ? 1 : 0) +
+			(client.getVarbitValue(Varbits.TOA_MEMBER_2_HEALTH) != 0 ? 1 : 0) +
+			(client.getVarbitValue(Varbits.TOA_MEMBER_3_HEALTH) != 0 ? 1 : 0) +
+			(client.getVarbitValue(Varbits.TOA_MEMBER_4_HEALTH) != 0 ? 1 : 0) +
+			(client.getVarbitValue(Varbits.TOA_MEMBER_5_HEALTH) != 0 ? 1 : 0) +
+			(client.getVarbitValue(Varbits.TOA_MEMBER_6_HEALTH) != 0 ? 1 : 0) +
+			(client.getVarbitValue(Varbits.TOA_MEMBER_7_HEALTH) != 0 ? 1 : 0);
 	}
 
 	private int getToARaidLevel()
 	{
-		Widget levelWidget = client.getWidget(RAID_LEVEL_WIDGET_ID);
-		if (levelWidget != null && !levelWidget.isHidden())
-		{
-			Matcher m = RAID_LEVEL_MATCHER.matcher(levelWidget.getText());
-			if (m.find())
-			{
-				try
-				{
-					return Integer.parseInt(m.group(0));
-				}
-				catch (Exception ignored) {}
-			}
-		}
-		return -1;
+		return client.getVarbitValue(Varbits.TOA_RAID_LEVEL);
 	}
 
 	private int getToARoomLevel()

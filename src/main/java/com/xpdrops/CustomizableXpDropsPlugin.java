@@ -20,6 +20,7 @@ import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemID;
 import net.runelite.api.NPC;
 import net.runelite.api.Player;
+import net.runelite.api.Prayer;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.BeforeRender;
@@ -491,6 +492,21 @@ public class CustomizableXpDropsPlugin extends Plugin
 			if (skill == Skill.MAGIC && activePrayer.getType() == XpDropStyle.MELEE && isVoidwakerEquipped())
 			{
 				return XpDropStyle.MELEE;
+			}
+			// The following prayers work for all 3 combat styles
+			if (activePrayer.getPrayer() == Prayer.RP_TRINITAS || activePrayer.getPrayer() == Prayer.RP_INTENSIFY)
+			{
+				switch (skill)
+				{
+					case ATTACK:
+					case STRENGTH:
+					case DEFENCE:
+						return XpDropStyle.MELEE;
+					case RANGED:
+						return XpDropStyle.RANGE;
+					case MAGIC:
+						return XpDropStyle.MAGE;
+				}
 			}
 		}
 		return XpDropStyle.DEFAULT;

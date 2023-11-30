@@ -18,6 +18,7 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - Replace the XP tracker widget with a minimalistic one.
 
 #### Change log
+- v1.8.2 - Text spacing of the xp tracker is now consistent, Added RP prayer support, Changed to varbits for toa raid level and party size so the widgets are no longer needed and other plugins that interfere with those widgets will not interfere with this plugin.
 - v1.8.1 - Added coloring of xp drop for offensive melee prayer when using special attack with voidwaker.
 - v1.8.0 - Added a new settings category called Miscellaneous. This category has the following new settings: `Hide vanilla xp drops`, `Hide vanilla xp tracker`, `Force xp drops to be centered`, `Center xp drop on`, `Xp drop overlay priority`, `Xp tracker overlay priority`. `Xp drop overlay priority` and `Xp tracker overlay priority` can be used to sort the respective overlays after other overlays. For example to sort the xp drops below the xp globes overlay.
 - v1.7.5 - Added setting to customize the border color of the xp tracker. - `@iipom`
