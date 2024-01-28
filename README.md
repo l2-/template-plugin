@@ -96,13 +96,16 @@ Fonts that are shipped with Windows should not need to be installed.\
 ![installforallusers](https://i.imgur.com/MXzOKjH.png)
 
 ### Vanilla XP drops
-This plugin replaces vanilla XP drops however using (close to) the following settings they can easily be mimicked.\
+This plugin replaces vanilla XP drops however using (close to) the following settings they can easily be mimicked if you play on fixed client layout.
+The vanilla xp drops speed depends on the size of the game canvas therefore the defaults given below only match vanilla behaviour on fixed layout client size.
+Note that you can view both customizable xp drops and vanilla xp drops at the same time by setting `Hide vanilla xp drops: false` under the Miscellaneous tab in the plugin settings for easy comparing.
+Note that when using ungrouped xp drops the `XP drop delay` setting is also important and depends on size and speed.\
 Vanilla XP drop Size smallest:  `Font style: Default`, `Background: Shadow`, `Font size: 12`, `Icon size override: 0`.\
 Vanilla XP drop Size medium:    `Font style: Default`, `Background: Shadow`, `Font size: 16`, `Icon size override: 25`.\
 Vanilla XP drop Size largest:   `Font style: Bold`, `Background: Shadow`, `Font size: 16`, `Icon size override: 25`.\
-Vanilla XP drop Speed default:  `Vertical XP drop speed: 60`.\
 Vanilla XP drop Speed slower:   `Vertical XP drop speed: 44`.\
-Vanilla XP drop Speed faster:   `Vertical XP drop speed: 80`.
+Vanilla XP drop Speed default:  `Vertical XP drop speed: 60`.\
+Vanilla XP drop Speed faster:   `Vertical XP drop speed: 90`.
 
 ### Screenshots
 Default in game XP drops (left) compared to this plugin with similar settings (right). Settings: Font size 12, Font style default, icon size override 0.\
