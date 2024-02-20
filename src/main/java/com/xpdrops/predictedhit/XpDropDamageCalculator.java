@@ -20,7 +20,6 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Slf4j
@@ -38,8 +37,8 @@ public class XpDropDamageCalculator
 	private int lastToARaidRoomLevel = 0;
 
 	private final Gson GSON;
-	private Client client;
-	private ChambersLayoutSolver chambersLayoutSolver;
+	private final Client client;
+	private final ChambersLayoutSolver chambersLayoutSolver;
 
 	@Inject
 	protected XpDropDamageCalculator(Gson gson, Client client, ChambersLayoutSolver chambersLayoutSolver)
@@ -55,9 +54,16 @@ public class XpDropDamageCalculator
 		XP_BONUS_MAPPING.putAll(getNpcsWithXpBonus());
 	}
 
-	private int getCoXPartySize()
+	private int getCoxScaledPartySize()
 	{
 		return Math.max(1, client.getVarbitValue(COX_SCALED_PARTY_SIZE_VARBIT));
+	}
+
+	// Currently it checks a varbit for the amount of players in the raid.
+	// Ideally this method returns how many non board scaling accounts started the raid.
+	private int getCoxPlayersInRaid()
+	{
+		return Math.max(1, client.getVarbitValue(Varbits.RAID_PARTY_SIZE));
 	}
 
 	private int getToBPartySize()
@@ -132,14 +138,16 @@ public class XpDropDamageCalculator
 	public int calculateHitOnNpc(int id, int hpXpDiff, double configModifier)
 	{
 		double modifier = 1.0;
-		if (CoXNPCs.isCOXNPC(id))
+		if (CoXNPCs.isCoxNpc(id))
 		{
-			int partySize = getCoXPartySize();
+			int scaledPartySize = getCoxScaledPartySize();
+			int playersInRaid = getCoxPlayersInRaid();
 			// Wrong. only follows the setting of the player's board
 //			int raidType = client.getVarbitValue(6385) > 0 ? 1 : 0;
 			int raidType = chambersLayoutSolver.isCM() ? 1 : 0;
-			modifier = CoXNPCs.getModifier(id, partySize, raidType);
-			log.debug("COX modifier {} {} party size {} raid type {}", id, modifier, partySize, raidType);
+
+			modifier = CoXNPCs.getModifier(id, scaledPartySize, playersInRaid, raidType);
+			log.debug("COX modifier {} {} party size {} players in raid {} raid type {}", id, modifier, scaledPartySize, playersInRaid, raidType);
 		}
 		else if (ToBNPCs.isTOBNPC(id))
 		{

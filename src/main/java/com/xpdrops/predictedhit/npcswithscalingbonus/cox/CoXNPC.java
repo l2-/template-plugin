@@ -2,7 +2,7 @@ package com.xpdrops.predictedhit.npcswithscalingbonus.cox;
 
 import com.xpdrops.predictedhit.npcswithscalingbonus.NPCStats;
 
-// Credits: De0, Bogi153, craigobaker, Ogkek, Machtigeman, In Africa for the CoX specific formulae used in this class and package.
+// Credits: De0, Bogi153, craigobaker, Ogkek, Machtigeman, and In Africa, for the CoX specific formulae used in this class and package.
 public class CoXNPC extends NPCStats
 {
 	public CoXNPC(int hp, int att, int str, int mage, int range, int def, int offensiveAtt, int offensiveStr, int defensiveStab, int defensiveSlash, int defensiveCrush, int defensiveMage, int defensiveRange)
@@ -10,34 +10,34 @@ public class CoXNPC extends NPCStats
 		super(hp, att, str, def, mage, range, offensiveAtt, offensiveStr, defensiveStab, defensiveSlash, defensiveCrush, defensiveMage, defensiveRange);
 	}
 
-	private boolean isCM(int raidType)
+	protected boolean isCM(int raidType)
 	{
 		return raidType > 0;
 	}
 
-	protected double cmHpMultiplier()
+	protected double modeHpMultiplier(int raidType)
 	{
-		return 1.5;
+		return this.isCM(raidType) ? 1.5 : 1.0;
 	}
 
-	protected double cmOffensiveMultiplier()
+	protected double modeOffensiveMultiplier(int raidType)
 	{
-		return 1.5;
+		return this.isCM(raidType) ? 1.5 : 1.0;
 	}
 
-	protected double cmMagicMultiplier()
+	protected double modeMagicMultiplier(int raidType)
 	{
-		return 1.5;
+		return this.isCM(raidType) ? 1.5 : 1.0;
 	}
 
-	protected double cmDefenseMultiplier()
+	protected double modeDefenceMultiplier(int raidType)
 	{
-		return 1.5;
+		return this.isCM(raidType) ? 1.5 : 1.0;
 	}
 
-	protected double calculateHpScaling(int partySize)
+	protected double calculateHpScaling(int scaledPartySize, int playersInRaid)
 	{
-		return 1.0 + Math.floor(partySize / 2.0);
+		return 1.0 + Math.floor(scaledPartySize / 2.0);
 	}
 
 	protected double calculateOffensiveScaling(int partySize)
@@ -51,21 +51,26 @@ public class CoXNPC extends NPCStats
 	}
 
 	// Assumes everyone in the part is max combat and mining
-	protected double calculateModifier(int raidType, int partySize)
+	protected double calculateModifier(int raidType, int scaledPartySize, int playersInRaid)
 	{
-		double hpScaling = calculateHpScaling(partySize);
-		double offensiveScaling = calculateOffensiveScaling(partySize);
-		double defensiveScaling = calculateDefensiveScaling(partySize);
-		double cmOffensiveMultiplier = isCM(raidType) ? cmOffensiveMultiplier() : 1.0;
-		double cmDefenseMultiplier = isCM(raidType) ? cmDefenseMultiplier() : 1.0;
-		double cmMagicMultiplier = isCM(raidType) ? cmMagicMultiplier() : 1.0;
+		double hpScaling = calculateHpScaling(scaledPartySize, playersInRaid);
+		double offensiveScaling = calculateOffensiveScaling(scaledPartySize);
+		double defensiveScaling = calculateDefensiveScaling(scaledPartySize);
+
+		int hitpoints = (int) (hpScaling * getHp() * modeHpMultiplier(raidType));
+		int attackLevel = 1 == getAtt() ? 1 : (int) (offensiveScaling * getAtt() * modeOffensiveMultiplier(raidType));
+		int strengthLevel = 1 == getStr() ? 1 : (int) (offensiveScaling * getStr() * modeOffensiveMultiplier(raidType));
+		int defenceLevel = (int) (defensiveScaling * getDef() * modeDefenceMultiplier(raidType));
+		int magicLevel = 1 == getMage() ? 1 : (int) (offensiveScaling * getMage() * modeMagicMultiplier(raidType));
+		int rangingLevel = 1 == getRange() ? 1 : (int) (offensiveScaling * getRange() * modeOffensiveMultiplier(raidType));
+
 		NPCStats scaledStats = new NPCStats(
-			(int)(hpScaling * getHp() * cmHpMultiplier()),
-			(int)(offensiveScaling * getAtt() * cmOffensiveMultiplier),
-			(int)(offensiveScaling * getStr() * cmOffensiveMultiplier),
-			(int)(defensiveScaling * getDef() * cmDefenseMultiplier),
-			(int)(offensiveScaling * getMage() * cmMagicMultiplier),
-			(int)(offensiveScaling * getRange() * cmOffensiveMultiplier),
+			hitpoints,
+			attackLevel,
+			strengthLevel,
+			defenceLevel,
+			magicLevel,
+			rangingLevel,
 			getOffensiveAtt(),
 			getOffensiveStr(),
 			getDefensiveStab(),

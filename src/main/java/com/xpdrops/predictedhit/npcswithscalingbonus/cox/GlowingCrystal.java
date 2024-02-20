@@ -8,13 +8,13 @@ public class GlowingCrystal extends CoXNPC
 	}
 
 	@Override
-	protected double cmHpMultiplier()
+	protected double modeHpMultiplier(int raidType)
 	{
 		return 1.0;
 	}
 
 	@Override
-	protected double cmDefenseMultiplier()
+	protected double modeDefenceMultiplier(int raidType)
 	{
 		return 1.0;
 	}

@@ -27,10 +27,6 @@ public class NPCStats
 	private int defensiveMage;
 	private int defensiveRange;
 
-	public NPCStats()
-	{
-	}
-
 	private static final int MAX_HP_FOR_MULTIPLIER = 2000;
 
 	protected static double modifierFromStats(NPCStats npcStats)

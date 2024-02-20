@@ -9,19 +9,19 @@ public class GreatOlm extends CoXNPC
 	}
 
 	@Override
-	protected double calculateHpScaling(int partySize)
+	protected double calculateHpScaling(int scaledPartySize, int playersInRaid)
 	{
-		return (partySize - 3 * Math.floor(partySize / 8.0) + 1) / 2.0;
+		return (scaledPartySize - 3 * Math.floor(scaledPartySize / 8.0) + 1) / 2.0;
 	}
 
 	@Override
-	protected double cmHpMultiplier()
+	protected double modeHpMultiplier(int raidType)
 	{
 		return 1.0;
 	}
 
 	@Override
-	protected double calculateModifier(int raidType, int partySize)
+	protected double calculateModifier(int raidType, int scaledPartySize, int playersInRaid)
 	{
 		// From testing, it seems Olm does not ever have xp bonus even though the sheet suggests otherwise.
 		return 1.0;

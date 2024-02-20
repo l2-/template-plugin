@@ -9,7 +9,7 @@ public class Scavenger extends CoXNPC
 	}
 
 	@Override
-	protected double calculateHpScaling(int partySize)
+	protected double calculateHpScaling(int scaledPartySize, int playersInRaid)
 	{
 		return 1.0;
 	}

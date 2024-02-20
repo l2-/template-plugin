@@ -55,20 +55,21 @@ public enum CoXNPCs
 		}
 	}
 
-	public static boolean isCOXNPC(int id)
+	public static boolean isCoxNpc(int id)
 	{
 		return COXNPC_MAPPING.containsKey(id);
 	}
 
-	public static double getModifier(int id, int partySize, int raidType)
+	public static double getModifier(int id, int scaledPartySize, int playersInRaid, int raidType)
 	{
-		if (isCOXNPC(id))
+		if (isCoxNpc(id))
 		{
-			return COXNPC_MAPPING.get(id).calculateModifier(raidType, partySize);
+			return COXNPC_MAPPING.get(id).calculateModifier(raidType, scaledPartySize, playersInRaid);
 		}
 		return 1.0;
 	}
 
+	@Getter
 	enum CoXNPCStats
 	{
 		TEKTON(new Tekton(300, 390, 390, 205, 1, 205, 64, 20, 155, 165, 105, 0, 0)),
@@ -80,7 +81,7 @@ public enum CoXNPCs
 		RANGE_VANG(new CoXNPC(180, 150, 150, 150, 150, 160, 0, 0, 55, 60, 100, 400, 300)),
 		VESPULA(new CoXNPC(200, 150, 150, 88, 150, 88, 0, -8, 0, 0, 0, 70, 60)),
 		ABYSSAL_PORTAL(new AbyssalPortal(250, 1, 1, 176, 1, 176, 0, 0, 0, 0, 0, 60, 140)),
-		GUARDIAN(new CoXNPC(250, 140, 140, 1, 1, 100, 0, 20, 80, 180, -10, 0, 0)),
+		GUARDIAN(new Guardian(1, 140, 140, 1, 1, 100, 0, 20, 80, 180, -10, 0, 0)),
 		VASA(new CoXNPC(300, 1, 1, 230, 230, 175, 0, 0, 170, 190, 50, 400, 40)),
 		GLOWING_CRYSTAL(new GlowingCrystal(120, 1, 1, 100, 1, 100, 0, 0, -5, 180, 180, 0, 0)),
 		MYSTIC(new CoXNPC(160, 140, 140, 140, 1, 187, 85, 50, 155, 155, 115, 140, 115)),
@@ -92,9 +93,7 @@ public enum CoXNPCs
 		GREAT_OLM_MAGE_HAND(new GreatOlm(600, 250, 250, 175, 250, 175, 0, 0, 50, 50, 50, 50, 50)),
 		GREAT_OLM_MELEE_HAND(new GreatOlm(600, 250, 250, 87, 250, 175, 0, 0, 200, 200, 200, 50, 200)),
 		SCAVENGER(new Scavenger(30, 120, 120, 1, 1, 45, 0, 0, 0, 0, 0, 0, 0));
-		@Getter
 		private final CoXNPC coxnpc;
-
 		CoXNPCStats(CoXNPC coxnpc)
 		{
 			this.coxnpc = coxnpc;
