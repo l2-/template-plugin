@@ -50,7 +50,7 @@ public class CoXNPC extends NPCStats
 		return (Math.floor(Math.sqrt(partySize - 1.0)) + Math.floor((partySize - 1) * 7.0 / 10.0) + 100.0) / 100.0;
 	}
 
-	// Assumes everyone in the part is max combat and mining
+	// Assumes everyone in the raid is max combat and mining
 	protected double calculateModifier(int raidType, int scaledPartySize, int playersInRaid)
 	{
 		double hpScaling = calculateHpScaling(scaledPartySize, playersInRaid);
