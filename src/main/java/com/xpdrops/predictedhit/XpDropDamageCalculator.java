@@ -31,6 +31,7 @@ public class XpDropDamageCalculator
 	private static final Pattern RAID_LEVEL_MATCHER = Pattern.compile("(\\d+)");
 	private static final int RAID_LEVEL_WIDGET_ID = (481 << 16) | 42;
 	private static final int ROOM_LEVEL_WIDGET_ID = (481 << 16) | 45;
+	private static final int COX_SCALED_PARTY_SIZE_VARBIT = 9540;
 
 	private int lastToARaidLevel = 0;
 	private int lastToARaidPartySize = 1;
@@ -56,7 +57,7 @@ public class XpDropDamageCalculator
 
 	private int getCoXPartySize()
 	{
-		return Math.max(1, client.getVarbitValue(Varbits.RAID_PARTY_SIZE));
+		return Math.max(1, client.getVarbitValue(COX_SCALED_PARTY_SIZE_VARBIT));
 	}
 
 	private int getToBPartySize()
