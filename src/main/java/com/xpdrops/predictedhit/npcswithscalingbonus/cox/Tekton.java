@@ -8,8 +8,8 @@ public class Tekton extends CoXNPC
 	}
 
 	@Override
-	protected double modeMagicMultiplier(int raidType)
+	protected double cmMagicMultiplier()
 	{
-		return isCM(raidType) ? 1.2 : 1.0;
+		return 1.2;
 	}
 }

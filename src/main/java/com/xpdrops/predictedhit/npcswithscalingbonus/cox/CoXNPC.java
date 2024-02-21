@@ -10,29 +10,29 @@ public class CoXNPC extends NPCStats
 		super(hp, att, str, def, mage, range, offensiveAtt, offensiveStr, defensiveStab, defensiveSlash, defensiveCrush, defensiveMage, defensiveRange);
 	}
 
-	protected boolean isCM(int raidType)
+	private boolean isCM(int raidType)
 	{
 		return raidType > 0;
 	}
 
-	protected double modeHpMultiplier(int raidType)
+	protected double cmHpMultiplier()
 	{
-		return this.isCM(raidType) ? 1.5 : 1.0;
+		return 1.5;
 	}
 
-	protected double modeOffensiveMultiplier(int raidType)
+	protected double cmOffensiveMultiplier()
 	{
-		return this.isCM(raidType) ? 1.5 : 1.0;
+		return 1.5;
 	}
 
-	protected double modeMagicMultiplier(int raidType)
+	protected double cmDefenceMultiplier()
 	{
-		return this.isCM(raidType) ? 1.5 : 1.0;
+		return 1.5;
 	}
 
-	protected double modeDefenceMultiplier(int raidType)
+	protected double cmMagicMultiplier()
 	{
-		return this.isCM(raidType) ? 1.5 : 1.0;
+		return 1.5;
 	}
 
 	protected double calculateHpScaling(int scaledPartySize, int playersInRaid)
@@ -57,12 +57,24 @@ public class CoXNPC extends NPCStats
 		double offensiveScaling = calculateOffensiveScaling(scaledPartySize);
 		double defensiveScaling = calculateDefensiveScaling(scaledPartySize);
 
-		int hitpoints = (int) (hpScaling * getHp() * modeHpMultiplier(raidType));
-		int attackLevel = 1 == getAtt() ? 1 : (int) (offensiveScaling * getAtt() * modeOffensiveMultiplier(raidType));
-		int strengthLevel = 1 == getStr() ? 1 : (int) (offensiveScaling * getStr() * modeOffensiveMultiplier(raidType));
-		int defenceLevel = (int) (defensiveScaling * getDef() * modeDefenceMultiplier(raidType));
-		int magicLevel = 1 == getMage() ? 1 : (int) (offensiveScaling * getMage() * modeMagicMultiplier(raidType));
-		int rangingLevel = 1 == getRange() ? 1 : (int) (offensiveScaling * getRange() * modeOffensiveMultiplier(raidType));
+		int hitpoints, attackLevel, strengthLevel, defenceLevel, magicLevel, rangingLevel;
+
+		if (isCM(raidType))
+		{
+			hitpoints = (int) (hpScaling * getHp() * cmHpMultiplier());
+			attackLevel = 1 == getAtt() ? 1 : (int) (offensiveScaling * getAtt() * cmOffensiveMultiplier());
+			strengthLevel = 1 == getStr() ? 1 : (int) (offensiveScaling * getStr() * cmOffensiveMultiplier());
+			defenceLevel = (int) (defensiveScaling * getDef() * cmDefenceMultiplier());
+			magicLevel = 1 == getMage() ? 1 : (int) (offensiveScaling * getMage() * cmMagicMultiplier());
+			rangingLevel = 1 == getRange() ? 1 : (int) (offensiveScaling * getRange() * cmOffensiveMultiplier());
+		} else {
+			hitpoints = (int) (hpScaling * getHp());
+			attackLevel = 1 == getAtt() ? 1 : (int) (offensiveScaling * getAtt());
+			strengthLevel = 1 == getStr() ? 1 : (int) (offensiveScaling * getStr());
+			defenceLevel = (int) (defensiveScaling * getDef());
+			magicLevel = 1 == getMage() ? 1 : (int) (offensiveScaling * getMage());
+			rangingLevel = 1 == getRange() ? 1 : (int) (offensiveScaling * getRange());
+		}
 
 		NPCStats scaledStats = new NPCStats(
 			hitpoints,

@@ -55,14 +55,14 @@ public enum CoXNPCs
 		}
 	}
 
-	public static boolean isCoxNpc(int id)
+	public static boolean isCOXNPC(int id)
 	{
 		return COXNPC_MAPPING.containsKey(id);
 	}
 
 	public static double getModifier(int id, int scaledPartySize, int playersInRaid, int raidType)
 	{
-		if (isCoxNpc(id))
+		if (isCOXNPC(id))
 		{
 			return COXNPC_MAPPING.get(id).calculateModifier(raidType, scaledPartySize, playersInRaid);
 		}

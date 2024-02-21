@@ -8,6 +8,9 @@ public class Guardian extends CoXNPC
 		super(hp, att, str, mage, range, def, offensiveAtt, offensiveStr, defensiveStab, defensiveSlash, defensiveCrush, defensiveMage, defensiveRange);
 	}
 
+	// Formula to calculate average mining level:
+	// floor(total mining level / total party size),
+	// where board scaling accounts have 0 mining.
 	@Override
 	protected double calculateHpScaling(int scaledPartySize, int playersInRaid)
 	{

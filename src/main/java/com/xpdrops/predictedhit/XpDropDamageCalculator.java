@@ -54,7 +54,7 @@ public class XpDropDamageCalculator
 		XP_BONUS_MAPPING.putAll(getNpcsWithXpBonus());
 	}
 
-	private int getCoxScaledPartySize()
+	private int getCoxTotalPartySize()
 	{
 		return Math.max(1, client.getVarbitValue(COX_SCALED_PARTY_SIZE_VARBIT));
 	}
@@ -138,9 +138,9 @@ public class XpDropDamageCalculator
 	public int calculateHitOnNpc(int id, int hpXpDiff, double configModifier)
 	{
 		double modifier = 1.0;
-		if (CoXNPCs.isCoxNpc(id))
+		if (CoXNPCs.isCOXNPC(id))
 		{
-			int scaledPartySize = getCoxScaledPartySize();
+			int scaledPartySize = getCoxTotalPartySize();
 			int playersInRaid = getCoxPlayersInRaid();
 			// Wrong. only follows the setting of the player's board
 //			int raidType = client.getVarbitValue(6385) > 0 ? 1 : 0;

@@ -15,7 +15,7 @@ public class GreatOlm extends CoXNPC
 	}
 
 	@Override
-	protected double modeHpMultiplier(int raidType)
+	protected double cmHpMultiplier()
 	{
 		return 1.0;
 	}
