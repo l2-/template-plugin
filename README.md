@@ -18,6 +18,7 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - Replace the XP tracker widget with a minimalistic one.
 
 #### Change log
+- v1.8.4 - Fix Chambers of Xeric predicted hits with respect to the [2023-11-29 game update](https://secure.runescape.com/m=news/chambers-of-xeric-changes?oldschool=1). - `@umer-rs`
 - v1.8.3 - Fix warden xp multiplier on first attack after skull phase.
 - v1.8.2 - Text spacing of the xp tracker is now consistent, Added RP prayer support, Changed to varbits for toa raid level and party size so the widgets are no longer needed and other plugins that interfere with those widgets will not interfere with this plugin.
 - v1.8.1 - Added coloring of xp drop for offensive melee prayer when using special attack with voidwaker.
@@ -29,7 +30,7 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - v1.7.3 - Update NPC stats to account for Jagex xp bonus change.
 - v1.7.2.3 - Update for RuneLite api change.
 - v1.7.2.2 - Set overlay priority explicitly to force correct ordering.
-- v1.7.2.1 - Change xp drop overlay layer to UNDER_WIDGETS - `@Jbleezy`
+- v1.7.2.1 - Change xp drop overlay layer to UNDER_WIDGETS. - `@Jbleezy`
 - v1.7.2 - Add alpha channel to color pickers.
 - v1.7.1 - Fix bug where xp drop icons were not properly loaded. Xp tracker most recent will now respect the filtered skills.
 - v1.7.0.1 - Update xp bonuses file for wilderness boss update.

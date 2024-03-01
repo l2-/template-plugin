@@ -14,7 +14,7 @@ public class GlowingCrystal extends CoXNPC
 	}
 
 	@Override
-	protected double cmDefenseMultiplier()
+	protected double cmDefenceMultiplier()
 	{
 		return 1.0;
 	}
