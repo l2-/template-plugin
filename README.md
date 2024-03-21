@@ -18,6 +18,8 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - Replace the XP tracker widget with a minimalistic one.
 
 #### Change log
+- v1.8.6 - Update plugin to work with the Varlamore: Part One game update.
+- v1.8.5 - Fixed a bug where the interacting mob was not correct. (e.g. Tekton, Vanguards)
 - v1.8.4 - Fix Chambers of Xeric predicted hits with respect to the [2023-11-29 game update](https://secure.runescape.com/m=news/chambers-of-xeric-changes?oldschool=1). - `@umer-rs`
 - v1.8.3 - Fix warden xp multiplier on first attack after skull phase.
 - v1.8.2 - Text spacing of the xp tracker is now consistent, Added RP prayer support, Changed to varbits for toa raid level and party size so the widgets are no longer needed and other plugins that interfere with those widgets will not interfere with this plugin.
