@@ -2,7 +2,6 @@ package com.xpdrops;
 
 import com.google.inject.Provides;
 import com.xpdrops.attackstyles.AttackStyle;
-import com.xpdrops.attackstyles.WeaponType;
 import com.xpdrops.config.XpDropsConfig;
 import com.xpdrops.overlay.XpDropOverlayManager;
 import com.xpdrops.predictedhit.Hit;
@@ -177,7 +176,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 
 	private void updateAttackStyle(int equippedWeaponType, int attackStyleIndex, int castingMode)
 	{
-		AttackStyle[] attackStyles = WeaponType.getWeaponType(equippedWeaponType).getAttackStyles();
+		AttackStyle[] attackStyles = AttackStyle.getAttackStylesForWeaponType(client, equippedWeaponType);
 		if (attackStyleIndex < attackStyles.length)
 		{
 			attackStyle = attackStyles[attackStyleIndex];

@@ -26,6 +26,8 @@ package com.xpdrops.attackstyles;
 
 import com.xpdrops.Skill;
 import lombok.Getter;
+import net.runelite.api.Client;
+import net.runelite.api.StructComposition;
 
 public enum AttackStyle
 {
@@ -44,9 +46,45 @@ public enum AttackStyle
 	@Getter
 	private final Skill[] skills;
 
+	private static final int WEAPON_STYLES = 3908; // TAG: Remove this
+	public static final int ATTACK_STYLE_NAME = 1407; // TAG: Remove this
+
 	AttackStyle(String name, Skill... skills)
 	{
 		this.name = name;
 		this.skills = skills;
+	}
+
+	// Duplicated from RuneLite's AttackStylesPlugin.java
+	public static AttackStyle[] getAttackStylesForWeaponType(Client client, int weaponType)
+	{
+		// from script4525
+		int weaponStyleEnum = client.getEnum(WEAPON_STYLES).getIntValue(weaponType);
+		int[] weaponStyleStructs = client.getEnum(weaponStyleEnum).getIntVals();
+
+		AttackStyle[] styles = new AttackStyle[weaponStyleStructs.length];
+		int i = 0;
+		for (int style : weaponStyleStructs)
+		{
+			StructComposition attackStyleStruct = client.getStructComposition(style);
+			String attackStyleName = attackStyleStruct.getStringValue(ATTACK_STYLE_NAME);
+
+			AttackStyle attackStyle = AttackStyle.valueOf(attackStyleName.toUpperCase());
+			if (attackStyle == AttackStyle.OTHER)
+			{
+				// "Other" is used for no style
+				++i;
+				continue;
+			}
+
+			// "Defensive" is used for Defensive and also Defensive casting
+			if (i == 5 && attackStyle == AttackStyle.DEFENSIVE)
+			{
+				attackStyle = AttackStyle.DEFENSIVE_CASTING;
+			}
+
+			styles[i++] = attackStyle;
+		}
+		return styles;
 	}
 }
