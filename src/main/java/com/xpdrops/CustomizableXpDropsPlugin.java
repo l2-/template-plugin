@@ -20,7 +20,6 @@ import net.runelite.api.ItemID;
 import net.runelite.api.NPC;
 import net.runelite.api.Player;
 import net.runelite.api.Prayer;
-import net.runelite.api.StructComposition;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.BeforeRender;
@@ -105,8 +104,6 @@ public class CustomizableXpDropsPlugin extends Plugin
 	private static final int XP_TRACKER_SCRIPT_ID = 997;
 	private static final int XP_TRACKER_WIDGET_GROUP_ID = 122;
 	private static final int XP_TRACKER_WIDGET_CHILD_ID = 4;
-	private static final int WEAPON_STYLES = 3908; // TAG: Remove this
-	public static final int ATTACK_STYLE_NAME = 1407; // TAG: Remove this
 	private static final int[] previous_exp = new int[Skill.values().length - 1];
 	private boolean resetXpTrackerLingerTimerFlag = false;
 
@@ -177,42 +174,9 @@ public class CustomizableXpDropsPlugin extends Plugin
 		updateAttackStyle(equippedWeaponTypeVarbit, attackStyleVarbit, castingModeVarbit);
 	}
 
-	// Duplicated from RuneLite's AttackStylesPlugin.java
-	private AttackStyle[] getWeaponTypeStyles(int weaponType)
-	{
-		// from script4525
-		int weaponStyleEnum = client.getEnum(WEAPON_STYLES).getIntValue(weaponType);
-		int[] weaponStyleStructs = client.getEnum(weaponStyleEnum).getIntVals();
-
-		AttackStyle[] styles = new AttackStyle[weaponStyleStructs.length];
-		int i = 0;
-		for (int style : weaponStyleStructs)
-		{
-			StructComposition attackStyleStruct = client.getStructComposition(style);
-			String attackStyleName = attackStyleStruct.getStringValue(ATTACK_STYLE_NAME);
-
-			AttackStyle attackStyle = AttackStyle.valueOf(attackStyleName.toUpperCase());
-			if (attackStyle == AttackStyle.OTHER)
-			{
-				// "Other" is used for no style
-				++i;
-				continue;
-			}
-
-			// "Defensive" is used for Defensive and also Defensive casting
-			if (i == 5 && attackStyle == AttackStyle.DEFENSIVE)
-			{
-				attackStyle = AttackStyle.DEFENSIVE_CASTING;
-			}
-
-			styles[i++] = attackStyle;
-		}
-		return styles;
-	}
-
 	private void updateAttackStyle(int equippedWeaponType, int attackStyleIndex, int castingMode)
 	{
-		AttackStyle[] attackStyles = getWeaponTypeStyles(equippedWeaponType);
+		AttackStyle[] attackStyles = AttackStyle.getAttackStylesForWeaponType(client, equippedWeaponType);
 		if (attackStyleIndex < attackStyles.length)
 		{
 			attackStyle = attackStyles[attackStyleIndex];
