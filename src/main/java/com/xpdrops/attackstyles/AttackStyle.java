@@ -62,6 +62,10 @@ public enum AttackStyle
 		int weaponStyleEnum = client.getEnum(WEAPON_STYLES).getIntValue(weaponType);
 		int[] weaponStyleStructs = client.getEnum(weaponStyleEnum).getIntVals();
 
+		if (weaponStyleStructs == null) {
+			return new AttackStyle[0];
+		}
+
 		AttackStyle[] styles = new AttackStyle[weaponStyleStructs.length];
 		int i = 0;
 		for (int style : weaponStyleStructs)
