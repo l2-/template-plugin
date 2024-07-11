@@ -18,6 +18,7 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - Replace the XP tracker widget with a minimalistic one.
 
 #### Change log
+- v1.8.7 - Fixed predicted hits on Awakened DT2 bosses, Kalphite Queen P2, and added Scurrius. - `@umer-rs`
 - v1.8.7 - Fix attach to target ungrouped xp drop draw location.
 - v1.8.6 - Update plugin to work with the Varlamore: Part One game update. - `@umer-rs`
 - v1.8.5 - Fixed a bug where the interacting mob was incorrect. (e.g. Tekton, Vanguards)
