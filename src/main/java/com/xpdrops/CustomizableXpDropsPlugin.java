@@ -363,10 +363,13 @@ public class CustomizableXpDropsPlugin extends Plugin
 		Player player = client.getLocalPlayer();
 		int lastOpponentId = -1;
 		Actor lastOpponent = null;
-		if (event.getSkill() == net.runelite.api.Skill.HITPOINTS && player != null)
+		if (player != null)
+		{
+			lastOpponent = player.getInteracting();
+		}
+		if (event.getSkill() == net.runelite.api.Skill.HITPOINTS)
 		{
 			int hit = 0;
-			lastOpponent = player.getInteracting();
 			if (lastOpponent instanceof Player)
 			{
 				lastOpponentId = lastOpponent.getCombatLevel();
@@ -395,10 +398,13 @@ public class CustomizableXpDropsPlugin extends Plugin
 			Player player = client.getLocalPlayer();
 			int lastOpponentId = -1;
 			Actor lastOpponent = null;
-			if (event.getSkill() == net.runelite.api.Skill.HITPOINTS && player != null)
+			if (player != null)
+			{
+				lastOpponent = player.getInteracting();
+			}
+			if (event.getSkill() == net.runelite.api.Skill.HITPOINTS)
 			{
 				int hit = 0;
-				lastOpponent = player.getInteracting();
 				if (lastOpponent instanceof Player)
 				{
 					lastOpponentId = lastOpponent.getCombatLevel();
