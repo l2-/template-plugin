@@ -46,8 +46,8 @@ public enum AttackStyle
 	@Getter
 	private final Skill[] skills;
 
-	private static final int WEAPON_STYLES = 3908; // TAG: Remove this
-	public static final int ATTACK_STYLE_NAME = 1407; // TAG: Remove this
+	private static final int WEAPON_STYLES = 3908; // EnumID.WEAPON_STYLES
+	private static final int ATTACK_STYLE_NAME = 1407; // ParamID.ATTACK_STYLE_NAME
 
 	AttackStyle(String name, Skill... skills)
 	{
@@ -60,6 +60,18 @@ public enum AttackStyle
 	{
 		// from script4525
 		int weaponStyleEnum = client.getEnum(WEAPON_STYLES).getIntValue(weaponType);
+		if (weaponStyleEnum == -1)
+		{
+			if (weaponType == 30)
+			{
+				// Partisan
+				return new AttackStyle[]{
+					AttackStyle.ACCURATE, AttackStyle.AGGRESSIVE, AttackStyle.AGGRESSIVE, DEFENSIVE
+				};
+			}
+			return new AttackStyle[0];
+		}
+
 		int[] weaponStyleStructs = client.getEnum(weaponStyleEnum).getIntVals();
 
 		if (weaponStyleStructs == null)
