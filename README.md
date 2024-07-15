@@ -18,6 +18,7 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - Replace the XP tracker widget with a minimalistic one.
 
 #### Change log
+- v1.8.11 - Fix whisperer xp bonus.
 - v1.8.10 - Fix keris partisan attack style and duke xp bonus.
 - v1.8.9 - Update NPC stats.
 - v1.8.8 - Fix attach to target ungrouped xp drop draw location.
