@@ -1,5 +1,6 @@
 package com.xpdrops;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
 import com.xpdrops.attackstyles.AttackStyle;
 import com.xpdrops.config.XpDropsConfig;
@@ -35,6 +36,7 @@ import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
+import net.runelite.client.game.ItemVariationMapping;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -46,6 +48,7 @@ import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.PriorityQueue;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static net.runelite.api.ScriptID.XPDROPS_SETDROPSIZE;
@@ -60,6 +63,9 @@ import static net.runelite.api.ScriptID.XPDROPS_SETDROPSIZE;
 public class CustomizableXpDropsPlugin extends Plugin
 {
 	public static final int[] SKILL_PRIORITY = new int[] {1, 5, 2, 6, 3, 7, 4, 15, 17, 18, 0, 16, 11, 14, 13, 9, 8, 10, 19, 20, 12, 22, 21};
+	private static final Set<Integer> VOIDWAKERS = new ImmutableSet.Builder<Integer>()
+		.addAll(ItemVariationMapping.getVariations(ItemID.VOIDWAKER))
+		.build();
 	private static final int LEVIATHAN_ID = 12214;
 	private static final int VARDORVIS_ID = 12223;
 
@@ -459,7 +465,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 		ItemContainer equipment = client.getItemContainer(InventoryID.EQUIPMENT);
 		if (equipment == null) return false;
 		Item weapon = equipment.getItem(EquipmentInventorySlot.WEAPON.getSlotIdx());
-		return weapon != null && weapon.getId() == ItemID.VOIDWAKER;
+		return weapon != null && VOIDWAKERS.contains(weapon.getId());
 	}
 
 	protected XpDropStyle matchPrayerStyle(Skill skill)
