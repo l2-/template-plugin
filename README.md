@@ -18,7 +18,8 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - Replace the XP tracker widget with a minimalistic one.
 
 #### Change log
-- v1.8.13 - Fix duke xp bonus again
+- v1.8.14 - Add xp bonuses for new npcs.
+- v1.8.13 - Fix duke xp bonus again.
 - v1.8.12 - Added voidwaker variations, and fixed a few xp bonuses. - `@umer-rs`, `@Tylanderr`
 - v1.8.11 - Fix whisperer xp bonus.
 - v1.8.10 - Fix keris partisan attack style and duke xp bonus.
