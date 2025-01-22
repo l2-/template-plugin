@@ -31,6 +31,7 @@ public class XpDropDamageCalculator
 	private static final int RAID_LEVEL_WIDGET_ID = (481 << 16) | 42;
 	private static final int ROOM_LEVEL_WIDGET_ID = (481 << 16) | 45;
 	private static final int COX_SCALED_PARTY_SIZE_VARBIT = 9540;
+	private static final int RAID_PARTY_SIZE = 5424;
 
 	private int lastToARaidLevel = 0;
 	private int lastToARaidPartySize = 1;
@@ -63,7 +64,7 @@ public class XpDropDamageCalculator
 	// Ideally this method returns how many non board scaling accounts started the raid.
 	private int getCoxPlayersInRaid()
 	{
-		return Math.max(1, client.getVarbitValue(Varbits.RAID_PARTY_SIZE));
+		return Math.max(1, client.getVarbitValue(RAID_PARTY_SIZE));
 	}
 
 	private int getToBPartySize()
