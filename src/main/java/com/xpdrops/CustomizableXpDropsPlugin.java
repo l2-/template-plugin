@@ -163,6 +163,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 		setXpTrackerHidden(config.useXpTracker());
 
 		xpDropDamageCalculator.populateMap();
+		xpDropDamageCalculator.populateUserDefinedXpBonusMapping(config.predictedHitModifiers());
 
 		long totalTime = System.currentTimeMillis() - time;
 		log.debug("Plugin took {}ms to start.", totalTime);
@@ -301,6 +302,11 @@ public class CustomizableXpDropsPlugin extends Plugin
 			if ("xpTrackerHideVanilla".equals(configChanged.getKey()))
 			{
 				setXpTrackerHidden(config.xpTrackerHideVanilla());
+			}
+
+			if ("predictedHitModifiers".equals(configChanged.getKey()))
+			{
+				xpDropDamageCalculator.populateUserDefinedXpBonusMapping(config.predictedHitModifiers());
 			}
 		}
 	}

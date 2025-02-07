@@ -11,6 +11,7 @@ import net.runelite.api.Client;
 import net.runelite.api.Varbits;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.util.Text;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.inject.Inject;
 import java.io.BufferedReader;
@@ -18,15 +19,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class XpDropDamageCalculator
 {
 	private static final String NPC_JSON_FILE = "npcs.min.json";
 	private static final HashMap<Integer, Double> XP_BONUS_MAPPING = new HashMap<>();
+	private static final HashMap<Integer, Double> USER_DEFINED_XP_BONUS_MAPPING = new HashMap<>();
 	private static final Pattern RAID_LEVEL_MATCHER = Pattern.compile("(\\d+)");
 	private static final int RAID_LEVEL_WIDGET_ID = (481 << 16) | 42;
 	private static final int ROOM_LEVEL_WIDGET_ID = (481 << 16) | 45;
@@ -168,6 +173,10 @@ public class XpDropDamageCalculator
 			modifier = ToANPCs.getModifier(id, partySize, raidLevel, roomLevel);
 			log.debug("TOA modifier {} {} party size {} raid level {} room level {}", id, modifier, partySize, raidLevel, roomLevel);
 		}
+		else if (USER_DEFINED_XP_BONUS_MAPPING.containsKey(id))
+		{
+			modifier = USER_DEFINED_XP_BONUS_MAPPING.get(id);
+		}
 		else if (XP_BONUS_MAPPING.containsKey(id))
 		{
 			modifier = XP_BONUS_MAPPING.get(id);
@@ -175,11 +184,40 @@ public class XpDropDamageCalculator
 		return calculateHit(hpXpDiff, modifier, configModifier);
 	}
 
+	public void populateUserDefinedXpBonusMapping(String xpModifiers)
+	{
+		USER_DEFINED_XP_BONUS_MAPPING.clear();
+		HashMap<Integer, Double> xpModifiersMap = parseUserDefinedXpModifiers(xpModifiers);
+		USER_DEFINED_XP_BONUS_MAPPING.putAll(xpModifiersMap);
+	}
+
+	private HashMap<Integer, Double> parseUserDefinedXpModifiers(String xpModifiers)
+	{
+		return Arrays.stream(xpModifiers.split("\\R"))
+			.map(line -> {
+				String[] splits = line.split(":");
+				if (splits.length < 2) return null;
+				try {
+					int key = Integer.parseInt(splits[0]);
+					double value = Double.parseDouble(splits[1]);
+					return Pair.of(key, value);
+				} catch (NumberFormatException ignored) {
+					return null;
+				}
+			})
+			.filter(Objects::nonNull)
+			.collect(Collectors.toMap(
+				Pair::getKey,
+				Pair::getValue,
+				(prev, next) -> next,
+				HashMap::new));
+	}
+
 	// Don't do this in static block since we may want finer control of when it happens for a possibly long blocking
 	// operation like this.
 	private HashMap<Integer, Double> getNpcsWithXpBonus()
 	{
-		HashMap<Integer, Double> map1 = new HashMap<>();
+		HashMap<Integer, Double> xpModifierMap = new HashMap<>();
 		try
 		{
 			try (InputStream resource = XpDropDamageCalculator.class.getResourceAsStream(NPC_JSON_FILE))
@@ -197,7 +235,7 @@ public class XpDropDamageCalculator
 						{
 							Double xpbonus = result.get(key);
 							xpbonus = (xpbonus + 100) / 100.0d;
-							map1.put(Integer.parseInt(id), xpbonus);
+							xpModifierMap.put(Integer.parseInt(id), xpbonus);
 						}
 					}
 				}
@@ -212,6 +250,6 @@ public class XpDropDamageCalculator
 			log.warn("Couldn't open NPC json file", e);
 		}
 
-		return map1;
+		return xpModifierMap;
 	}
 }

@@ -545,6 +545,21 @@ public interface XpDropsConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "predictedHitModifiers",
+		name = "Predicted hit xp modifiers",
+		description = "Advanced. Enter your own xp modifiers per NPC id here.<br>" +
+			"Format as NPC id:xp modifier. Separate each entry with a newline.<br>" +
+			"For example if a goblin has an NPC id of 2 and an xp bonus of 35% then enter 2:1.35 in this field. If a rat has NPC id of 3 and an xp bonus of -75% then enter 3:0.25<br>"  +
+			"Modifiers entered here will supersede the modifiers shipped with the plugin!",
+		position = 27,
+		section = predicted_hit
+	)
+	default String predictedHitModifiers()
+	{
+		return "";
+	}
+
+	@ConfigItem(
 		keyName = "useXpTracker",
 		name = "Use xp tracker",
 		description = "Enable or disable custom xp tracker",
