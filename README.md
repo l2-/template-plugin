@@ -18,6 +18,7 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - Replace the XP tracker widget with a minimalistic one.
 
 #### Change log
+- v1.8.16 - Add titans xp bonus .
 - v1.8.15.1 - Fix to account for Runelite api change. - `@DapperMickie`
 - v1.8.15 - Add xp bonuses for Hueycoatl and Amoxliatl. - `@wavesy`
 - v1.8.14 - Add xp bonuses for new npcs.
