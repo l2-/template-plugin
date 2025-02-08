@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
 import com.xpdrops.attackstyles.AttackStyle;
 import com.xpdrops.config.ImportExport;
+import com.xpdrops.config.MigrationManager;
 import com.xpdrops.config.XpDropsConfig;
 import com.xpdrops.overlay.XpDropOverlayManager;
 import com.xpdrops.predictedhit.Hit;
@@ -91,6 +92,9 @@ public class CustomizableXpDropsPlugin extends Plugin
 	@Inject
 	private ImportExport importExport;
 
+	@Inject
+	private MigrationManager migrationManager;
+
 	@Provides
 	XpDropsConfig provideConfig(ConfigManager configManager)
 	{
@@ -129,6 +133,8 @@ public class CustomizableXpDropsPlugin extends Plugin
 	protected void startUp()
 	{
 		long time = System.currentTimeMillis();
+
+		migrationManager.migrate();
 
 		if (client.getGameState() == GameState.LOGGED_IN)
 		{

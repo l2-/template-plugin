@@ -8,7 +8,7 @@ import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
 import net.runelite.client.config.Range;
-import net.runelite.client.ui.overlay.OverlayPriority;
+import net.runelite.client.ui.overlay.Overlay;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -770,7 +770,7 @@ public interface XpDropsConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "xpDropOverlayPriority",
+		keyName = "xpDropOverlayPriority1",
 		name = "Xp drop overlay priority",
 		description = "The priority of the xp drop overlay with relation to the other overlays.<br>" +
 			"This impacts the sorting of the overlays attached to the same overlay group (eg. the top right corner overlay group).<br>" +
@@ -778,13 +778,13 @@ public interface XpDropsConfig extends Config
 		position = 5,
 		section = xp_miscellaneous_settings
 	)
-	default OverlayPriority xpDropOverlayPriority()
+	default double xpDropOverlayPriority()
 	{
-		return OverlayPriority.HIGH;
+		return Overlay.PRIORITY_HIGH;
 	}
 
 	@ConfigItem(
-		keyName = "xpTrackerOverlayPriority",
+		keyName = "xpTrackerOverlayPriority1",
 		name = "Xp tracker overlay priority",
 		description = "The priority of the xp tracker overlay with relation to the other overlays.<br>" +
 			"This impacts the sorting of the overlays attached to the same overlay group (eg. the top right corner overlay group).<br>" +
@@ -792,8 +792,8 @@ public interface XpDropsConfig extends Config
 		position = 6,
 		section = xp_miscellaneous_settings
 	)
-	default OverlayPriority xpTrackerOverlayPriority()
+	default double xpTrackerOverlayPriority()
 	{
-		return OverlayPriority.HIGHEST;
+		return Overlay.PRIORITY_HIGHEST;
 	}
 }

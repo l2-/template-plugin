@@ -26,7 +26,7 @@ public class XpDropOverlay extends Overlay
 		this.xpDropOverlayManager = xpDropOverlayManager;
 		setLayer(OverlayLayer.UNDER_WIDGETS);
 		setPosition(OverlayPosition.TOP_RIGHT);
-		setPriority(config.xpDropOverlayPriority());
+		setPriority((float)config.xpDropOverlayPriority());
 	}
 
 	@Override

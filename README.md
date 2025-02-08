@@ -19,6 +19,7 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - Export your plugin settings to share with a friend by right-clicking the xp orb in-game.
 
 #### Change log
+- v1.9.2 - Add migration manager to drop use of OverlayPriority which is deprecated.
 - v1.9.1 - Add option to export and import plugin settings. Right-click the xp orb in-game to export or import.
 - v1.9.0 - Add xp multiplier config.
 - v1.8.16 - Add titans xp bonus.

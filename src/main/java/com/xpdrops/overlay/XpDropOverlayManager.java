@@ -121,13 +121,13 @@ public class XpDropOverlayManager
 
 	public void xpDropOverlayPriorityChanged()
 	{
-		xpDropOverlay.setPriority(config.xpDropOverlayPriority());
+		xpDropOverlay.setPriority((float)config.xpDropOverlayPriority());
 		overlayManager.saveOverlay(xpDropOverlay);
 	}
 
 	public void xpTrackerOverlayPriorityChanged()
 	{
-		xpTrackerOverlay.setPriority(config.xpTrackerOverlayPriority());
+		xpTrackerOverlay.setPriority((float)config.xpTrackerOverlayPriority());
 		overlayManager.saveOverlay(xpTrackerOverlay);
 	}
 

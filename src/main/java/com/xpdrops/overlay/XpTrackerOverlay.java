@@ -35,7 +35,7 @@ public class XpTrackerOverlay extends Overlay
 		this.xpTrackerService = xpTrackerService;
 		setLayer(OverlayLayer.UNDER_WIDGETS);
 		setPosition(OverlayPosition.TOP_RIGHT);
-		setPriority(config.xpTrackerOverlayPriority());
+		setPriority((float)config.xpTrackerOverlayPriority());
 	}
 
 	@Override
