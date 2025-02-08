@@ -16,8 +16,10 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - Add a custom prefix and suffix to the XP drop text.
 - Show predicted damage from XP drop.
 - Replace the XP tracker widget with a minimalistic one.
+- Export your plugin settings to share with a friend by right-clicking the xp orb in-game.
 
 #### Change log
+- v1.9.1 - Add option to export and import plugin settings. Right-click the xp orb in-game to export or import.
 - v1.9.0 - Add xp multiplier config.
 - v1.8.16 - Add titans xp bonus.
 - v1.8.15.1 - Fix to account for Runelite api change. - `@DapperMickie`
@@ -137,6 +139,9 @@ Customizable XP tracker (Settings: Font size 16, Font style default, icon size o
 
 With optional progress bar (Settings: Font size 16, Font style bold, icon size override 25).\
 ![xptrackerprogress](https://i.imgur.com/d9lKvQK.png)
+
+Import and export settings of this plugin to share with friends.\
+![xpgloberightclickmenu](https://i.imgur.com/GYCCXQj.png)
 
 From https://github.com/ruchir90 \
 ![pic1](https://i.imgur.com/8W9zE8g.png)

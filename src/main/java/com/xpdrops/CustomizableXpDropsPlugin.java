@@ -3,6 +3,7 @@ package com.xpdrops;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provides;
 import com.xpdrops.attackstyles.AttackStyle;
+import com.xpdrops.config.ImportExport;
 import com.xpdrops.config.XpDropsConfig;
 import com.xpdrops.overlay.XpDropOverlayManager;
 import com.xpdrops.predictedhit.Hit;
@@ -87,6 +88,9 @@ public class CustomizableXpDropsPlugin extends Plugin
 	@Inject
 	private ChambersLayoutSolver chambersLayoutSolver;
 
+	@Inject
+	private ImportExport importExport;
+
 	@Provides
 	XpDropsConfig provideConfig(ConfigManager configManager)
 	{
@@ -165,6 +169,8 @@ public class CustomizableXpDropsPlugin extends Plugin
 		xpDropDamageCalculator.populateMap();
 		xpDropDamageCalculator.populateUserDefinedXpBonusMapping(config.predictedHitModifiers());
 
+		importExport.addImportExportMenuOptions();
+
 		long totalTime = System.currentTimeMillis() - time;
 		log.debug("Plugin took {}ms to start.", totalTime);
 	}
@@ -205,6 +211,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 	{
 		xpDropOverlayManager.shutdown();
 		setXpTrackerHidden(false); // should be according to varbit?
+		importExport.removeMenuOptions();
 	}
 
 	protected void setXpTrackerHidden(boolean hidden)
