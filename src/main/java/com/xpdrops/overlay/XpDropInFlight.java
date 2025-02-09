@@ -20,4 +20,14 @@ public class XpDropInFlight
 	private Actor attachTo;
 	// Can include predicted hit but is not 'just' a predicted hit.
 	boolean isPredictedHit;
+	int clientTickCount;
+
+	void merge(XpDropInFlight xpDropInFlight)
+	{
+		icons = icons | xpDropInFlight.getIcons();
+		amount = amount + xpDropInFlight.getAmount();
+		style = style == XpDropStyle.DEFAULT ? xpDropInFlight.getStyle() : style;
+		hit = hit + xpDropInFlight.getHit();
+		attachTo = attachTo == null ? xpDropInFlight.attachTo : attachTo;
+	}
 }
