@@ -14,7 +14,7 @@ public class MigrationManager
 	@Inject
 	private ConfigManager configManager;
 
-	private XpDropsConfig config;
+	private final XpDropsConfig config;
 
 	@Inject
 	protected MigrationManager(XpDropsConfig config)

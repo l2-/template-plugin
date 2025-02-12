@@ -2,6 +2,7 @@ package com.xpdrops.predictedhit;
 
 import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
+import com.google.gson.reflect.TypeToken;
 import com.xpdrops.predictedhit.npcswithscalingbonus.ChambersLayoutSolver;
 import com.xpdrops.predictedhit.npcswithscalingbonus.cox.CoXNPCs;
 import com.xpdrops.predictedhit.npcswithscalingbonus.toa.ToANPCs;
@@ -18,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -222,12 +224,17 @@ public class XpDropDamageCalculator
 		{
 			try (InputStream resource = XpDropDamageCalculator.class.getResourceAsStream(NPC_JSON_FILE))
 			{
+				if (resource == null)
+				{
+					log.warn("Couldn't open NPC json file");
+					return xpModifierMap;
+				}
 				BufferedReader reader = new BufferedReader(new InputStreamReader(resource,
 					StandardCharsets.UTF_8));
-				Object jsonResult = GSON.fromJson(reader, Map.class);
 				try
 				{
-					Map<String, LinkedTreeMap<String, Double>> map = (Map<String, LinkedTreeMap<String, Double>>) jsonResult;
+					Type type = TypeToken.getParameterized(Map.class, String.class, LinkedTreeMap.class).getType();
+					Map<String, LinkedTreeMap<String, Double>> map = GSON.fromJson(reader, type);
 					for (String id : map.keySet())
 					{
 						LinkedTreeMap<String, Double> result = map.get(id);

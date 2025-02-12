@@ -36,7 +36,7 @@ public class ChambersLayoutSolver
 	private static final WorldPoint TEMP_LOCATION = new WorldPoint(3360, 5152, 2);
 	private static final String CM_RAID_CODE = "SPCFPC#¤CFP SPC#";
 
-	private Client client;
+	private final Client client;
 	boolean checkInRaid;
 	private boolean loggedIn;
 	private boolean inRaidChambers;
@@ -80,7 +80,7 @@ public class ChambersLayoutSolver
 		}
 	}
 
-	public void onGameTick(GameTick event)
+	public void onGameTick(GameTick ignored)
 	{
 		if (checkInRaid)
 		{
@@ -101,7 +101,7 @@ public class ChambersLayoutSolver
 		}
 	}
 
-	public void onGameStateChanged(GameStateChanged event)
+	public void onGameStateChanged(GameStateChanged ignored)
 	{
 		if (client.getGameState() == GameState.LOGGED_IN)
 		{
@@ -162,7 +162,7 @@ public class ChambersLayoutSolver
 			}
 
 			raid = new Raid(
-				new WorldPoint(client.getBaseX() + gridBase.getX(), client.getBaseY() + gridBase.getY(), LOBBY_PLANE),
+				new WorldPoint(client.getTopLevelWorldView().getBaseX() + gridBase.getX(), client.getTopLevelWorldView().getBaseY() + gridBase.getY(), LOBBY_PLANE),
 				lobbyIndex
 			);
 		}
@@ -182,8 +182,8 @@ public class ChambersLayoutSolver
 			x = raid.getGridBase().getX() + x * ROOM_MAX_SIZE;
 			y = raid.getGridBase().getY() - y * ROOM_MAX_SIZE;
 
-			x = x - client.getBaseX();
-			y = y - client.getBaseY();
+			x = x - client.getTopLevelWorldView().getBaseX();
+			y = y - client.getTopLevelWorldView().getBaseY();
 
 			if (x < (1 - ROOM_MAX_SIZE) || x >= SCENE_SIZE)
 			{
@@ -199,7 +199,7 @@ public class ChambersLayoutSolver
 				y = 1;
 			}
 
-			Tile tile = client.getScene().getTiles()[plane][x][y];
+			Tile tile = client.getTopLevelWorldView().getScene().getTiles()[plane][x][y];
 
 			if (tile == null)
 			{
@@ -215,7 +215,7 @@ public class ChambersLayoutSolver
 
 	private Point findLobbyBase()
 	{
-		Tile[][] tiles = client.getScene().getTiles()[LOBBY_PLANE];
+		Tile[][] tiles = client.getTopLevelWorldView().getScene().getTiles()[LOBBY_PLANE];
 
 		for (int x = 0; x < SCENE_SIZE; x++)
 		{
@@ -238,7 +238,7 @@ public class ChambersLayoutSolver
 
 	private RaidRoom determineRoom(Tile base)
 	{
-		int chunkData = client.getInstanceTemplateChunks()[base.getPlane()][(base.getSceneLocation().getX()) / 8][base.getSceneLocation().getY() / 8];
+		int chunkData = client.getTopLevelWorldView().getInstanceTemplateChunks()[base.getPlane()][(base.getSceneLocation().getX()) / 8][base.getSceneLocation().getY() / 8];
 		InstanceTemplates template = InstanceTemplates.findMatch(chunkData);
 
 		if (template == null)
@@ -297,7 +297,7 @@ public class ChambersLayoutSolver
 		}
 		int x;
 		int y;
-		Tile[][] tiles = client.getScene().getTiles()[LOBBY_PLANE];
+		Tile[][] tiles = client.getTopLevelWorldView().getScene().getTiles()[LOBBY_PLANE];
 		if (tiles[gridBase.getX()][gridBase.getY() + ROOM_MAX_SIZE] == null)
 		{
 			y = 0;
