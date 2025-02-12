@@ -23,9 +23,9 @@ public interface XpDropsConfig extends Config
 		BOLD_ITALICS("Bold and italics", Font.BOLD | Font.ITALIC),
 		DEFAULT("Default", Font.PLAIN);
 
-		String name;
+		private final String name;
 		@Getter
-		private int style;
+		private final int style;
 
 		FontStyle(String name, int style)
 		{
