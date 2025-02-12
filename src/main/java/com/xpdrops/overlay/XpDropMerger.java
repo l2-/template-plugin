@@ -1,5 +1,6 @@
 package com.xpdrops.overlay;
 
+import com.xpdrops.XpDropStyle;
 import com.xpdrops.config.XpDropsConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Singleton
-// The existence of this class is necessary because of the onStatChanged events the client sometimes fires out of order,
+// The existence of this class is necessary because the client sometimes fires StatChanged events on the same server tick but not on the same client tick (and out of order?),
 // which causes a disconnect between adding the xp drops to the queue from the event handler and polling the xp drops from the queue in the overlay manager.
 // We use this class to merge new xp drops into existing xp drops if they happened on the same tick.
 public class XpDropMerger
@@ -44,6 +45,7 @@ public class XpDropMerger
 		{
 			mergeUngroupedXpDrops(dropsToBePutInFlight, dropsInFlight);
 			reorderXpDrops(dropsToBePutInFlight);
+			mergeUngroupedPredictedHit(dropsInFlight);
 		}
 	}
 
@@ -71,7 +73,7 @@ public class XpDropMerger
 	private void mergeGroupedXpDrops(List<XpDropInFlight> xpDropsToBePutInFlight, List<XpDropInFlight> dropsInFlight)
 	{
 		Map<Integer, List<XpDropInFlight>> toBeInFlightGroupedByTick = xpDropsToBePutInFlight.stream()
-			.filter(drop -> !drop.isPredictedHit)
+			.filter(drop -> !drop.isPredictedHit())
 			.collect(Collectors.groupingBy(XpDropInFlight::getClientTickCount));
 		for (Integer tick : toBeInFlightGroupedByTick.keySet())
 		{
@@ -85,7 +87,7 @@ public class XpDropMerger
 	private void mergeUngroupedXpDrops(List<XpDropInFlight> xpDropsToBePutInFlight, List<XpDropInFlight> dropsInFlight)
 	{
 		Map<Pair<Integer, Integer>, List<XpDropInFlight>> toBeInFlightGroupedByTick = xpDropsToBePutInFlight.stream()
-			.filter(drop -> !drop.isPredictedHit)
+			.filter(drop -> !drop.isPredictedHit())
 			.collect(Collectors.groupingBy(drop -> Pair.of(drop.getIcons(), drop.getClientTickCount())));
 		for (Pair<Integer, Integer> key : toBeInFlightGroupedByTick.keySet())
 		{
@@ -96,17 +98,42 @@ public class XpDropMerger
 		}
 	}
 
+	private void mergeUngroupedPredictedHit(List<XpDropInFlight> dropsInFlight)
+	{
+		// These xp drops should be merged already...
+		Map<Integer, List<XpDropInFlight>> inFlightGroupedByTick = dropsInFlight.stream()
+			.filter(drop -> !drop.isPredictedHit())
+			.collect(Collectors.groupingBy(XpDropInFlight::getClientTickCount));
+		for (Integer tick : inFlightGroupedByTick.keySet())
+		{
+			{
+				// ... therefore getting any with hit > 0 will probably be the same hit as all with hit > 0
+				Optional<XpDropInFlight> xpDropInFlight = findLast(inFlightGroupedByTick.get(tick), xp -> !xp.isPredictedHit() && xp.getHit() > 0);
+				if (!xpDropInFlight.isPresent()) continue;
+				inFlightGroupedByTick.get(tick).forEach(xp -> xp.setHit(xpDropInFlight.get().getHit()));
+			}
+			{
+				// ... therefore getting any with style != default will probably be the same style as all with != default
+				Optional<XpDropInFlight> xpDropInFlight = findLast(inFlightGroupedByTick.get(tick), xp -> !xp.isPredictedHit() && xp.getStyle() != XpDropStyle.DEFAULT);
+				if (!xpDropInFlight.isPresent()) continue;
+				inFlightGroupedByTick.get(tick).forEach(xp -> xp.setStyle(xpDropInFlight.get().getStyle()));
+			}
+		}
+	}
+
 	// Flags are already in priority order
 	static int skillPriorityComparator(XpDropInFlight x1, XpDropInFlight x2)
 	{
+		if (x1.isPredictedHit() && !x2.isPredictedHit()) return -1;
+		if (!x1.isPredictedHit() && x2.isPredictedHit()) return 1;
 		int flag1 = x1.getFlags() & XpDropOverlayManager.SKILL_FLAGS_MASK;
 		int flag2 = x2.getFlags() & XpDropOverlayManager.SKILL_FLAGS_MASK;
 		return Integer.compare(flag1, flag2);
 	}
 
-	private void reorderXpDrops(List<XpDropInFlight> dropsToBePutInFlight)
+	private void reorderXpDrops(List<XpDropInFlight> xpDropsToBePutInFlight)
 	{
-		dropsToBePutInFlight.sort(XpDropMerger::skillPriorityComparator);
+		xpDropsToBePutInFlight.sort(XpDropMerger::skillPriorityComparator);
 	}
 
 	private <T> Optional<T> findLast(List<T> list, Predicate<T> p)

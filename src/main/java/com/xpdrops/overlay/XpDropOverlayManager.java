@@ -211,7 +211,6 @@ public class XpDropOverlayManager
 		Skill currentSkill = null;
 		if (config.xpTrackerSkill().equals(XpTrackerSkills.MOST_RECENT))
 		{
-			XpDrop topDrop = plugin.getQueue().peek();
 			for (XpDrop xpDrop : plugin.getQueue())
 			{
 				if (xpDrop != null && !plugin.getFilteredSkills().contains(xpDrop.getSkill().toString().toLowerCase()))
