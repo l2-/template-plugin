@@ -15,12 +15,14 @@ import static net.runelite.api.Prayer.AUGURY;
 import static net.runelite.api.Prayer.BURST_OF_STRENGTH;
 import static net.runelite.api.Prayer.CHIVALRY;
 import static net.runelite.api.Prayer.CLARITY_OF_THOUGHT;
+import static net.runelite.api.Prayer.DEADEYE;
 import static net.runelite.api.Prayer.EAGLE_EYE;
 import static net.runelite.api.Prayer.HAWK_EYE;
 import static net.runelite.api.Prayer.IMPROVED_REFLEXES;
 import static net.runelite.api.Prayer.INCREDIBLE_REFLEXES;
 import static net.runelite.api.Prayer.MYSTIC_LORE;
 import static net.runelite.api.Prayer.MYSTIC_MIGHT;
+import static net.runelite.api.Prayer.MYSTIC_VIGOUR;
 import static net.runelite.api.Prayer.MYSTIC_WILL;
 import static net.runelite.api.Prayer.PIETY;
 import static net.runelite.api.Prayer.RIGOUR;
@@ -50,6 +52,8 @@ enum XpPrayer
 	XP_INCREDIBLE_REFLEXES(INCREDIBLE_REFLEXES, MELEE, AttackStyle.ACCURATE, AttackStyle.AGGRESSIVE, AttackStyle.CONTROLLED, AttackStyle.DEFENSIVE, AttackStyle.OTHER),
 	XP_EAGLE_EYE(EAGLE_EYE, RANGE, AttackStyle.RANGING, AttackStyle.LONGRANGE, AttackStyle.OTHER),
 	XP_MYSTIC_MIGHT(MYSTIC_MIGHT, MAGE, AttackStyle.CASTING, AttackStyle.DEFENSIVE_CASTING, AttackStyle.OTHER),
+	XP_DEADEYE(DEADEYE, RANGE, AttackStyle.RANGING, AttackStyle.LONGRANGE, AttackStyle.OTHER),
+	XP_MYSTIC_VIGOUR(MYSTIC_VIGOUR, MAGE, AttackStyle.CASTING, AttackStyle.DEFENSIVE_CASTING, AttackStyle.OTHER),
 	XP_CHIVALRY(CHIVALRY, MELEE, AttackStyle.ACCURATE, AttackStyle.AGGRESSIVE, AttackStyle.CONTROLLED, AttackStyle.DEFENSIVE, AttackStyle.OTHER),
 	XP_PIETY(PIETY, MELEE, AttackStyle.ACCURATE, AttackStyle.AGGRESSIVE, AttackStyle.CONTROLLED, AttackStyle.DEFENSIVE, AttackStyle.OTHER),
 	XP_RIGOUR(RIGOUR, RANGE, AttackStyle.RANGING, AttackStyle.LONGRANGE, AttackStyle.OTHER),
