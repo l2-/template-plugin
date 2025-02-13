@@ -118,7 +118,9 @@ public class XpDropDamageCalculator
 			{
 				return Integer.parseInt(Text.sanitize(levelWidget.getText()));
 			}
-			catch (Exception ignored) {}
+			catch (Exception ignored)
+			{
+			}
 		}
 		return -1;
 	}
@@ -169,9 +171,12 @@ public class XpDropDamageCalculator
 			int roomLevel = getToARoomLevel();
 			int raidLevel = getToARaidLevel();
 			// If we cannot determine any of the above; use last known settings.
-			if (partySize < 0) partySize = lastToARaidPartySize; else lastToARaidPartySize = partySize;
-			if (roomLevel < 0) roomLevel = lastToARaidRoomLevel; else lastToARaidRoomLevel = roomLevel;
-			if (raidLevel < 0) raidLevel = lastToARaidLevel; else lastToARaidLevel = raidLevel;
+			if (partySize < 0) partySize = lastToARaidPartySize;
+			else lastToARaidPartySize = partySize;
+			if (roomLevel < 0) roomLevel = lastToARaidRoomLevel;
+			else lastToARaidRoomLevel = roomLevel;
+			if (raidLevel < 0) raidLevel = lastToARaidLevel;
+			else lastToARaidLevel = raidLevel;
 			modifier = ToANPCs.getModifier(id, partySize, raidLevel, roomLevel);
 			log.debug("TOA modifier {} {} party size {} raid level {} room level {}", id, modifier, partySize, raidLevel, roomLevel);
 		}
@@ -196,14 +201,18 @@ public class XpDropDamageCalculator
 	private HashMap<Integer, Double> parseUserDefinedXpModifiers(String xpModifiers)
 	{
 		return Arrays.stream(xpModifiers.split("\\R"))
-			.map(line -> {
+			.map(line ->
+			{
 				String[] splits = line.split(":");
 				if (splits.length < 2) return null;
-				try {
+				try
+				{
 					int key = Integer.parseInt(splits[0]);
 					double value = Double.parseDouble(splits[1]);
 					return Pair.of(key, value);
-				} catch (NumberFormatException ignored) {
+				}
+				catch (NumberFormatException ignored)
+				{
 					return null;
 				}
 			})
@@ -229,9 +238,7 @@ public class XpDropDamageCalculator
 					log.warn("Couldn't open NPC json file");
 					return xpModifierMap;
 				}
-				BufferedReader reader = new BufferedReader(new InputStreamReader(resource,
-					StandardCharsets.UTF_8));
-				try
+				try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource, StandardCharsets.UTF_8)))
 				{
 					Type type = TypeToken.getParameterized(Map.class, String.class, LinkedTreeMap.class).getType();
 					Map<String, LinkedTreeMap<String, Double>> map = GSON.fromJson(reader, type);
