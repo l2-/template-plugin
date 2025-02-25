@@ -1,5 +1,6 @@
 package com.xpdrops.overlay;
 
+import com.xpdrops.PredictedHitDropStyle;
 import com.xpdrops.XpDropStyle;
 import com.xpdrops.config.XpDropsConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +34,7 @@ public class XpDropMerger
 	// Removes merged xp drops from the list of to be put in flight.
 	public void mergeXpDrops(List<XpDropInFlight> dropsToBePutInFlight, List<XpDropInFlight> dropsInFlight)
 	{
-		if (config.showPredictedHit() && config.neverGroupPredictedHit())
+		if (config.showPredictedHit() != PredictedHitDropStyle.OFF && config.neverGroupPredictedHit())
 		{
 			mergePredictedHits(dropsToBePutInFlight, dropsInFlight);
 		}

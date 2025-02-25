@@ -64,7 +64,7 @@ public class XpDropOverlay extends Overlay
 			{
 				continue;
 			}
-			String text = getDropText(xpDropInFlight);
+			String text = XpDropOverlayUtilities.getDropText(xpDropInFlight, config);
 
 			float xStart = xpDropInFlight.getXOffset();
 			float yStart = xpDropInFlight.getYOffset();
@@ -121,11 +121,6 @@ public class XpDropOverlay extends Overlay
 				drawIcons(graphics, xpDropInFlight.getIcons(), imageX, imageY, xpDropInFlight.getAlpha(), true);
 			}
 		}
-	}
-
-	private String getDropText(XpDropInFlight xpDropInFlight)
-	{
-		return XpDropOverlayUtilities.getDropText(xpDropInFlight, config);
 	}
 
 	private int drawIcons(Graphics2D graphics, int icons, int x, int y, float alpha, boolean rightToLeft)

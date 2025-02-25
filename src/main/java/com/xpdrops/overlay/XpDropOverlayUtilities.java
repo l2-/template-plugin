@@ -57,34 +57,41 @@ public class XpDropOverlayUtilities
 
 	public static String getDropText(XpDropInFlight xpDropInFlight, XpDropsConfig config)
 	{
-		String text = XpDropOverlayManager.XP_FORMATTER.format(xpDropInFlight.getAmount());
+		final StringBuilder text = new StringBuilder();
 
-		if (xpDropInFlight.isPredictedHit())
+		switch (config.showPredictedHit())
 		{
-			// This line of text is a predicted hit without xp drop.
-			String colorTag = config.predictedHitColorOverride() ?
+			case OFF: // just xp
+				appendXpDrop(xpDropInFlight, config, text);
+				break;
+			case XP_AND_HIT: // xp and hit
+				appendXpDrop(xpDropInFlight, config, text);
+				appendPredictedHit(xpDropInFlight, config, text);
+				break;
+			case HIT_ONLY: // hit
+				appendPredictedHit(xpDropInFlight, config, text);
+				break;
+		}
+
+		return text.toString();
+	}
+
+	private static void appendXpDrop(XpDropInFlight xpDropInFlight, XpDropsConfig config, StringBuilder sb)
+	{
+		sb.append(wrapWithTags(RGBToHex(getColor(xpDropInFlight, config).getRGB())));
+		sb.append(config.xpDropPrefix());
+		sb.append(XpDropOverlayManager.XP_FORMATTER.format(xpDropInFlight.getAmount()));
+		sb.append(config.xpDropSuffix());
+	}
+
+	private static void appendPredictedHit(XpDropInFlight xpDropInFlight, XpDropsConfig config, StringBuilder sb)
+	{
+		sb.append(config.predictedHitColorOverride() ?
 				wrapWithTags(RGBToHex(config.predictedHitColor().getRGB())) :
-				wrapWithTags(RGBToHex(getColor(xpDropInFlight, config).getRGB()));
-			text = colorTag + config.predictedHitPrefix() + text + config.predictedHitSuffix();
-		}
-		else
-		{
-			// This line of text is an XP drop.
-			String colorTag = wrapWithTags(RGBToHex(getColor(xpDropInFlight, config).getRGB()));
-			text = colorTag + config.xpDropPrefix() + text + config.xpDropSuffix();
-		}
-
-		if (xpDropInFlight.getHit() > 0)
-		{
-			// Add predicted hit to the XP drop line of text.
-			String predictedHitColor = "";
-			if (config.predictedHitColorOverride())
-			{
-				predictedHitColor = wrapWithTags(RGBToHex(config.predictedHitColor().getRGB()));
-			}
-			text += predictedHitColor + " (" + config.predictedHitPrefix() + xpDropInFlight.getHit() + config.predictedHitSuffix() + ")";
-		}
-		return text;
+				wrapWithTags(RGBToHex(getColor(xpDropInFlight, config).getRGB())))
+			.append(config.predictedHitPrefix())
+			.append(xpDropInFlight.getHit())
+			.append(config.predictedHitSuffix());
 	}
 
 	public static int getIconWidthForIcons(Graphics2D graphics, int icons, XpDropsConfig config, XpDropOverlayManager xpDropOverlayManager)

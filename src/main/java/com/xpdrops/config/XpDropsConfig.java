@@ -1,5 +1,6 @@
 package com.xpdrops.config;
 
+import com.xpdrops.PredictedHitDropStyle;
 import com.xpdrops.overlay.TextComponentWithAlpha;
 import lombok.Getter;
 import net.runelite.client.config.Alpha;
@@ -442,9 +443,9 @@ public interface XpDropsConfig extends Config
 		position = 18,
 		section = predicted_hit
 	)
-	default boolean showPredictedHit()
+	default PredictedHitDropStyle showPredictedHit()
 	{
-		return false;
+		return PredictedHitDropStyle.OFF;
 	}
 
 	@ConfigItem(
@@ -468,7 +469,7 @@ public interface XpDropsConfig extends Config
 	)
 	default String predictedHitPrefix()
 	{
-		return "";
+		return " ";
 	}
 
 	@ConfigItem(

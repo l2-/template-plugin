@@ -1,6 +1,7 @@
 package com.xpdrops.overlay;
 
 import com.xpdrops.CustomizableXpDropsPlugin;
+import com.xpdrops.PredictedHitDropStyle;
 import com.xpdrops.Skill;
 import com.xpdrops.XpDrop;
 import com.xpdrops.XpDropStyle;
@@ -277,6 +278,7 @@ public class XpDropOverlayManager
 		int totalHit = 0;
 		AttackStyle predictedHitAttackStyle = null;
 		Actor target = null;
+
 		{
 			Hit hit = plugin.getHitBuffer().poll();
 			while (hit != null)
@@ -289,7 +291,7 @@ public class XpDropOverlayManager
 			}
 		}
 
-		if (!config.showPredictedHit())
+		if (config.showPredictedHit() == PredictedHitDropStyle.OFF)
 		{
 			totalHit = 0;
 		}
@@ -307,7 +309,7 @@ public class XpDropOverlayManager
 			}
 		}
 
-		if (config.showPredictedHit() && config.neverGroupPredictedHit() && totalHit > 0 && !filteredHit)
+		if (config.showPredictedHit() != PredictedHitDropStyle.OFF && config.neverGroupPredictedHit() && totalHit > 0 && !filteredHit)
 		{
 			Skill skill = null;
 			if (predictedHitAttackStyle != null && predictedHitAttackStyle.getSkills().length > 0)
