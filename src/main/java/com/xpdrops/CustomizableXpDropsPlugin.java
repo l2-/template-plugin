@@ -448,6 +448,14 @@ public class CustomizableXpDropsPlugin extends Plugin
 				else if (lastOpponent instanceof NPC)
 				{
 					lastOpponentId = ((NPC) lastOpponent).getId();
+
+					// Special case for Awakened DT2 Bosses
+					if ((lastOpponentId == LEVIATHAN_ID || lastOpponentId == VARDORVIS_ID)
+						&& lastOpponent.getCombatLevel() > 1000)
+					{
+						lastOpponentId *= -1;
+					}
+
 					hit = xpDropDamageCalculator.calculateHitOnNpc(lastOpponentId, currentXp - previousXp, config.xpMultiplier());
 				}
 				log.debug("Hit npc with hp xp drop xp:{} hit:{} npc_id:{}", currentXp - previousXp, hit, lastOpponentId);
