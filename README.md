@@ -19,6 +19,7 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - Export your plugin settings to share with a friend by right-clicking the xp orb in-game.
 
 #### Change log
+- v1.9.5 - Added Yama xp bonus.
 - v1.9.4 - Fix for awakened bosses (depends on runelite api update for correct combat level), added xp modifiers.
 - v1.9.3 - "Fix" cases of split xp drops most notably during olm melee hand running. Added the new prayers Deadeye and Mystic vigour.
 - v1.9.2 - Add migration manager to drop use of OverlayPriority which is deprecated.
