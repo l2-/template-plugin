@@ -62,6 +62,14 @@ public enum AttackStyle
 		int weaponStyleEnum = client.getEnum(WEAPON_STYLES).getIntValue(weaponType);
 		if (weaponStyleEnum == -1)
 		{
+			// Blue moon spear
+			if (weaponType == 22)
+			{
+				return new AttackStyle[]{
+					AttackStyle.ACCURATE, AttackStyle.AGGRESSIVE, null, DEFENSIVE, CASTING, DEFENSIVE_CASTING
+				};
+			}
+
 			if (weaponType == 30)
 			{
 				// Partisan
@@ -73,12 +81,6 @@ public enum AttackStyle
 		}
 
 		int[] weaponStyleStructs = client.getEnum(weaponStyleEnum).getIntVals();
-
-		if (weaponStyleStructs == null)
-		{
-			return new AttackStyle[0];
-		}
-
 		AttackStyle[] styles = new AttackStyle[weaponStyleStructs.length];
 		int i = 0;
 		for (int style : weaponStyleStructs)
