@@ -102,6 +102,12 @@ public enum AttackStyle
 				attackStyle = AttackStyle.DEFENSIVE_CASTING;
 			}
 
+			// Replaces defensive with defensive casting for powered staves
+			if (i == 3 && attackStyle == AttackStyle.DEFENSIVE && weaponType == 24)
+			{
+				attackStyle = AttackStyle.DEFENSIVE_CASTING;
+			}
+
 			styles[i++] = attackStyle;
 		}
 		return styles;
