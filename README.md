@@ -19,6 +19,7 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - Export your plugin settings to share with a friend by right-clicking the xp orb in-game.
 
 #### Change log
+- v1.9.8 - Added Doom of Mokhaiotl missing xp bonuses - `@Richardant`
 - v1.9.7 - Added Varlamore pt 3 xp bonuses - `@coopermor`
 - v1.9.6 - Fixed attack styles for powered staffs - `@umer-rs`
 - v1.9.5 - Added Yama xp bonus.
