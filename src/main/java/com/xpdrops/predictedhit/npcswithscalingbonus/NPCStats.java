@@ -2,11 +2,13 @@ package com.xpdrops.predictedhit.npcswithscalingbonus;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.With;
 
 @AllArgsConstructor
 @Getter
 public class NPCStats
 {
+ 	@With
 	private int hp;
 	private int att;
 	private int str;

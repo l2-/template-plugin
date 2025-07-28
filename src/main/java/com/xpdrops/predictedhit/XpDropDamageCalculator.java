@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
 import com.xpdrops.predictedhit.npcswithscalingbonus.ChambersLayoutSolver;
+import com.xpdrops.predictedhit.npcswithscalingbonus.DelveNpc;
 import com.xpdrops.predictedhit.npcswithscalingbonus.cox.CoXNPCs;
 import com.xpdrops.predictedhit.npcswithscalingbonus.toa.ToANPCs;
 import com.xpdrops.predictedhit.npcswithscalingbonus.tob.ToBNPCs;
@@ -148,7 +149,13 @@ public class XpDropDamageCalculator
 	public int calculateHitOnNpc(int id, int hpXpDiff, double configModifier)
 	{
 		double modifier = 1.0;
-		if (CoXNPCs.isCOXNPC(id))
+		if (DelveNpc.isDelveNpc(id))
+		{
+			int maxHp = client.getVarbitValue(VarbitID.HPBAR_HUD_BASEHP);
+			modifier = DelveNpc.modifierFromState(maxHp);
+			log.debug("Delve modifier {} {} max hp {}", id, modifier, maxHp);
+		}
+		else if (CoXNPCs.isCOXNPC(id))
 		{
 			int scaledPartySize = getCoxTotalPartySize();
 			int playersInRaid = getCoxPlayersInRaid();
