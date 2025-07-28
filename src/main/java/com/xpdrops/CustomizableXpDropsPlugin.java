@@ -16,15 +16,11 @@ import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import net.runelite.api.EquipmentInventorySlot;
 import net.runelite.api.GameState;
-import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
-import net.runelite.api.ItemID;
 import net.runelite.api.NPC;
 import net.runelite.api.Player;
 import net.runelite.api.Prayer;
-import net.runelite.api.VarPlayer;
-import net.runelite.api.Varbits;
 import net.runelite.api.events.BeforeRender;
 import net.runelite.api.events.FakeXpDrop;
 import net.runelite.api.events.GameStateChanged;
@@ -33,6 +29,10 @@ import net.runelite.api.events.ScriptPostFired;
 import net.runelite.api.events.ScriptPreFired;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.events.VarbitChanged;
+import net.runelite.api.gameval.InventoryID;
+import net.runelite.api.gameval.ItemID;
+import net.runelite.api.gameval.VarPlayerID;
+import net.runelite.api.gameval.VarbitID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
@@ -189,9 +189,9 @@ public class CustomizableXpDropsPlugin extends Plugin
 
 	private void initAttackStyles()
 	{
-		attackStyleVarbit = client.getVarpValue(VarPlayer.ATTACK_STYLE);
-		equippedWeaponTypeVarbit = client.getVarbitValue(Varbits.EQUIPPED_WEAPON_TYPE);
-		castingModeVarbit = client.getVarbitValue(Varbits.DEFENSIVE_CASTING_MODE);
+		attackStyleVarbit = client.getVarpValue(VarPlayerID.COM_MODE);
+		equippedWeaponTypeVarbit = client.getVarbitValue(VarbitID.COMBAT_WEAPON_CATEGORY);
+		castingModeVarbit = client.getVarbitValue(VarbitID.AUTOCAST_DEFMODE);
 		updateAttackStyle(equippedWeaponTypeVarbit, attackStyleVarbit, castingModeVarbit);
 	}
 
@@ -238,9 +238,9 @@ public class CustomizableXpDropsPlugin extends Plugin
 		boolean shouldDraw = client.getVarbitValue(EXPERIENCE_TRACKER_TOGGLE) == 1;
 		xpDropOverlayManager.setShouldDraw(shouldDraw);
 
-		int currentAttackStyleVarbit = client.getVarpValue(VarPlayer.ATTACK_STYLE);
-		int currentEquippedWeaponTypeVarbit = client.getVarbitValue(Varbits.EQUIPPED_WEAPON_TYPE);
-		int currentCastingModeVarbit = client.getVarbitValue(Varbits.DEFENSIVE_CASTING_MODE);
+		int currentAttackStyleVarbit = client.getVarpValue(VarPlayerID.COM_MODE);
+		int currentEquippedWeaponTypeVarbit = client.getVarbitValue(VarbitID.COMBAT_WEAPON_CATEGORY);
+		int currentCastingModeVarbit = client.getVarbitValue(VarbitID.AUTOCAST_DEFMODE);
 
 		if (attackStyleVarbit != currentAttackStyleVarbit || equippedWeaponTypeVarbit != currentEquippedWeaponTypeVarbit || castingModeVarbit != currentCastingModeVarbit)
 		{
@@ -489,7 +489,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 
 	protected boolean isVoidwakerEquipped()
 	{
-		ItemContainer equipment = client.getItemContainer(InventoryID.EQUIPMENT);
+		ItemContainer equipment = client.getItemContainer(InventoryID.WORN);
 		if (equipment == null) return false;
 		Item weapon = equipment.getItem(EquipmentInventorySlot.WEAPON.getSlotIdx());
 		return weapon != null && VOIDWAKERS.contains(weapon.getId());

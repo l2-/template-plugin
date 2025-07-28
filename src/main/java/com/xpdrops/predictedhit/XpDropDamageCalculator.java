@@ -9,7 +9,7 @@ import com.xpdrops.predictedhit.npcswithscalingbonus.toa.ToANPCs;
 import com.xpdrops.predictedhit.npcswithscalingbonus.tob.ToBNPCs;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
-import net.runelite.api.Varbits;
+import net.runelite.api.gameval.VarbitID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.util.Text;
 import org.apache.commons.lang3.tuple.Pair;
@@ -95,18 +95,18 @@ public class XpDropDamageCalculator
 	private int getToAPartySize()
 	{
 		return 1 +
-			(client.getVarbitValue(Varbits.TOA_MEMBER_1_HEALTH) != 0 ? 1 : 0) +
-			(client.getVarbitValue(Varbits.TOA_MEMBER_2_HEALTH) != 0 ? 1 : 0) +
-			(client.getVarbitValue(Varbits.TOA_MEMBER_3_HEALTH) != 0 ? 1 : 0) +
-			(client.getVarbitValue(Varbits.TOA_MEMBER_4_HEALTH) != 0 ? 1 : 0) +
-			(client.getVarbitValue(Varbits.TOA_MEMBER_5_HEALTH) != 0 ? 1 : 0) +
-			(client.getVarbitValue(Varbits.TOA_MEMBER_6_HEALTH) != 0 ? 1 : 0) +
-			(client.getVarbitValue(Varbits.TOA_MEMBER_7_HEALTH) != 0 ? 1 : 0);
+			(client.getVarbitValue(VarbitID.TOA_CLIENT_P1) != 0 ? 1 : 0) +
+			(client.getVarbitValue(VarbitID.TOA_CLIENT_P2) != 0 ? 1 : 0) +
+			(client.getVarbitValue(VarbitID.TOA_CLIENT_P3) != 0 ? 1 : 0) +
+			(client.getVarbitValue(VarbitID.TOA_CLIENT_P4) != 0 ? 1 : 0) +
+			(client.getVarbitValue(VarbitID.TOA_CLIENT_P5) != 0 ? 1 : 0) +
+			(client.getVarbitValue(VarbitID.TOA_CLIENT_P6) != 0 ? 1 : 0) +
+			(client.getVarbitValue(VarbitID.TOA_CLIENT_P7) != 0 ? 1 : 0);
 	}
 
 	private int getToARaidLevel()
 	{
-		return client.getVarbitValue(Varbits.TOA_RAID_LEVEL);
+		return client.getVarbitValue(VarbitID.TOA_CLIENT_RAID_LEVEL);
 	}
 
 	private int getToARoomLevel()

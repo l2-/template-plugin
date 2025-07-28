@@ -6,15 +6,14 @@ import net.runelite.api.Client;
 import net.runelite.api.Constants;
 import net.runelite.api.GameState;
 import net.runelite.api.InstanceTemplates;
-import net.runelite.api.NullObjectID;
 import net.runelite.api.Point;
 import net.runelite.api.Tile;
-import net.runelite.api.VarPlayer;
-import net.runelite.api.Varbits;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.VarbitChanged;
+import net.runelite.api.gameval.VarPlayerID;
+import net.runelite.api.gameval.VarbitID;
 import net.runelite.client.plugins.raids.Raid;
 import net.runelite.client.plugins.raids.RaidRoom;
 
@@ -57,9 +56,9 @@ public class ChambersLayoutSolver
 
 	public void onVarbitChanged(VarbitChanged event)
 	{
-		if (event.getVarpId() == VarPlayer.IN_RAID_PARTY)
+		if (event.getVarpId() == VarPlayerID.RAIDS_PARTY_GROUPHOLDER)
 		{
-			boolean tempInRaid = client.getVarbitValue(Varbits.IN_RAID) == 1;
+			boolean tempInRaid = client.getVarbitValue(VarbitID.RAIDS_CLIENT_INDUNGEON) == 1;
 			if (loggedIn && !tempInRaid)
 			{
 				raid = null;
@@ -68,7 +67,7 @@ public class ChambersLayoutSolver
 			raidPartyID = event.getValue();
 		}
 
-		if (event.getVarbitId() == Varbits.IN_RAID)
+		if (event.getVarbitId() == VarbitID.RAIDS_CLIENT_INDUNGEON)
 		{
 			boolean tempInRaid = event.getValue() == 1;
 			if (tempInRaid && loggedIn)
@@ -131,7 +130,7 @@ public class ChambersLayoutSolver
 			return;
 		}
 
-		inRaidChambers = client.getVarbitValue(Varbits.IN_RAID) == 1;
+		inRaidChambers = client.getVarbitValue(VarbitID.RAIDS_CLIENT_INDUNGEON) == 1;
 
 		if (!inRaidChambers)
 		{
@@ -226,7 +225,7 @@ public class ChambersLayoutSolver
 					continue;
 				}
 
-				if (tiles[x][y].getWallObject().getId() == NullObjectID.NULL_12231)
+				if (tiles[x][y].getWallObject().getId() == 12231)
 				{
 					return tiles[x][y].getSceneLocation();
 				}
