@@ -56,7 +56,7 @@ public class ChambersLayoutSolver
 
 	public void onVarbitChanged(VarbitChanged event)
 	{
-		if (event.getVarpId() == VarPlayerID.RAIDS_PARTY_GROUPHOLDER)
+		if (event.getVarpId() == VarPlayerID.RAIDS_PARTY_GROUPHOLDER && client.getGameState() == GameState.LOGGED_IN)
 		{
 			boolean tempInRaid = client.getVarbitValue(VarbitID.RAIDS_CLIENT_INDUNGEON) == 1;
 			if (loggedIn && !tempInRaid)
