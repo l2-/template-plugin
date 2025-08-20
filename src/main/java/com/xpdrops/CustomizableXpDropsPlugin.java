@@ -129,6 +129,8 @@ public class CustomizableXpDropsPlugin extends Plugin
 	@Getter
 	private AttackStyle attackStyle;
 
+	private int lastHit = 0;
+
 	@Override
 	protected void startUp()
 	{
@@ -218,6 +220,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 		xpDropOverlayManager.shutdown();
 		setXpTrackerHidden(false); // should be according to varbit?
 		importExport.removeMenuOptions();
+		lastHit = 0;
 	}
 
 	protected void setXpTrackerHidden(boolean hidden)
@@ -327,7 +330,8 @@ public class CustomizableXpDropsPlugin extends Plugin
 	@Subscribe
 	public void onScriptPreFired(ScriptPreFired scriptPreFired)
 	{
-		if (!config.xpDropsHideVanilla()) return;
+		final boolean appendHit = config.predictedHitVanillaAppend() && config.showPredictedHit();
+		if (!config.xpDropsHideVanilla() && !appendHit) return;
 
 		if (scriptPreFired.getScriptId() == XPDROPS_SETDROPSIZE)
 		{
@@ -338,9 +342,27 @@ public class CustomizableXpDropsPlugin extends Plugin
 			final int widgetId = intStack[intStackSize - 4];
 
 			final Widget xpdrop = client.getWidget(widgetId);
-			if (xpdrop != null)
+			if (xpdrop == null)
+			{
+				return;
+			}
+
+			if (config.xpDropsHideVanilla())
 			{
 				xpdrop.setHidden(true);
+			}
+
+			final Widget text = xpdrop.getChild(0);
+			if (appendHit && text != null)
+			{
+				Object[] objectStack = client.getObjectStack();
+				int objectStackSize = client.getObjectStackSize();
+
+				final String newText = String.format("%s (%d)", text.getText(), lastHit);
+				// we cant just use setText on the widget as the CS2 script calculates the size based on the string
+				// so, we need to also update the string on the objectStack
+				text.setText(newText);
+				objectStack[objectStackSize - 1] = newText;
 			}
 		}
 	}
@@ -417,6 +439,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 			}
 			log.debug("Hit npc with fake hp xp drop xp:{} hit:{} npc_id:{}", currentXp, hit, lastOpponentId);
 			hitBuffer.add(new Hit(hit, lastOpponent, attackStyle));
+			lastHit = hit;
 		}
 
 		XpDrop xpDrop = new XpDrop(Skill.fromSkill(event.getSkill()), currentXp, matchPrayerStyle(Skill.fromSkill(event.getSkill())), true, lastOpponent);
@@ -460,6 +483,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 				}
 				log.debug("Hit npc with hp xp drop xp:{} hit:{} npc_id:{}", currentXp - previousXp, hit, lastOpponentId);
 				hitBuffer.add(new Hit(hit, lastOpponent, attackStyle));
+				lastHit = hit;
 			}
 
 			XpDrop xpDrop = new XpDrop(Skill.fromSkill(event.getSkill()), currentXp - previousXp, matchPrayerStyle(Skill.fromSkill(event.getSkill())), false, lastOpponent);

@@ -533,10 +533,22 @@ public interface XpDropsConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "predictedHitVanillaAppend",
+		name = "Append to Vanilla XP Drop ",
+		description = "Appends the predicted hit to the Vanilla XP drops, respecting the RuneLite XP Drop plugin settings",
+		position = 26,
+		section = predicted_hit
+	)
+	default boolean predictedHitVanillaAppend()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "predictedHitIcon",
 		name = "Predicted hit icon",
 		description = "The style of the predicted hit icon. Only applicable when `Never group predicted hit` is enabled.",
-		position = 26,
+		position = 27,
 		section = predicted_hit
 	)
 	default PredictedHitIconStyle predictedHitIcon()
@@ -551,7 +563,7 @@ public interface XpDropsConfig extends Config
 			"Format as NPC id:xp modifier. Separate each entry with a newline.<br>" +
 			"For example if a goblin has an NPC id of 2 and an xp bonus of 35% then enter 2:1.35 in this field. If a rat has NPC id of 3 and an xp bonus of -75% then enter 3:0.25<br>"  +
 			"Modifiers entered here will supersede the modifiers shipped with the plugin!",
-		position = 27,
+		position = 28,
 		section = predicted_hit
 	)
 	default String predictedHitModifiers()
