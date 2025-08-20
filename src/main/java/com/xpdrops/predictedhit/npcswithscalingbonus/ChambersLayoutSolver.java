@@ -58,24 +58,35 @@ public class ChambersLayoutSolver
 	{
 		if (event.getVarpId() == VarPlayerID.RAIDS_PARTY_GROUPHOLDER)
 		{
-			boolean tempInRaid = client.getVarbitValue(VarbitID.RAIDS_CLIENT_INDUNGEON) == 1;
-			if (loggedIn && !tempInRaid)
-			{
-				raid = null;
-			}
-
+			boolean inRaid = inRaidChambers;
+			int prevRaidID = raidPartyID;
 			raidPartyID = event.getValue();
+
+			if (client.getGameState() == GameState.LOGGED_IN)
+			{
+				if (!inRaid || (prevRaidID != -1 && raidPartyID != -1 && prevRaidID != raidPartyID))
+				{
+					raid = null;
+				}
+			}
 		}
 
 		if (event.getVarbitId() == VarbitID.RAIDS_CLIENT_INDUNGEON)
 		{
-			boolean tempInRaid = event.getValue() == 1;
-			if (tempInRaid && loggedIn)
-			{
-				checkRaidPresence();
-			}
+			boolean inRaid = event.getValue() == 1;
+			inRaidChambers = inRaid;
 
-			inRaidChambers = tempInRaid;
+			if (client.getGameState() == GameState.LOGGED_IN)
+			{
+				if (inRaid)
+				{
+					checkRaidPresence();
+				}
+				else if (raidPartyID == -1)
+				{
+					raid = null;
+				}
+			}
 		}
 	}
 
