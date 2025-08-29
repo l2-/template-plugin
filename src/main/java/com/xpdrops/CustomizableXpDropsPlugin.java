@@ -22,6 +22,7 @@ import net.runelite.api.NPC;
 import net.runelite.api.Player;
 import net.runelite.api.Prayer;
 import net.runelite.api.events.BeforeRender;
+import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.FakeXpDrop;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
@@ -473,6 +474,11 @@ public class CustomizableXpDropsPlugin extends Plugin
 	protected void onBeforeRender(BeforeRender beforeRender)
 	{
 		xpDropOverlayManager.update();
+	}
+
+	@Subscribe
+	protected void onChatMessage(ChatMessage chatMessage) {
+		chambersLayoutSolver.onChatMessage(chatMessage);
 	}
 
 	private XpPrayer getActivePrayer()
