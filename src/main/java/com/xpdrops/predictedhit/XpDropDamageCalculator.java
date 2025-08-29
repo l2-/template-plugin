@@ -161,7 +161,7 @@ public class XpDropDamageCalculator
 			int playersInRaid = getCoxPlayersInRaid();
 			// Wrong. only follows the setting of the player's board
 //			int raidType = client.getVarbitValue(6385) > 0 ? 1 : 0;
-			int raidType = chambersLayoutSolver.isCM() ? 1 : 0;
+			int raidType = chambersLayoutSolver.getRaidType() == ChambersLayoutSolver.RaidType.CM ? 1 : 0;
 
 			modifier = CoXNPCs.getModifier(id, scaledPartySize, playersInRaid, raidType);
 			log.debug("COX modifier {} {} party size {} players in raid {} raid type {}", id, modifier, scaledPartySize, playersInRaid, raidType);
