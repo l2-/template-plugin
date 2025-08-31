@@ -2,6 +2,7 @@ package com.xpdrops.predictedhit.npcswithscalingbonus;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.Constants;
 import net.runelite.api.GameState;
@@ -9,6 +10,7 @@ import net.runelite.api.InstanceTemplates;
 import net.runelite.api.Point;
 import net.runelite.api.Tile;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.VarbitChanged;
@@ -27,6 +29,13 @@ import static net.runelite.api.Perspective.SCENE_SIZE;
 @Singleton
 public class ChambersLayoutSolver
 {
+	public enum RaidType
+	{
+		UNKNOWN,
+		REGULAR,
+		CM
+	}
+
 	static final int ROOM_MAX_SIZE = 32;
 	private static final int LOBBY_PLANE = 3;
 	private static final int SECOND_FLOOR_PLANE = 2;
@@ -40,6 +49,7 @@ public class ChambersLayoutSolver
 	private boolean loggedIn;
 	private boolean inRaidChambers;
 	private int raidPartyID;
+	private RaidType isCM = RaidType.UNKNOWN;
 	@Getter
 	private Raid raid;
 
@@ -49,33 +59,46 @@ public class ChambersLayoutSolver
 		this.client = client;
 	}
 
-	public boolean isCM()
+
+
+	public RaidType getRaidType()
 	{
-		return raid != null && CM_RAID_CODE.equals(raid.toCode());
+		return this.isCM;
 	}
 
 	public void onVarbitChanged(VarbitChanged event)
 	{
 		if (event.getVarpId() == VarPlayerID.RAIDS_PARTY_GROUPHOLDER)
 		{
-			boolean tempInRaid = client.getVarbitValue(VarbitID.RAIDS_CLIENT_INDUNGEON) == 1;
-			if (loggedIn && !tempInRaid)
-			{
-				raid = null;
-			}
-
+			boolean inRaid = inRaidChambers;
+			int prevRaidID = raidPartyID;
 			raidPartyID = event.getValue();
+
+			if (client.getGameState() == GameState.LOGGED_IN)
+			{
+				if (!inRaid || (prevRaidID != -1 && raidPartyID != -1 && prevRaidID != raidPartyID))
+				{
+					raid = null;
+				}
+			}
 		}
 
 		if (event.getVarbitId() == VarbitID.RAIDS_CLIENT_INDUNGEON)
 		{
-			boolean tempInRaid = event.getValue() == 1;
-			if (tempInRaid && loggedIn)
-			{
-				checkRaidPresence();
-			}
+			boolean inRaid = event.getValue() == 1;
+			inRaidChambers = inRaid;
 
-			inRaidChambers = tempInRaid;
+			if (client.getGameState() == GameState.LOGGED_IN)
+			{
+				if (inRaid)
+				{
+					checkRaidPresence();
+				}
+				else if (raidPartyID == -1)
+				{
+					raid = null;
+				}
+			}
 		}
 	}
 
@@ -121,6 +144,16 @@ public class ChambersLayoutSolver
 		{
 			raid = null;
 		}
+	}
+
+	public void onChatMessage(ChatMessage chatMessage)
+	{
+		if (chatMessage.getType() != ChatMessageType.FRIENDSCHATNOTIFICATION
+			|| !chatMessage.getMessage().startsWith("Map Layout:"))
+		{
+			return;
+		}
+		this.isCM = chatMessage.getMessage().equals("Map Layout: Challenge Mode (Full).") ? RaidType.CM : RaidType.REGULAR;
 	}
 
 	private void checkRaidPresence()
