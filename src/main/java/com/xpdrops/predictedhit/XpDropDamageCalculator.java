@@ -4,15 +4,13 @@ import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
 import com.xpdrops.predictedhit.npcswithscalingbonus.ChambersLayoutSolver;
-import com.xpdrops.predictedhit.npcswithscalingbonus.DelveNpc;
-import com.xpdrops.predictedhit.npcswithscalingbonus.cox.CoXNPCs;
-import com.xpdrops.predictedhit.npcswithscalingbonus.toa.ToANPCs;
-import com.xpdrops.predictedhit.npcswithscalingbonus.tob.ToBNPCs;
+import com.xpdrops.predictedhit.npcswithscalingbonus.IModifierBoss;
+import com.xpdrops.predictedhit.npcswithscalingbonus.cox.CoX;
+import com.xpdrops.predictedhit.npcswithscalingbonus.delve.Delve;
+import com.xpdrops.predictedhit.npcswithscalingbonus.toa.ToA;
+import com.xpdrops.predictedhit.npcswithscalingbonus.tob.ToB;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
-import net.runelite.api.gameval.VarbitID;
-import net.runelite.api.widgets.Widget;
-import net.runelite.client.util.Text;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.inject.Inject;
@@ -22,10 +20,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -36,94 +31,26 @@ public class XpDropDamageCalculator
 	private static final HashMap<Integer, Double> XP_BONUS_MAPPING = new HashMap<>();
 	private static final HashMap<Integer, Double> USER_DEFINED_XP_BONUS_MAPPING = new HashMap<>();
 	private static final Pattern RAID_LEVEL_MATCHER = Pattern.compile("(\\d+)");
-	private static final int RAID_LEVEL_WIDGET_ID = (481 << 16) | 42;
-	private static final int ROOM_LEVEL_WIDGET_ID = (481 << 16) | 45;
-	private static final int COX_SCALED_PARTY_SIZE_VARBIT = 9540;
-	private static final int RAID_PARTY_SIZE = 5424;
-
-	private int lastToARaidLevel = 0;
-	private int lastToARaidPartySize = 1;
-	private int lastToARaidRoomLevel = 0;
 
 	private final Gson GSON;
-	private final Client client;
-	private final ChambersLayoutSolver chambersLayoutSolver;
+	private final List<IModifierBoss> modifierBosses;
 
 	@Inject
 	protected XpDropDamageCalculator(Gson gson, Client client, ChambersLayoutSolver chambersLayoutSolver)
 	{
 		this.GSON = gson;
-		this.client = client;
-		this.chambersLayoutSolver = chambersLayoutSolver;
+		this.modifierBosses = Arrays.asList(
+				new CoX(client, chambersLayoutSolver),
+				new Delve(client),
+				new ToB(client),
+				new ToA(client)
+		);
 	}
 
 	public void populateMap()
 	{
 		XP_BONUS_MAPPING.clear();
 		XP_BONUS_MAPPING.putAll(getNpcsWithXpBonus());
-	}
-
-	private int getCoxTotalPartySize()
-	{
-		return Math.max(1, client.getVarbitValue(COX_SCALED_PARTY_SIZE_VARBIT));
-	}
-
-	// Currently it checks a varbit for the amount of players in the raid.
-	// Ideally this method returns how many non board scaling accounts started the raid.
-	private int getCoxPlayersInRaid()
-	{
-		return Math.max(1, client.getVarbitValue(RAID_PARTY_SIZE));
-	}
-
-	private int getToBPartySize()
-	{
-		int count = 0;
-		for (int i = 330; i < 335; i++)
-		{
-			String jagexName = client.getVarcStrValue(i);
-			if (jagexName != null)
-			{
-				String name = Text.removeTags(jagexName).replace('\u00A0', ' ').trim();
-				if (!"".equals(name))
-				{
-					count++;
-				}
-			}
-		}
-		return count;
-	}
-
-	private int getToAPartySize()
-	{
-		return 1 +
-			(client.getVarbitValue(VarbitID.TOA_CLIENT_P1) != 0 ? 1 : 0) +
-			(client.getVarbitValue(VarbitID.TOA_CLIENT_P2) != 0 ? 1 : 0) +
-			(client.getVarbitValue(VarbitID.TOA_CLIENT_P3) != 0 ? 1 : 0) +
-			(client.getVarbitValue(VarbitID.TOA_CLIENT_P4) != 0 ? 1 : 0) +
-			(client.getVarbitValue(VarbitID.TOA_CLIENT_P5) != 0 ? 1 : 0) +
-			(client.getVarbitValue(VarbitID.TOA_CLIENT_P6) != 0 ? 1 : 0) +
-			(client.getVarbitValue(VarbitID.TOA_CLIENT_P7) != 0 ? 1 : 0);
-	}
-
-	private int getToARaidLevel()
-	{
-		return client.getVarbitValue(VarbitID.TOA_CLIENT_RAID_LEVEL);
-	}
-
-	private int getToARoomLevel()
-	{
-		Widget levelWidget = client.getWidget(ROOM_LEVEL_WIDGET_ID);
-		if (levelWidget != null && !levelWidget.isHidden())
-		{
-			try
-			{
-				return Integer.parseInt(Text.sanitize(levelWidget.getText()));
-			}
-			catch (Exception ignored)
-			{
-			}
-		}
-		return -1;
 	}
 
 	private int calculateHit(int hpXpDiff, double modifier, double configModifier)
@@ -149,45 +76,19 @@ public class XpDropDamageCalculator
 	public int calculateHitOnNpc(int id, int hpXpDiff, double configModifier)
 	{
 		double modifier = 1.0;
-		if (DelveNpc.isDelveNpc(id))
-		{
-			int maxHp = client.getVarbitValue(VarbitID.HPBAR_HUD_BASEHP);
-			modifier = DelveNpc.modifierFromState(maxHp);
-			log.debug("Delve modifier {} {} max hp {}", id, modifier, maxHp);
-		}
-		else if (CoXNPCs.isCOXNPC(id))
-		{
-			int scaledPartySize = getCoxTotalPartySize();
-			int playersInRaid = getCoxPlayersInRaid();
-			// Wrong. only follows the setting of the player's board
-//			int raidType = client.getVarbitValue(6385) > 0 ? 1 : 0;
-			int raidType = chambersLayoutSolver.getRaidType() == ChambersLayoutSolver.RaidType.CM ? 1 : 0;
 
-			modifier = CoXNPCs.getModifier(id, scaledPartySize, playersInRaid, raidType);
-			log.debug("COX modifier {} {} party size {} players in raid {} raid type {}", id, modifier, scaledPartySize, playersInRaid, raidType);
-		}
-		else if (ToBNPCs.isTOBNPC(id))
+		for(IModifierBoss boss: modifierBosses)
 		{
-			int partySize = getToBPartySize();
-			modifier = ToBNPCs.getModifier(id, partySize);
-			log.debug("TOB modifier {} {} part size {}", id, modifier, partySize);
+			if (boss.containsId(id))
+			{
+				modifier = boss.getModifier(id);
+
+				log.debug("id: {}, boss: {} ,  modifier: {}", id, boss.getClass().getSimpleName(), modifier);
+				return calculateHit(hpXpDiff, modifier, configModifier);
+			}
 		}
-		else if (ToANPCs.isToANPC(id))
-		{
-			int partySize = getToAPartySize();
-			int roomLevel = getToARoomLevel();
-			int raidLevel = getToARaidLevel();
-			// If we cannot determine any of the above; use last known settings.
-			if (partySize < 0) partySize = lastToARaidPartySize;
-			else lastToARaidPartySize = partySize;
-			if (roomLevel < 0) roomLevel = lastToARaidRoomLevel;
-			else lastToARaidRoomLevel = roomLevel;
-			if (raidLevel < 0) raidLevel = lastToARaidLevel;
-			else lastToARaidLevel = raidLevel;
-			modifier = ToANPCs.getModifier(id, partySize, raidLevel, roomLevel);
-			log.debug("TOA modifier {} {} party size {} raid level {} room level {}", id, modifier, partySize, raidLevel, roomLevel);
-		}
-		else if (USER_DEFINED_XP_BONUS_MAPPING.containsKey(id))
+
+		if (USER_DEFINED_XP_BONUS_MAPPING.containsKey(id))
 		{
 			modifier = USER_DEFINED_XP_BONUS_MAPPING.get(id);
 		}
@@ -195,6 +96,7 @@ public class XpDropDamageCalculator
 		{
 			modifier = XP_BONUS_MAPPING.get(id);
 		}
+
 		return calculateHit(hpXpDiff, modifier, configModifier);
 	}
 
