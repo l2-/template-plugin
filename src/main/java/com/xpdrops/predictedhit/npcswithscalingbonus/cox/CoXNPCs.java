@@ -31,9 +31,11 @@ public enum CoXNPCs
 	GREAT_OLM(CoXNPCStats.GREAT_OLM.getCoxnpc(), NpcID.OLM_HEAD_SPAWNING, NpcID.OLM_HEAD),
 	GREAT_OLM_MAGE_HAND(CoXNPCStats.GREAT_OLM_MAGE_HAND.getCoxnpc(), NpcID.OLM_HAND_LEFT_SPAWNING, NpcID.OLM_HAND_LEFT_SPAWNING),
 	GREAT_OLM_MELEE_HAND(CoXNPCStats.GREAT_OLM_MELEE_HAND.getCoxnpc(), NpcID.OLM_HAND_RIGHT_SPAWNING, NpcID.OLM_HAND_RIGHT),
-	SCAVENGER(CoXNPCStats.SCAVENGER.getCoxnpc(), NpcID.RAIDS_SCAVENGER_BEAST_A, NpcID.RAIDS_SCAVENGER_BEAST_B),
-	;
+	SCAVENGER(CoXNPCStats.SCAVENGER.getCoxnpc(), NpcID.RAIDS_SCAVENGER_BEAST_A, NpcID.RAIDS_SCAVENGER_BEAST_B);
+
+	@Getter(AccessLevel.PACKAGE)
 	private final HashSet<Integer> ids;
+	@Getter(AccessLevel.PACKAGE)
 	private final CoXNPC npcWithScalingBonus;
 
 	CoXNPCs(CoXNPC coxnpc, int... ids)
@@ -42,23 +44,9 @@ public enum CoXNPCs
 		this.ids = new HashSet<>();
 		Arrays.stream(ids).forEach(this.ids::add);
 	}
-    @Getter(AccessLevel.PACKAGE)
-	private static final Map<Integer, CoXNPC> COX_NPC_MAPPING;
-
-	static
-	{
-		COX_NPC_MAPPING = new HashMap<>();
-		for (CoXNPCs value : CoXNPCs.values())
-		{
-			for (Integer id : value.ids)
-			{
-				COX_NPC_MAPPING.put(id, value.npcWithScalingBonus);
-			}
-		}
-	}
 
 	@Getter
-	enum CoXNPCStats
+    enum CoXNPCStats
 	{
 		TEKTON(new Tekton(300, 390, 390, 205, 1, 205, 64, 20, 155, 165, 105, 0, 0)),
 		TEKTON_ENRAGED(new Tekton(300, 390, 390, 205, 1, 205, 64, 30, 280, 290, 180, 0, 0)),

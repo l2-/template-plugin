@@ -7,20 +7,36 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.client.util.Text;
 
 import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ToA implements IModifierBoss
 {
     private final Client client;
 
+    private static final Map<Integer, ToANPC> TOA_NPC_MAPPING;
+
+    private static final int ROOM_LEVEL_WIDGET_ID = (481 << 16) | 45;
     private int lastToARaidLevel = 0;
     private int lastToARaidPartySize = 1;
     private int lastToARaidRoomLevel = 0;
-    private static final int ROOM_LEVEL_WIDGET_ID = (481 << 16) | 45;
 
     @Inject
     public ToA(Client client)
     {
         this.client = client;
+    }
+
+    static
+    {
+        TOA_NPC_MAPPING = new HashMap<>();
+        for (ToANPCs value : ToANPCs.values())
+        {
+            for (Integer id : value.getIds())
+            {
+                TOA_NPC_MAPPING.put(id, value.getNpcWithScalingBonus());
+            }
+        }
     }
 
     private int getToAPartySize()
@@ -58,7 +74,7 @@ public class ToA implements IModifierBoss
 
     @Override
     public boolean containsId(int npcId) {
-        return ToANPCs.getTOA_NPC_MAPPING().containsKey(npcId);
+        return TOA_NPC_MAPPING.containsKey(npcId);
     }
 
     @Override
@@ -80,6 +96,6 @@ public class ToA implements IModifierBoss
         if (raidLevel < 0) raidLevel = lastToARaidLevel;
         else lastToARaidLevel = raidLevel;
 
-        return ToANPCs.getTOA_NPC_MAPPING().get(npcId).calculateModifier(raidLevel, partySize, roomLevel);
+        return TOA_NPC_MAPPING.get(npcId).calculateModifier(raidLevel, partySize, roomLevel);
     }
 }

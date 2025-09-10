@@ -5,15 +5,31 @@ import net.runelite.api.Client;
 import net.runelite.client.util.Text;
 
 import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ToB implements IModifierBoss
 {
     private final Client client;
 
+    private static final Map<Integer, ToBNPC> TOB_NPC_MAPPING;
+
     @Inject
     public ToB(Client client)
     {
         this.client = client;
+    }
+
+    static
+    {
+        TOB_NPC_MAPPING = new HashMap<>();
+        for (ToBNPCs value : ToBNPCs.values())
+        {
+            for (Integer id : value.getIds())
+            {
+                TOB_NPC_MAPPING.put(id, value.getNpcWithScalingBonus());
+            }
+        }
     }
 
     private int getToBPartySize()
@@ -37,7 +53,7 @@ public class ToB implements IModifierBoss
     @Override
     public boolean containsId(int npcId)
     {
-        return ToBNPCs.getTOB_NPC_MAPPING().containsKey(npcId);
+        return TOB_NPC_MAPPING.containsKey(npcId);
     }
 
     @Override
@@ -49,6 +65,6 @@ public class ToB implements IModifierBoss
         }
 
         int partySize = getToBPartySize();
-        return ToBNPCs.getTOB_NPC_MAPPING().get(npcId).calculateModifier(partySize);
+        return TOB_NPC_MAPPING.get(npcId).calculateModifier(partySize);
     }
 }

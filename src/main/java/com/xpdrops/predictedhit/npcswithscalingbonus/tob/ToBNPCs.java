@@ -35,29 +35,16 @@ public enum ToBNPCs
 	SOTETSEG_HM(		new ToBNPC(1.4,	1.4, 	1.4		), NpcID.TOB_SOTETSEG_COMBAT_HARD),
 	VERZIK_P1_HM(		new ToBNPC(1.05,	1.05, 	1.05	), NpcID.VERZIK_PHASE1_HARD, NpcID.VERZIK_PHASE1_TO2_TRANSITION_HARD),
 	VERZIK_P2_HM(		new ToBNPC(1.30,	1.30, 	1.30	), NpcID.VERZIK_PHASE2_HARD, NpcID.VERZIK_PHASE2_TO3_TRANSITION_HARD),
-	VERZIK_P3_HM(		new ToBNPC(1.575,	1.575, 	1.575	), NpcID.VERZIK_PHASE3_HARD, NpcID.VERZIK_DEATH_BAT_HARD),
-	;
+	VERZIK_P3_HM(		new ToBNPC(1.575,	1.575, 	1.575	), NpcID.VERZIK_PHASE3_HARD, NpcID.VERZIK_DEATH_BAT_HARD);
+
+	@Getter(AccessLevel.PACKAGE)
 	private final HashSet<Integer> ids;
+	@Getter(AccessLevel.PACKAGE)
 	private final ToBNPC npcWithScalingBonus;
 	ToBNPCs(ToBNPC npcWithScalingBonus, int ... ids)
 	{
 		this.npcWithScalingBonus = npcWithScalingBonus;
 		this.ids = new HashSet<>();
 		Arrays.stream(ids).forEach(this.ids::add);
-	}
-
-	@Getter(AccessLevel.PACKAGE)
-	private static final Map<Integer, ToBNPC> TOB_NPC_MAPPING;
-
-	static
-	{
-		TOB_NPC_MAPPING = new HashMap<>();
-		for (ToBNPCs value : ToBNPCs.values())
-		{
-			for (Integer id : value.ids)
-			{
-				TOB_NPC_MAPPING.put(id, value.npcWithScalingBonus);
-			}
-		}
 	}
 }

@@ -2,24 +2,41 @@ package com.xpdrops.predictedhit.npcswithscalingbonus.cox;
 
 import com.xpdrops.predictedhit.npcswithscalingbonus.IModifierBoss;
 import com.xpdrops.predictedhit.npcswithscalingbonus.ChambersLayoutSolver;
+import lombok.AccessLevel;
+import lombok.Getter;
 import net.runelite.api.Client;
 
 import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CoX implements IModifierBoss
 {
     private final Client client;
     private final ChambersLayoutSolver chambersLayoutSolver;
 
+    private static final Map<Integer, CoXNPC> COX_NPC_MAPPING;
+
     private static final int COX_SCALED_PARTY_SIZE_VARBIT = 9540;
     private static final int RAID_PARTY_SIZE = 5424;
-
 
     @Inject
     public CoX(Client client, ChambersLayoutSolver chambersLayoutSolver)
     {
         this.client = client;
         this.chambersLayoutSolver = chambersLayoutSolver;
+    }
+
+    static
+    {
+        COX_NPC_MAPPING = new HashMap<>();
+        for (CoXNPCs value : CoXNPCs.values())
+        {
+            for (Integer id : value.getIds())
+            {
+                COX_NPC_MAPPING.put(id, value.getNpcWithScalingBonus());
+            }
+        }
     }
 
     private int getCoxTotalPartySize()
@@ -37,7 +54,7 @@ public class CoX implements IModifierBoss
     @Override
     public boolean containsId(int npcId)
     {
-        return CoXNPCs.getCOX_NPC_MAPPING().containsKey(npcId);
+        return COX_NPC_MAPPING.containsKey(npcId);
     }
 
     @Override
@@ -54,6 +71,6 @@ public class CoX implements IModifierBoss
         // int raidType = client.getVarbitValue(6385) > 0 ? 1 : 0;
         int raidType = chambersLayoutSolver.getRaidType() == ChambersLayoutSolver.RaidType.CM ? 1 : 0;
 
-        return CoXNPCs.getCOX_NPC_MAPPING().get(npcId).calculateModifier(raidType, scaledPartySize, playersInRaid);
+        return COX_NPC_MAPPING.get(npcId).calculateModifier(raidType, scaledPartySize, playersInRaid);
     }
 }
