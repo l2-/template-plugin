@@ -1,11 +1,13 @@
 package com.xpdrops.predictedhit.npcswithscalingbonus.cox;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.gameval.NpcID;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 public enum CoXNPCs
 {
@@ -40,33 +42,19 @@ public enum CoXNPCs
 		this.ids = new HashSet<>();
 		Arrays.stream(ids).forEach(this.ids::add);
 	}
-
-	private static final HashMap<Integer, CoXNPC> COXNPC_MAPPING;
+    @Getter(AccessLevel.PACKAGE)
+	private static final Map<Integer, CoXNPC> COX_NPC_MAPPING;
 
 	static
 	{
-		COXNPC_MAPPING = new HashMap<>();
+		COX_NPC_MAPPING = new HashMap<>();
 		for (CoXNPCs value : CoXNPCs.values())
 		{
 			for (Integer id : value.ids)
 			{
-				COXNPC_MAPPING.put(id, value.npcWithScalingBonus);
+				COX_NPC_MAPPING.put(id, value.npcWithScalingBonus);
 			}
 		}
-	}
-
-	public static boolean isCOXNPC(int id)
-	{
-		return COXNPC_MAPPING.containsKey(id);
-	}
-
-	public static double getModifier(int id, int scaledPartySize, int playersInRaid, int raidType)
-	{
-		if (isCOXNPC(id))
-		{
-			return COXNPC_MAPPING.get(id).calculateModifier(raidType, scaledPartySize, playersInRaid);
-		}
-		return 1.0;
 	}
 
 	@Getter

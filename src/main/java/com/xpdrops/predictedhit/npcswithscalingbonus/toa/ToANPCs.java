@@ -1,11 +1,13 @@
 package com.xpdrops.predictedhit.npcswithscalingbonus.toa;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.gameval.NpcID;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 public enum ToANPCs
 {
@@ -39,32 +41,19 @@ public enum ToANPCs
 		Arrays.stream(ids).forEach(this.ids::add);
 	}
 
-	private static final HashMap<Integer, ToANPC> TOANPCMAPPING;
+	@Getter(AccessLevel.PACKAGE)
+	private static final Map<Integer, ToANPC> TOA_NPC_MAPPING;
 
 	static
 	{
-		TOANPCMAPPING = new HashMap<>();
+		TOA_NPC_MAPPING = new HashMap<>();
 		for (ToANPCs value : ToANPCs.values())
 		{
 			for (Integer id : value.ids)
 			{
-				TOANPCMAPPING.put(id, value.npcWithScalingBonus);
+				TOA_NPC_MAPPING.put(id, value.npcWithScalingBonus);
 			}
 		}
-	}
-
-	public static boolean isToANPC(int id)
-	{
-		return TOANPCMAPPING.containsKey(id);
-	}
-
-	public static double getModifier(int id, int partySize, int raidLevel, int pathLevel)
-	{
-		if (isToANPC(id))
-		{
-			return TOANPCMAPPING.get(id).calculateModifier(raidLevel, partySize, pathLevel);
-		}
-		return 1.0;
 	}
 
 	enum ToANPCStats
