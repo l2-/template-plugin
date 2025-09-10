@@ -1,11 +1,13 @@
 package com.xpdrops.predictedhit.npcswithscalingbonus.toa;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.gameval.NpcID;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 public enum ToANPCs
 {
@@ -29,7 +31,10 @@ public enum ToANPCs
 	E_WARDEN_544(ToANPCStats.E_WARDEN_544.getToANPC(), NpcID.TOA_WARDEN_ELIDINIS_PHASE3, NpcID.TOA_WARDEN_ELIDINIS_PHASE3_CHARGING),
 	AKKHA_SHADOW(ToANPCStats.AKKHA_SHADOW.getToANPC(), NpcID.AKKHA_SHADOW, NpcID.AKKHA_SHADOW_ENRAGE, NpcID.AKKHA_SHADOW_ENRAGE_DUMMY),
 	OBELISK(ToANPCStats.OBELISK.getToANPC(), NpcID.TOA_WARDENS_P1_OBELISK_NPC_INACTIVE, NpcID.TOA_WARDENS_P1_OBELISK_NPC, NpcID.TOA_WARDENS_P2_OBELISK_NPC);
+
+	@Getter(AccessLevel.PACKAGE)
 	private final HashSet<Integer> ids;
+	@Getter(AccessLevel.PACKAGE)
 	private final ToANPC npcWithScalingBonus;
 
 	ToANPCs(ToANPC coxnpc, int... ids)
@@ -39,35 +44,8 @@ public enum ToANPCs
 		Arrays.stream(ids).forEach(this.ids::add);
 	}
 
-	private static final HashMap<Integer, ToANPC> TOANPCMAPPING;
-
-	static
-	{
-		TOANPCMAPPING = new HashMap<>();
-		for (ToANPCs value : ToANPCs.values())
-		{
-			for (Integer id : value.ids)
-			{
-				TOANPCMAPPING.put(id, value.npcWithScalingBonus);
-			}
-		}
-	}
-
-	public static boolean isToANPC(int id)
-	{
-		return TOANPCMAPPING.containsKey(id);
-	}
-
-	public static double getModifier(int id, int partySize, int raidLevel, int pathLevel)
-	{
-		if (isToANPC(id))
-		{
-			return TOANPCMAPPING.get(id).calculateModifier(raidLevel, partySize, pathLevel);
-		}
-		return 1.0;
-	}
-
-	enum ToANPCStats
+	@Getter
+    enum ToANPCStats
 	{
 		AKKHA(new CoreBoss(40, 100, 140, 80, 100, 100, 115, 30, 60, 120, 120, 10, 60)),
 		BABA(new CoreBoss(38, 150, 160, 80, 100, 0, 0, 26, 80, 160, 240, 280, 200)),
@@ -90,11 +68,8 @@ public enum ToANPCs
 		E_WARDEN_544(new RoomLevelInvariant.RoomLevelInvariant10x(88, 150, 150, 150, 150, 150, 0, 40, 40, 40, 20, 20, 20)),
 		//E_WARDEN_544_ENRAGED(new RoomLevelInvariant.RoomLevelInvariant10x(88, 150, 150, 180, 150, 150, 0, 40, 40, 40, 20, 20, 20)), // Maps to the same ids but also leads to same xp bonus
 		AKKHA_SHADOW(new RoomLevelInvariant.RoomLevelInvariant5x(14, 100, 140, 30, 100, 100, 115, 30, 60, 120, 120, 10, 60)),
-		OBELISK(new RoomLevelInvariant.RoomLevelInvariant10x(26, 200, 150, 100, 100, 100, 0, 0, 70, 70, 70, 50, 60)),
-		;
-		@Getter
+		OBELISK(new RoomLevelInvariant.RoomLevelInvariant10x(26, 200, 150, 100, 100, 100, 0, 0, 70, 70, 70, 50, 60));
 		private final ToANPC toANPC;
-
 		ToANPCStats(ToANPC toANPC)
 		{
 			this.toANPC = toANPC;

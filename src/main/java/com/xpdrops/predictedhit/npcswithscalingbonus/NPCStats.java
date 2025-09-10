@@ -31,7 +31,7 @@ public class NPCStats
 
 	private static final int MAX_HP_FOR_MULTIPLIER = 2000;
 
-	protected static double modifierFromStats(NPCStats npcStats)
+	public static double modifierFromStats(NPCStats npcStats)
 	{
 		int hp = Math.min(npcStats.hp, MAX_HP_FOR_MULTIPLIER);
 		double averageLevel = Math.floor((hp + npcStats.getAtt() + npcStats.getStr() + npcStats.getDef()) / 4.0);
