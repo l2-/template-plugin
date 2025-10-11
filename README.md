@@ -19,6 +19,7 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - Export your plugin settings to share with a friend by right-clicking the xp orb in-game.
 
 #### Change log
+- v1.9.11 - Fix overlay priority - `@taysta`
 - v1.9.10 - Fixed a bug regarding predicted hits being wrong when relogging within CM.
 - v1.9.9 - Added xp bonus calculation for Doom of Mokhaiotl.
 - v1.9.8 - Added Doom of Mokhaiotl missing xp bonuses - `@Richardant`
