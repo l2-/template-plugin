@@ -303,12 +303,12 @@ public class CustomizableXpDropsPlugin extends Plugin
 				xpDropOverlayManager.clearIconCache();
 			}
 
-			if ("xpDropOverlayPriority".equals(configChanged.getKey()))
+			if ("xpDropOverlayPriority1".equals(configChanged.getKey()))
 			{
 				xpDropOverlayManager.xpDropOverlayPriorityChanged();
 			}
 
-			if ("xpTrackerOverlayPriority".equals(configChanged.getKey()))
+			if ("xpTrackerOverlayPriority1".equals(configChanged.getKey()))
 			{
 				xpDropOverlayManager.xpTrackerOverlayPriorityChanged();
 			}
