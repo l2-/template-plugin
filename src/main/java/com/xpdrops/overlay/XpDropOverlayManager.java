@@ -194,7 +194,7 @@ public class XpDropOverlayManager
 		}
 
 		Skill _lastSkill = pollLastSkill();
-		if (_lastSkill != null)
+		if (_lastSkill != null && (config.xpTrackerSkill().equals(XpTrackerSkills.MOST_RECENT) || config.xpTrackerSkill().getAssociatedSkill().equals(_lastSkill)))
 		{
 			lastSkillSetMillis = System.currentTimeMillis();
 			lastSkill = _lastSkill;
@@ -208,7 +208,6 @@ public class XpDropOverlayManager
 
 	private Skill pollLastSkill()
 	{
-		Skill currentSkill = null;
 		if (config.xpTrackerSkill().equals(XpTrackerSkills.MOST_RECENT))
 		{
 			for (XpDrop xpDrop : plugin.getQueue())
@@ -219,11 +218,22 @@ public class XpDropOverlayManager
 				}
 			}
 		}
+		else if (config.xpTrackerSkill().equals(XpTrackerSkills.OVERALL))
+		{
+			return plugin.getQueue().isEmpty() ? null : XpTrackerSkills.OVERALL.getAssociatedSkill();
+		}
 		else
 		{
-			currentSkill = config.xpTrackerSkill().getAssociatedSkill();
+			Skill trackedSkill = config.xpTrackerSkill().getAssociatedSkill();
+			for (XpDrop xpDrop : plugin.getQueue())
+			{
+				if (xpDrop != null && !plugin.getFilteredSkills().contains(trackedSkill.toString().toLowerCase()))
+				{
+					return xpDrop.getSkill();
+				}
+			}
 		}
-		return currentSkill;
+		return null;
 	}
 
 	private void updateDrops()
