@@ -193,12 +193,7 @@ public class XpDropOverlayManager
 			lastFrameTime = System.currentTimeMillis() - 20; // set last frame 20 ms ago.
 		}
 
-		Skill _lastSkill = pollLastSkill();
-		if (_lastSkill != null)
-		{
-			lastSkillSetMillis = System.currentTimeMillis();
-			lastSkill = _lastSkill;
-		}
+		refreshXpTracker();
 
 		updateDrops();
 		pollDrops();
@@ -206,24 +201,46 @@ public class XpDropOverlayManager
 		lastFrameTime = System.currentTimeMillis();
 	}
 
-	private Skill pollLastSkill()
+	private void refreshXpTracker()
 	{
-		Skill currentSkill = null;
-		if (config.xpTrackerSkill().equals(XpTrackerSkills.MOST_RECENT))
+		if (!plugin.getQueue().isEmpty() || config.xpTrackerClientTicksToLinger() == 0)
 		{
-			for (XpDrop xpDrop : plugin.getQueue())
+			if (config.xpTrackerSkill().equals(XpTrackerSkills.MOST_RECENT))
 			{
-				if (xpDrop != null && !plugin.getFilteredSkills().contains(xpDrop.getSkill().toString().toLowerCase()))
+				Skill lastSkill = pollLastTrackedXpTrackerSkill();
+				if (lastSkill != null)
 				{
-					return xpDrop.getSkill();
+					switchXpTrackerTo(lastSkill);
 				}
 			}
+			else
+			{
+				switchXpTrackerTo(config.xpTrackerSkill().getAssociatedSkill());
+			}
 		}
-		else
+
+		if (lastSkillSetMillis <= 0)
 		{
-			currentSkill = config.xpTrackerSkill().getAssociatedSkill();
+			lastSkillSetMillis = System.currentTimeMillis();
 		}
-		return currentSkill;
+	}
+
+	private void switchXpTrackerTo(Skill skill)
+	{
+		lastSkillSetMillis = System.currentTimeMillis();
+		lastSkill = skill;
+	}
+
+	private Skill pollLastTrackedXpTrackerSkill()
+	{
+		for (XpDrop xpDrop : plugin.getQueue())
+		{
+			if (xpDrop != null && !plugin.getFilteredSkills().contains(xpDrop.getSkill().toString().toLowerCase()))
+			{
+				return xpDrop.getSkill();
+			}
+		}
+		return null;
 	}
 
 	private void updateDrops()
