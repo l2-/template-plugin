@@ -29,7 +29,8 @@ public enum XpTrackerSkills
 	COOKING(Skill.COOKING),
 	FIREMAKING(Skill.FIREMAKING),
 	WOODCUTTING(Skill.WOODCUTTING),
-	FARMING(Skill.FARMING);
+	FARMING(Skill.FARMING),
+	SAILING(Skill.SAILING);
 
 	@Getter
 	private final Skill associatedSkill;

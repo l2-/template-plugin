@@ -53,6 +53,7 @@ public enum Skill
 	RUNECRAFT("Runecraft"),
 	HUNTER("Hunter"),
 	CONSTRUCTION("Construction"),
+	SAILING("Sailing"),
 	/**
 	 * The level of all skills added together.
 	 */

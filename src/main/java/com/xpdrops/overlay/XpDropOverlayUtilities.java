@@ -16,6 +16,9 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static com.xpdrops.overlay.XpDropOverlayManager.FAKE_SKILL_ICON_INDEX;
+import static com.xpdrops.overlay.XpDropOverlayManager.HITSPLAT_ICON_INDEX;
+
 @Slf4j
 public class XpDropOverlayUtilities
 {
@@ -114,7 +117,7 @@ public class XpDropOverlayUtilities
 
 		{
 			// FAKE/BLOCKED XP DROP ICON
-			int icon = (icons >> 23) & 0x1;
+			int icon = (icons >> FAKE_SKILL_ICON_INDEX) & 0x1;
 			if (icon == 0x1)
 			{
 				int _iconSize = Math.max(iconSize - 4, 14);
@@ -125,7 +128,7 @@ public class XpDropOverlayUtilities
 
 		{
 			// HIT SPLAT ICON
-			int icon = (icons >> 24) & 0x1;
+			int icon = (icons >> HITSPLAT_ICON_INDEX) & 0x1;
 			if (icon == 0x1)
 			{
 				int _iconSize = Math.max(iconSize - 4, 14);
@@ -172,7 +175,7 @@ public class XpDropOverlayUtilities
 
 		{
 			// FAKE/BLOCKED XP DROP ICON
-			int icon = (icons >> 23) & 0x1;
+			int icon = (icons >> FAKE_SKILL_ICON_INDEX) & 0x1;
 			if (icon == 0x1)
 			{
 				BufferedImage image = xpDropOverlayManager.getFakeSkillIcon();
@@ -184,7 +187,7 @@ public class XpDropOverlayUtilities
 
 		{
 			// HIT SPLAT ICON
-			int icon = (icons >> 24) & 0x1;
+			int icon = (icons >> HITSPLAT_ICON_INDEX) & 0x1;
 			if (icon == 0x1)
 			{
 				BufferedImage image = xpDropOverlayManager.getHitsplatIcon();

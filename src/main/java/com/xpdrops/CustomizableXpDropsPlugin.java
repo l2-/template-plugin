@@ -65,7 +65,7 @@ import static net.runelite.api.ScriptID.XPDROPS_SETDROPSIZE;
 @Slf4j
 public class CustomizableXpDropsPlugin extends Plugin
 {
-	public static final int[] SKILL_PRIORITY = new int[] {1, 5, 2, 6, 3, 7, 4, 15, 17, 18, 0, 16, 11, 14, 13, 9, 8, 10, 19, 20, 12, 22, 21};
+	public static final int[] SKILL_PRIORITY = new int[] {1, 5, 2, 6, 3, 7, 4, 15, 17, 18, 0, 16, 11, 14, 13, 9, 8, 10, 19, 20, 12, 22, 21, 23};
 	private static final Set<Integer> VOIDWAKERS = new ImmutableSet.Builder<Integer>()
 		.addAll(ItemVariationMapping.getVariations(ItemID.VOIDWAKER))
 		.build();
@@ -121,7 +121,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 	private static final int XP_TRACKER_SCRIPT_ID = 997;
 	private static final int XP_TRACKER_WIDGET_GROUP_ID = 122;
 	private static final int XP_TRACKER_WIDGET_CHILD_ID = 4;
-	private static final int[] previous_exp = new int[Skill.values().length - 1];
+	private static final int[] previous_exp = new int[net.runelite.api.Skill.values().length];
 	private boolean resetXpTrackerLingerTimerFlag = false;
 
 	private int attackStyleVarbit = -1;

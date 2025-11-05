@@ -37,7 +37,7 @@ public class XpDropOverlayManager
 	private static final int FAKE_SKILL_ICON_ID = 423; //sprite index 11
 	private static final int[] SKILL_ICON_ORDINAL_ICONS = new int[]{
 		197, 199, 198, 203, 200, 201, 202, 212, 214, 208,
-		211, 213, 207, 210, 209, 205, 204, 206, 216, 217, 215, 220, 221, 898
+		211, 213, 207, 210, 209, 205, 204, 206, 216, 217, 215, 220, 221, 228, 898
 	};
 
 	// key: icon + spriteIndex << 16
@@ -48,13 +48,18 @@ public class XpDropOverlayManager
 	public static final float CONSTANT_FRAME_TIME = 1000.0f / FRAMES_PER_SECOND;
 	public static final DecimalFormat XP_FORMATTER = new DecimalFormat(XP_FORMAT_PATTERN);
 	public static final Font RUNESCAPE_BOLD_FONT = XpDropOverlayUtilities.initRuneScapeBold();
-	// Used to order skills in the same order as the vanilla xp drops would display them
+	// Used to order skills in the same order as the vanilla xp drops would display them.
+	// Used to inverse skill_priority.
+	// ordinal = priority[skill_indices[ordinal]]
 	public static final int[] SKILL_INDICES = new int[]{
-		10, 0, 2, 4, 6, 1, 3, 5, 16, 15, 17, 12, 20, 14, 13, 7, 11, 8, 9, 18, 19, 22, 21
+		10, 0, 2, 4, 6, 1, 3, 5, 16, 15, 17, 12, 20, 14, 13, 7, 11, 8, 9, 18, 19, 22, 21, 23
 	};
-	public static final int SKILL_FLAGS_MASK = (1 << 23) - 1;
-	public static final int FAKE_SKILL_FLAGS_MASK = 1 << 23;
-	public static final int HITSPLAT_FLAGS_MASK = 1 << 24;
+	public static final int NUMBER_OF_SKILLS = 23;
+	public static final int FAKE_SKILL_ICON_INDEX = NUMBER_OF_SKILLS + 1;
+	public static final int HITSPLAT_ICON_INDEX = NUMBER_OF_SKILLS + 2;
+	public static final int SKILL_FLAGS_MASK = (1 << (NUMBER_OF_SKILLS + 1)) - 1;
+	public static final int FAKE_SKILL_FLAGS_MASK = 1 << FAKE_SKILL_ICON_INDEX;
+	public static final int HITSPLAT_FLAGS_MASK = 1 << HITSPLAT_ICON_INDEX;
 
 	@Inject
 	private XpDropMerger xpDropMerger;
@@ -336,7 +341,7 @@ public class XpDropOverlayManager
 			{
 				flags |= 1 << CustomizableXpDropsPlugin.SKILL_PRIORITY[skill.ordinal()];
 			}
-			flags |= 1 << 24;
+			flags |= HITSPLAT_FLAGS_MASK;
 			int icons = 0;
 			if ((config.predictedHitIcon() == XpDropsConfig.PredictedHitIconStyle.SKILL ||
 				config.predictedHitIcon() == XpDropsConfig.PredictedHitIconStyle.HITSPLAT_SKILL))
@@ -367,7 +372,7 @@ public class XpDropOverlayManager
 					flags |= 1 << CustomizableXpDropsPlugin.SKILL_PRIORITY[xpDrop.getSkill().ordinal()];
 					if (xpDrop.isFake())
 					{
-						flags |= 1 << 23;
+						flags |= FAKE_SKILL_FLAGS_MASK;
 					}
 				}
 
@@ -406,7 +411,7 @@ public class XpDropOverlayManager
 
 					if (xpDrop.isFake())
 					{
-						flags |= 1 << 23;
+						flags |= FAKE_SKILL_FLAGS_MASK;
 					}
 
 					if (dropsInFlightMap.containsKey(xpDrop.getSkill()))
