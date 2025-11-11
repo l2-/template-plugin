@@ -19,7 +19,11 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - Export your plugin settings to share with a friend by right-clicking the xp orb in-game.
 
 #### Change log
+- v1.10.1 - Fix import/export menu not showing.
 - v1.10.0 - Add sailing skill.
+<details>
+<summary>Older versions changelog</summary>
+
 - v1.9.12 - Fix issue where XP tracker would always stay on screen when not using Most Recent as tracked skill.
 - v1.9.11 - Fix overlay priority - `@taysta`
 - v1.9.10 - Fixed a bug regarding predicted hits being wrong when relogging within CM.
@@ -89,6 +93,7 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - v1.2.0 - Add config options for prefix and suffix for XP drop text.
 - v1.1.0 - Updated positioning logic and make sure shortly subsequent XP drops are evenly spaced.
 - v1.0.0 - Initial release.
+</details>
 
 ### Known issues
 

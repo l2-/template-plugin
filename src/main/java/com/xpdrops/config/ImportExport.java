@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ImportExport
 {
-	private static final int MINIMAP_XP_ORB_ID = 10485765;
+	private static final int MINIMAP_XP_ORB_ID = 10485766;
 	private static final WidgetMenuOption EXPORT_MARKERS_OPTION = new WidgetMenuOption("Export", "Customizable XP drops settings", MINIMAP_XP_ORB_ID);
 	private static final WidgetMenuOption IMPORT_MARKERS_OPTION = new WidgetMenuOption("Import", "Customizable XP drops settings", MINIMAP_XP_ORB_ID);
 
