@@ -136,8 +136,10 @@ public class XpTrackerOverlay extends Overlay
 	}
 
 	// Returns height of drawn bar.
-	private int drawProgressBar(Graphics2D graphics, int x, int y, int width, long start, long end, long _current)
+	public int drawProgressBar(Graphics2D graphics, int x, int y, int width, long start, long end, long current)
 	{
+		end = Math.max(start, end);
+		current = Math.max(start, Math.min(end, current));
 		if (start < 0 || end < 0 || start == end)
 		{
 			// No point in drawing a bar.
@@ -146,13 +148,11 @@ public class XpTrackerOverlay extends Overlay
 
 		long total = end - start;
 		double ratio = 1.0;
-		long current = Math.max(0, _current - start);
+		long currentXpDelta = Math.max(0, current - start);
 		if (total > 0)
 		{
-			ratio = current / (double)total;
+			ratio = currentXpDelta / (double)total;
 		}
-		// Clamp ratio to prevent color values from exceeding valid range
-		ratio = Math.min(1.0, Math.max(0.0, ratio));
 
 		int alpha = getAlpha();
 
@@ -169,10 +169,7 @@ public class XpTrackerOverlay extends Overlay
 
 		final double rMod = 130.0 * ratio;
 		final double gMod = 255.0 * ratio;
-		// Clamp color components to valid range (0-255) to prevent IllegalArgumentException
-		final int red = Math.min(255, Math.max(0, (int) (255 - rMod)));
-		final int green = Math.min(255, Math.max(0, (int) (0 + gMod)));
-		final Color c = new Color(red, green, 0, alpha);
+		final Color c = new Color((int) (255 - rMod), (int) (0 + gMod), 0, alpha);
 		graphics.setColor(c);
 		graphics.fillRect(x + 2, y + 2, progressBarWidth, barHeight - 2);
 		return PROGRESS_BAR_HEIGHT;

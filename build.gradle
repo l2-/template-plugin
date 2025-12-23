@@ -19,9 +19,17 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok:1.18.30'
 	annotationProcessor 'org.projectlombok:lombok:1.18.30'
 
-	testImplementation 'junit:junit:4.13.2'
+	testImplementation "org.mockito:mockito-core:5.17.0"
+	compileOnly 'org.jetbrains:annotations:23.0.0'
+	def junitVersion = "5.5.2" // max version before junit-bom was added to pom files, due to runelite restrictions
+	testImplementation group: "org.junit.jupiter", name: "junit-jupiter-api", version: junitVersion
+	testImplementation group: "org.junit.jupiter", name: "junit-jupiter-params", version: junitVersion
+	testImplementation group: "org.junit.jupiter", name: "junit-jupiter-engine", version: junitVersion
 	testImplementation group: 'net.runelite', name:'client', version: runeLiteVersion
 	testImplementation group: 'net.runelite', name:'jshell', version: runeLiteVersion
+	testImplementation(group: 'com.google.inject.extensions', name:'guice-testlib', version: "4.1.0") {
+		exclude group: 'com.google.inject', module: 'guice' // already provided by runelite
+	}
 }
 
 group = 'com.xpdrops'
@@ -30,6 +38,20 @@ sourceCompatibility = '1.8'
 
 tasks.withType(JavaCompile).configureEach {
 	options.encoding = 'UTF-8'
+}
+
+tasks.withType(Test).configureEach {
+	maxHeapSize = "3g"
+	minHeapSize = "512m"
+	jvmArgs = [
+			"-XX:ReservedCodeCacheSize=512m",
+			"-XX:MaxMetaspaceSize=1g"
+	]
+	testLogging.showStandardStreams = true
+}
+
+tasks.test {
+	useJUnitPlatform()
 }
 
 //shadowJar {
