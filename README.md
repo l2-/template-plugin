@@ -19,6 +19,7 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - Export your plugin settings to share with a friend by right-clicking the xp orb in-game.
 
 #### Change log
+- v1.10.2 - Prevent IllegalArgumentException. - `@SRLJustin`
 - v1.10.1 - Fix import/export menu not showing.
 - v1.10.0 - Add sailing skill.
 <details>

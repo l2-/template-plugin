@@ -136,8 +136,10 @@ public class XpTrackerOverlay extends Overlay
 	}
 
 	// Returns height of drawn bar.
-	private int drawProgressBar(Graphics2D graphics, int x, int y, int width, long start, long end, long _current)
+	public int drawProgressBar(Graphics2D graphics, int x, int y, int width, long start, long end, long current)
 	{
+		end = Math.max(start, end);
+		current = Math.max(start, Math.min(end, current));
 		if (start < 0 || end < 0 || start == end)
 		{
 			// No point in drawing a bar.
@@ -146,10 +148,10 @@ public class XpTrackerOverlay extends Overlay
 
 		long total = end - start;
 		double ratio = 1.0;
-		long current = Math.max(0, _current - start);
+		long currentXpDelta = Math.max(0, current - start);
 		if (total > 0)
 		{
-			ratio = current / (double)total;
+			ratio = currentXpDelta / (double)total;
 		}
 
 		int alpha = getAlpha();
