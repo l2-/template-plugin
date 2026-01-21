@@ -1,10 +1,13 @@
 package com.xpdrops.predictedhit.npcswithscalingbonus.tob;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import net.runelite.api.gameval.NpcID;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 // We need a mapping (npc id, raid_type) -> xp bonus
 // EM = Entry Mode
@@ -32,42 +35,16 @@ public enum ToBNPCs
 	SOTETSEG_HM(		new ToBNPC(1.4,	1.4, 	1.4		), NpcID.TOB_SOTETSEG_COMBAT_HARD),
 	VERZIK_P1_HM(		new ToBNPC(1.05,	1.05, 	1.05	), NpcID.VERZIK_PHASE1_HARD, NpcID.VERZIK_PHASE1_TO2_TRANSITION_HARD),
 	VERZIK_P2_HM(		new ToBNPC(1.30,	1.30, 	1.30	), NpcID.VERZIK_PHASE2_HARD, NpcID.VERZIK_PHASE2_TO3_TRANSITION_HARD),
-	VERZIK_P3_HM(		new ToBNPC(1.575,	1.575, 	1.575	), NpcID.VERZIK_PHASE3_HARD, NpcID.VERZIK_DEATH_BAT_HARD),
-	;
+	VERZIK_P3_HM(		new ToBNPC(1.575,	1.575, 	1.575	), NpcID.VERZIK_PHASE3_HARD, NpcID.VERZIK_DEATH_BAT_HARD);
+
+	@Getter(AccessLevel.PACKAGE)
 	private final HashSet<Integer> ids;
+	@Getter(AccessLevel.PACKAGE)
 	private final ToBNPC npcWithScalingBonus;
 	ToBNPCs(ToBNPC npcWithScalingBonus, int ... ids)
 	{
 		this.npcWithScalingBonus = npcWithScalingBonus;
 		this.ids = new HashSet<>();
 		Arrays.stream(ids).forEach(this.ids::add);
-	}
-
-	private static final HashMap<Integer, ToBNPC> NPCS_WITH_SCALING_BONUS_MAPPING;
-
-	static
-	{
-		NPCS_WITH_SCALING_BONUS_MAPPING = new HashMap<>();
-		for (ToBNPCs value : ToBNPCs.values())
-		{
-			for (Integer id : value.ids)
-			{
-				NPCS_WITH_SCALING_BONUS_MAPPING.put(id, value.npcWithScalingBonus);
-			}
-		}
-	}
-
-	public static boolean isTOBNPC(int id)
-	{
-		return NPCS_WITH_SCALING_BONUS_MAPPING.containsKey(id);
-	}
-
-	public static double getModifier(int id, int partySize)
-	{
-		if (isTOBNPC(id))
-		{
-			return NPCS_WITH_SCALING_BONUS_MAPPING.get(id).calculateModifier(partySize);
-		}
-		return 1.0;
 	}
 }

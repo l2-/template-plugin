@@ -1,11 +1,13 @@
 package com.xpdrops.predictedhit.npcswithscalingbonus.cox;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.gameval.NpcID;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 public enum CoXNPCs
 {
@@ -29,9 +31,11 @@ public enum CoXNPCs
 	GREAT_OLM(CoXNPCStats.GREAT_OLM.getCoxnpc(), NpcID.OLM_HEAD_SPAWNING, NpcID.OLM_HEAD),
 	GREAT_OLM_MAGE_HAND(CoXNPCStats.GREAT_OLM_MAGE_HAND.getCoxnpc(), NpcID.OLM_HAND_LEFT_SPAWNING, NpcID.OLM_HAND_LEFT_SPAWNING),
 	GREAT_OLM_MELEE_HAND(CoXNPCStats.GREAT_OLM_MELEE_HAND.getCoxnpc(), NpcID.OLM_HAND_RIGHT_SPAWNING, NpcID.OLM_HAND_RIGHT),
-	SCAVENGER(CoXNPCStats.SCAVENGER.getCoxnpc(), NpcID.RAIDS_SCAVENGER_BEAST_A, NpcID.RAIDS_SCAVENGER_BEAST_B),
-	;
+	SCAVENGER(CoXNPCStats.SCAVENGER.getCoxnpc(), NpcID.RAIDS_SCAVENGER_BEAST_A, NpcID.RAIDS_SCAVENGER_BEAST_B);
+
+	@Getter(AccessLevel.PACKAGE)
 	private final HashSet<Integer> ids;
+	@Getter(AccessLevel.PACKAGE)
 	private final CoXNPC npcWithScalingBonus;
 
 	CoXNPCs(CoXNPC coxnpc, int... ids)
@@ -41,36 +45,8 @@ public enum CoXNPCs
 		Arrays.stream(ids).forEach(this.ids::add);
 	}
 
-	private static final HashMap<Integer, CoXNPC> COXNPC_MAPPING;
-
-	static
-	{
-		COXNPC_MAPPING = new HashMap<>();
-		for (CoXNPCs value : CoXNPCs.values())
-		{
-			for (Integer id : value.ids)
-			{
-				COXNPC_MAPPING.put(id, value.npcWithScalingBonus);
-			}
-		}
-	}
-
-	public static boolean isCOXNPC(int id)
-	{
-		return COXNPC_MAPPING.containsKey(id);
-	}
-
-	public static double getModifier(int id, int scaledPartySize, int playersInRaid, int raidType)
-	{
-		if (isCOXNPC(id))
-		{
-			return COXNPC_MAPPING.get(id).calculateModifier(raidType, scaledPartySize, playersInRaid);
-		}
-		return 1.0;
-	}
-
 	@Getter
-	enum CoXNPCStats
+    enum CoXNPCStats
 	{
 		TEKTON(new Tekton(300, 390, 390, 205, 1, 205, 64, 20, 155, 165, 105, 0, 0)),
 		TEKTON_ENRAGED(new Tekton(300, 390, 390, 205, 1, 205, 64, 30, 280, 290, 180, 0, 0)),
