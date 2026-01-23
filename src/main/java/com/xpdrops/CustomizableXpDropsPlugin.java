@@ -32,6 +32,7 @@ import net.runelite.api.events.StatChanged;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.gameval.InventoryID;
 import net.runelite.api.gameval.ItemID;
+import net.runelite.api.gameval.SpriteID;
 import net.runelite.api.gameval.VarPlayerID;
 import net.runelite.api.gameval.VarbitID;
 import net.runelite.api.widgets.Widget;
@@ -50,6 +51,7 @@ import javax.inject.Inject;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -65,7 +67,9 @@ import static net.runelite.api.ScriptID.XPDROPS_SETDROPSIZE;
 @Slf4j
 public class CustomizableXpDropsPlugin extends Plugin
 {
-	public static final int[] SKILL_PRIORITY = new int[] {1, 5, 2, 6, 3, 7, 4, 15, 17, 18, 0, 16, 11, 14, 13, 9, 8, 10, 19, 20, 12, 22, 21, 23};
+	public static final int[] SKILL_PRIORITY = new int[]{
+		1, 5, 2, 6, 3, 7, 4, 15, 17, 18, 0, 16, 11, 14, 13, 9, 8, 10, 19, 20, 12, 22, 21, 23
+	};
 	private static final Set<Integer> VOIDWAKERS = new ImmutableSet.Builder<Integer>()
 		.addAll(ItemVariationMapping.getVariations(ItemID.VOIDWAKER))
 		.build();
@@ -154,6 +158,10 @@ public class CustomizableXpDropsPlugin extends Plugin
 		}
 		queue.clear();
 		xpDropOverlayManager.startup();
+		if (!config.useCustomizableXpDrops())
+		{
+			xpDropOverlayManager.shutdownXpDropOverlay();
+		}
 
 		filteredSkillsPredictedHits.clear();
 		filteredSkillsPredictedHits.addAll(Text.fromCSV(config.skillsToFilterForPredictedHits()).stream().map(String::toLowerCase).collect(Collectors.toList()));
@@ -322,14 +330,24 @@ public class CustomizableXpDropsPlugin extends Plugin
 			{
 				xpDropDamageCalculator.populateUserDefinedXpBonusMapping(config.predictedHitModifiers());
 			}
+
+			if ("useCustomizableXpDrops".equals(configChanged.getKey()))
+			{
+				if (config.useCustomizableXpDrops())
+				{
+					xpDropOverlayManager.startupXpDropOverlay();
+				}
+				else
+				{
+					xpDropOverlayManager.shutdownXpDropOverlay();
+				}
+			}
 		}
 	}
 
 	@Subscribe
 	public void onScriptPreFired(ScriptPreFired scriptPreFired)
 	{
-		if (!config.xpDropsHideVanilla()) return;
-
 		if (scriptPreFired.getScriptId() == XPDROPS_SETDROPSIZE)
 		{
 			final int[] intStack = client.getIntStack();
@@ -339,9 +357,18 @@ public class CustomizableXpDropsPlugin extends Plugin
 			final int widgetId = intStack[intStackSize - 4];
 
 			final Widget xpdrop = client.getWidget(widgetId);
-			if (xpdrop != null)
+			if (xpdrop == null)
+			{
+				return;
+			}
+
+			if (config.useCustomizableXpDrops() && config.xpDropsHideVanilla())
 			{
 				xpdrop.setHidden(true);
+			}
+			else if (config.showPredictedHit())
+			{
+				appendPredictedHit(xpdrop);
 			}
 		}
 	}
@@ -477,7 +504,8 @@ public class CustomizableXpDropsPlugin extends Plugin
 	}
 
 	@Subscribe
-	protected void onChatMessage(ChatMessage chatMessage) {
+	protected void onChatMessage(ChatMessage chatMessage)
+	{
 		chambersLayoutSolver.onChatMessage(chatMessage);
 	}
 
@@ -543,5 +571,44 @@ public class CustomizableXpDropsPlugin extends Plugin
 			}
 		}
 		return XpDropStyle.DEFAULT;
+	}
+
+	private boolean isCombatXpDropSprite(int sprite)
+	{
+		switch (sprite)
+		{
+			case SpriteID.Staticons._0: // Attack
+			case SpriteID.Staticons._1: // Strength
+			case SpriteID.Staticons._2: // Defence
+			case SpriteID.Staticons._3: // Ranged
+			case SpriteID.Staticons._5: // Magic
+			case SpriteID.Staticons._6: // Hitpoints
+				return true;
+		}
+		return false;
+	}
+
+	private void appendPredictedHit(Widget xpdrop)
+	{
+		final Widget text = xpdrop.getChild(0);
+		Hit hit = hitBuffer.peek();
+		if (text != null
+			&& xpdrop.getChildren() != null
+			&& Arrays
+			.stream(xpdrop.getChildren())
+			.skip(1)
+			.filter(Objects::nonNull)
+			.anyMatch(child -> isCombatXpDropSprite(child.getSpriteId()))
+			&& hit != null)
+		{
+			Object[] objectStack = client.getObjectStack();
+			int objectStackSize = client.getObjectStackSize();
+
+			final String newText = String.format("%s (%s%d%s)", text.getText(), config.predictedHitPrefix(), hit.getHit(), config.predictedHitSuffix());
+			// we cant just use setText on the widget as the CS2 script calculates the size based on the string
+			// so, we need to also update the string on the objectStack
+			text.setText(newText);
+			objectStack[objectStackSize - 1] = newText;
+		}
 	}
 }

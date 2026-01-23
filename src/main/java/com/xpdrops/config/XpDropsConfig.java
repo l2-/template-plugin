@@ -105,6 +105,19 @@ public interface XpDropsConfig extends Config
 	String xp_miscellaneous_settings = "xp_miscellaneous_settings";
 
 	@ConfigItem(
+		keyName = "useCustomizableXpDrops",
+		name = "Use Customizable XP drops",
+		description = "Control if this plugin should show customizable xp drops or not." +
+			"In case you only want to use the custom xp tracker or predicted hits.",
+		position = -2,
+		section = xp_drop_settings
+	)
+	default boolean useCustomizableXpDrops()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		keyName = "grouped",
 		name = "Group XP drops",
 		description = "Group XP drops",
@@ -549,7 +562,7 @@ public interface XpDropsConfig extends Config
 		name = "Predicted hit xp modifiers",
 		description = "Advanced. Enter your own xp modifiers per NPC id here.<br>" +
 			"Format as NPC id:xp modifier. Separate each entry with a newline.<br>" +
-			"For example if a goblin has an NPC id of 2 and an xp bonus of 35% then enter 2:1.35 in this field. If a rat has NPC id of 3 and an xp bonus of -75% then enter 3:0.25<br>"  +
+			"For example if a goblin has an NPC id of 2 and an xp bonus of 35% then enter 2:1.35 in this field. If a rat has NPC id of 3 and an xp bonus of -75% then enter 3:0.25<br>" +
 			"Modifiers entered here will supersede the modifiers shipped with the plugin!",
 		position = 27,
 		section = predicted_hit

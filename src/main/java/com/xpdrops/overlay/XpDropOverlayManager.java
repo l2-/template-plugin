@@ -165,10 +165,8 @@ public class XpDropOverlayManager
 		}
 	}
 
-	public void startup()
+	public void startupXpDropOverlay()
 	{
-		clearIconCache();
-
 		if (config.attachToTarget() || config.attachToPlayer())
 		{
 			currentXpDropOverlay = xpDropSceneOverlay;
@@ -178,16 +176,27 @@ public class XpDropOverlayManager
 			currentXpDropOverlay = xpDropOverlay;
 		}
 		currentXpTrackerOverlay = xpTrackerOverlay; // only have 1 currently
+		overlayManager.add(currentXpDropOverlay);
+	}
+
+	public void startup()
+	{
+		clearIconCache();
 
 		//add overlays
-		overlayManager.add(currentXpDropOverlay);
+		startupXpDropOverlay();
 		overlayManager.add(currentXpTrackerOverlay);
+	}
+
+	public void shutdownXpDropOverlay()
+	{
+		overlayManager.remove(currentXpDropOverlay);
 	}
 
 	public void shutdown()
 	{
 		//remove overlays
-		overlayManager.remove(currentXpDropOverlay);
+		shutdownXpDropOverlay();
 		overlayManager.remove(currentXpTrackerOverlay);
 	}
 
