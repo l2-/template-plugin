@@ -1,6 +1,7 @@
 package com.xpdrops;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.gson.Gson;
 import com.google.inject.Provides;
 import com.xpdrops.attackstyles.AttackStyle;
 import com.xpdrops.config.ImportExport;
@@ -8,6 +9,7 @@ import com.xpdrops.config.MigrationManager;
 import com.xpdrops.config.XpDropsConfig;
 import com.xpdrops.overlay.XpDropOverlayManager;
 import com.xpdrops.predictedhit.Hit;
+import com.xpdrops.predictedhit.PredictedHit;
 import com.xpdrops.predictedhit.XpDropDamageCalculator;
 import com.xpdrops.predictedhit.npcswithscalingbonus.ChambersLayoutSolver;
 import lombok.Getter;
@@ -18,7 +20,6 @@ import net.runelite.api.EquipmentInventorySlot;
 import net.runelite.api.GameState;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
-import net.runelite.api.NPC;
 import net.runelite.api.Player;
 import net.runelite.api.Prayer;
 import net.runelite.api.events.BeforeRender;
@@ -38,8 +39,10 @@ import net.runelite.api.gameval.VarbitID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
+import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
+import net.runelite.client.events.PluginMessage;
 import net.runelite.client.game.ItemVariationMapping;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
@@ -50,6 +53,7 @@ import net.runelite.client.util.Text;
 import javax.inject.Inject;
 import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.PriorityQueue;
@@ -73,8 +77,6 @@ public class CustomizableXpDropsPlugin extends Plugin
 	private static final Set<Integer> VOIDWAKERS = new ImmutableSet.Builder<Integer>()
 		.addAll(ItemVariationMapping.getVariations(ItemID.VOIDWAKER))
 		.build();
-	private static final int LEVIATHAN_ID = 12214;
-	private static final int VARDORVIS_ID = 12223;
 
 	@Inject
 	private Client client;
@@ -99,6 +101,12 @@ public class CustomizableXpDropsPlugin extends Plugin
 
 	@Inject
 	private MigrationManager migrationManager;
+
+	@Inject
+	private EventBus eventBus;
+
+	@Inject
+	private Gson gson;
 
 	@Provides
 	XpDropsConfig provideConfig(ConfigManager configManager)
@@ -424,27 +432,10 @@ public class CustomizableXpDropsPlugin extends Plugin
 		}
 		if (event.getSkill() == net.runelite.api.Skill.HITPOINTS)
 		{
-			int hit = 0;
-			if (lastOpponent instanceof Player)
-			{
-				lastOpponentId = lastOpponent.getCombatLevel();
-				hit = xpDropDamageCalculator.calculateHitOnPlayer(lastOpponent.getCombatLevel(), currentXp, config.xpMultiplier());
-			}
-			else if (lastOpponent instanceof NPC)
-			{
-				lastOpponentId = ((NPC) lastOpponent).getId();
-
-				// Special case for Awakened DT2 Bosses
-				if ((lastOpponentId == LEVIATHAN_ID || lastOpponentId == VARDORVIS_ID)
-					&& lastOpponent.getCombatLevel() > 1000)
-				{
-					lastOpponentId *= -1;
-				}
-
-				hit = xpDropDamageCalculator.calculateHitOnNpc(lastOpponentId, currentXp, config.xpMultiplier());
-			}
-			log.debug("Hit npc with fake hp xp drop xp:{} hit:{} npc_id:{}", currentXp, hit, lastOpponentId);
-			hitBuffer.add(new Hit(hit, lastOpponent, attackStyle));
+			PredictedHit predictedHit = xpDropDamageCalculator.predictHit(lastOpponent, currentXp, config.xpMultiplier(), attackStyle);
+			log.debug("Hit npc with fake hp xp drop xp:{} hit:{} npc_id:{}", currentXp, predictedHit.getHit(), lastOpponentId);
+			hitBuffer.add(new Hit(predictedHit.getHit(), lastOpponent, attackStyle));
+			postPredictedHit(predictedHit);
 		}
 
 		XpDrop xpDrop = new XpDrop(Skill.fromSkill(event.getSkill()), currentXp, matchPrayerStyle(Skill.fromSkill(event.getSkill())), true, lastOpponent);
@@ -467,27 +458,10 @@ public class CustomizableXpDropsPlugin extends Plugin
 			}
 			if (event.getSkill() == net.runelite.api.Skill.HITPOINTS)
 			{
-				int hit = 0;
-				if (lastOpponent instanceof Player)
-				{
-					lastOpponentId = lastOpponent.getCombatLevel();
-					hit = xpDropDamageCalculator.calculateHitOnPlayer(lastOpponentId, currentXp - previousXp, config.xpMultiplier());
-				}
-				else if (lastOpponent instanceof NPC)
-				{
-					lastOpponentId = ((NPC) lastOpponent).getId();
-
-					// Special case for Awakened DT2 Bosses
-					if ((lastOpponentId == LEVIATHAN_ID || lastOpponentId == VARDORVIS_ID)
-						&& lastOpponent.getCombatLevel() > 1000)
-					{
-						lastOpponentId *= -1;
-					}
-
-					hit = xpDropDamageCalculator.calculateHitOnNpc(lastOpponentId, currentXp - previousXp, config.xpMultiplier());
-				}
-				log.debug("Hit npc with hp xp drop xp:{} hit:{} npc_id:{}", currentXp - previousXp, hit, lastOpponentId);
-				hitBuffer.add(new Hit(hit, lastOpponent, attackStyle));
+				PredictedHit predictedHit = xpDropDamageCalculator.predictHit(lastOpponent, currentXp - previousXp, config.xpMultiplier(), attackStyle);
+				log.debug("Hit npc with hp xp drop xp:{} hit:{} npc_id:{}", currentXp - previousXp, predictedHit.getHit(), lastOpponentId);
+				hitBuffer.add(new Hit(predictedHit.getHit(), lastOpponent, attackStyle));
+				postPredictedHit(predictedHit);
 			}
 
 			XpDrop xpDrop = new XpDrop(Skill.fromSkill(event.getSkill()), currentXp - previousXp, matchPrayerStyle(Skill.fromSkill(event.getSkill())), false, lastOpponent);
@@ -610,5 +584,14 @@ public class CustomizableXpDropsPlugin extends Plugin
 			text.setText(newText);
 			objectStack[objectStackSize - 1] = newText;
 		}
+	}
+
+	private void postPredictedHit(PredictedHit hit)
+	{
+		String namespace = "customizable-xp-drops";
+		String name = "predicted-hit";
+		HashMap<String, Object> data = new HashMap<>();
+		data.put("value", gson.toJson(hit));
+		eventBus.post(new PluginMessage(namespace, name, data));
 	}
 }

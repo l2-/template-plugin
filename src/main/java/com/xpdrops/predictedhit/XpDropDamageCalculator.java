@@ -3,13 +3,22 @@ package com.xpdrops.predictedhit;
 import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
+import com.xpdrops.attackstyles.AttackStyle;
 import com.xpdrops.predictedhit.npcswithscalingbonus.ChambersLayoutSolver;
 import com.xpdrops.predictedhit.npcswithscalingbonus.DelveNpc;
 import com.xpdrops.predictedhit.npcswithscalingbonus.cox.CoXNPCs;
 import com.xpdrops.predictedhit.npcswithscalingbonus.toa.ToANPCs;
 import com.xpdrops.predictedhit.npcswithscalingbonus.tob.ToBNPCs;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.Actor;
 import net.runelite.api.Client;
+import net.runelite.api.EquipmentInventorySlot;
+import net.runelite.api.Item;
+import net.runelite.api.ItemContainer;
+import net.runelite.api.NPC;
+import net.runelite.api.Player;
+import net.runelite.api.Prayer;
+import net.runelite.api.gameval.InventoryID;
 import net.runelite.api.gameval.VarbitID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.util.Text;
@@ -40,6 +49,8 @@ public class XpDropDamageCalculator
 	private static final int ROOM_LEVEL_WIDGET_ID = (481 << 16) | 45;
 	private static final int COX_SCALED_PARTY_SIZE_VARBIT = 9540;
 	private static final int RAID_PARTY_SIZE = 5424;
+	private static final int LEVIATHAN_ID = 12214;
+	private static final int VARDORVIS_ID = 12223;
 
 	private int lastToARaidLevel = 0;
 	private int lastToARaidPartySize = 1;
@@ -140,37 +151,123 @@ public class XpDropDamageCalculator
 		return (int) Math.round((hpXpDiff * (3.0d / 4.0d)) / modifier / configModifier);
 	}
 
-	public int calculateHitOnPlayer(int cmb, int hpXpDiff, double configModifier)
+	private boolean isPrayerActive(Prayer prayer)
 	{
-		double modifier = Math.min(1.125d, 1 + Math.floor(cmb / 20.0d) / 40.0d);
-		return calculateHit(hpXpDiff, modifier, configModifier);
+		return client.getServerVarbitValue(prayer.getVarbit()) == 1;
 	}
 
-	public int calculateHitOnNpc(int id, int hpXpDiff, double configModifier)
+	private void setPlayerData(PredictedHit hit, AttackStyle attackStyle)
 	{
-		double modifier = 1.0;
+		ItemContainer equipment = client.getItemContainer(InventoryID.WORN);
+		if (equipment != null)
+		{
+			Item weapon = equipment.getItem(EquipmentInventorySlot.WEAPON.getSlotIdx());
+			if (weapon != null)
+			{
+				hit.setEquippedWeaponId(weapon.getId());
+			}
+		}
+
+		hit.setActivePrayer(Arrays.stream(Prayer.values()).filter(this::isPrayerActive).toArray(Prayer[]::new));
+		PredictedHit.AttackStyle predictedHitAttackStyle = PredictedHit.AttackStyle.NONE;
+		switch (attackStyle)
+		{
+			case OTHER:
+				predictedHitAttackStyle = PredictedHit.AttackStyle.OTHER;
+				break;
+			case ACCURATE:
+				predictedHitAttackStyle = PredictedHit.AttackStyle.ACCURATE;
+				break;
+			case DEFENSIVE:
+				predictedHitAttackStyle = PredictedHit.AttackStyle.DEFENSIVE;
+				break;
+			case AGGRESSIVE:
+				predictedHitAttackStyle = PredictedHit.AttackStyle.AGGRESSIVE;
+				break;
+			case CASTING:
+				predictedHitAttackStyle = PredictedHit.AttackStyle.CASTING;
+				break;
+			case CONTROLLED:
+				predictedHitAttackStyle = PredictedHit.AttackStyle.CONTROLLED;
+				break;
+			case DEFENSIVE_CASTING:
+				predictedHitAttackStyle = PredictedHit.AttackStyle.DEFENSIVE_CASTING;
+				break;
+			case LONGRANGE:
+				predictedHitAttackStyle = PredictedHit.AttackStyle.LONGRANGE;
+				break;
+			case RANGING:
+				predictedHitAttackStyle = PredictedHit.AttackStyle.RANGING;
+				break;
+		}
+		hit.setAttackStyle(predictedHitAttackStyle);
+	}
+
+	public PredictedHit predictHit(Actor actor, int hpXpDiff, double configModifier, AttackStyle attackStyle)
+	{
+		PredictedHit hit = new PredictedHit();
+		hit.setUserXpModifier(configModifier);
+		hit.setHpXpAwarded(hpXpDiff);
+
+		setPlayerData(hit, attackStyle);
+
+		if (actor instanceof Player)
+		{
+			return predictedHitPlayer(hit, actor.getCombatLevel());
+		}
+		else if (actor instanceof NPC)
+		{
+			return predictedHitNpc(hit, ((NPC) actor).getId(), actor.getCombatLevel());
+		}
+		return null;
+	}
+
+	private PredictedHit predictedHitPlayer(PredictedHit hit, int cmb)
+	{
+		hit.setOpponentIsPlayer(true);
+		hit.setPlayerCombatLevel(cmb);
+		double modifier = Math.min(1.125d, 1 + Math.floor(cmb / 20.0d) / 40.0d);
+		hit.setXpModifier(modifier);
+		hit.setHit(calculateHit(hit.getHpXpAwarded(), modifier, hit.getUserXpModifier()));
+		return hit;
+	}
+
+	private PredictedHit predictedHitNpc(PredictedHit hit, int id, int cmb)
+	{
+		hit.setNpcId(id);
+		hit.setXpModifier(1);
+
+		// Special case for Awakened DT2 Bosses
+		if ((hit.getNpcId() == LEVIATHAN_ID || hit.getNpcId() == VARDORVIS_ID) && cmb > 1000)
+		{
+			id *= -1;
+		}
+
 		if (DelveNpc.isDelveNpc(id))
 		{
 			int maxHp = client.getVarbitValue(VarbitID.HPBAR_HUD_BASEHP);
-			modifier = DelveNpc.modifierFromState(maxHp);
-			log.debug("Delve modifier {} {} max hp {}", id, modifier, maxHp);
+			hit.setXpModifier(DelveNpc.modifierFromState(maxHp));
+			log.debug("Delve modifier {} {} max hp {}", id, hit.getXpModifier(), maxHp);
 		}
 		else if (CoXNPCs.isCOXNPC(id))
 		{
 			int scaledPartySize = getCoxTotalPartySize();
 			int playersInRaid = getCoxPlayersInRaid();
-			// Wrong. only follows the setting of the player's board
-//			int raidType = client.getVarbitValue(6385) > 0 ? 1 : 0;
 			int raidType = chambersLayoutSolver.getRaidType() == ChambersLayoutSolver.RaidType.CM ? 1 : 0;
 
-			modifier = CoXNPCs.getModifier(id, scaledPartySize, playersInRaid, raidType);
-			log.debug("COX modifier {} {} party size {} players in raid {} raid type {}", id, modifier, scaledPartySize, playersInRaid, raidType);
+			hit.setRaid(chambersLayoutSolver.getRaidType() == ChambersLayoutSolver.RaidType.CM ? PredictedHit.Raid.COX_CM : PredictedHit.Raid.COX);
+			hit.setPartySize(scaledPartySize);
+			hit.setXpModifier(CoXNPCs.getModifier(id, scaledPartySize, playersInRaid, raidType));
+			log.debug("COX modifier {} {} party size {} players in raid {} raid type {}", id, hit.getXpModifier(), scaledPartySize, playersInRaid, raidType);
 		}
 		else if (ToBNPCs.isTOBNPC(id))
 		{
 			int partySize = getToBPartySize();
-			modifier = ToBNPCs.getModifier(id, partySize);
-			log.debug("TOB modifier {} {} part size {}", id, modifier, partySize);
+
+			hit.setRaid(PredictedHit.Raid.TOB);
+			hit.setPartySize(partySize);
+			hit.setXpModifier(ToBNPCs.getModifier(id, partySize));
+			log.debug("TOB modifier {} {} part size {}", id, hit.getXpModifier(), partySize);
 		}
 		else if (ToANPCs.isToANPC(id))
 		{
@@ -184,18 +281,24 @@ public class XpDropDamageCalculator
 			else lastToARaidRoomLevel = roomLevel;
 			if (raidLevel < 0) raidLevel = lastToARaidLevel;
 			else lastToARaidLevel = raidLevel;
-			modifier = ToANPCs.getModifier(id, partySize, raidLevel, roomLevel);
-			log.debug("TOA modifier {} {} party size {} raid level {} room level {}", id, modifier, partySize, raidLevel, roomLevel);
+
+			hit.setRaid(PredictedHit.Raid.TOA);
+			hit.setPartySize(partySize);
+			hit.setRaidRoomLevel(roomLevel);
+			hit.setRaidLevel(raidLevel);
+			hit.setXpModifier(ToANPCs.getModifier(id, partySize, raidLevel, roomLevel));
+			log.debug("TOA modifier {} {} party size {} raid level {} room level {}", id, hit.getXpModifier(), partySize, raidLevel, roomLevel);
 		}
 		else if (USER_DEFINED_XP_BONUS_MAPPING.containsKey(id))
 		{
-			modifier = USER_DEFINED_XP_BONUS_MAPPING.get(id);
+			hit.setXpModifier(USER_DEFINED_XP_BONUS_MAPPING.get(id));
 		}
 		else if (XP_BONUS_MAPPING.containsKey(id))
 		{
-			modifier = XP_BONUS_MAPPING.get(id);
+			hit.setXpModifier(XP_BONUS_MAPPING.get(id));
 		}
-		return calculateHit(hpXpDiff, modifier, configModifier);
+		hit.setHit(calculateHit(hit.getHpXpAwarded(), hit.getXpModifier(), hit.getUserXpModifier()));
+		return hit;
 	}
 
 	public void populateUserDefinedXpBonusMapping(String xpModifiers)
