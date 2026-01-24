@@ -809,4 +809,17 @@ public interface XpDropsConfig extends Config
 	{
 		return Overlay.PRIORITY_HIGHEST;
 	}
+
+
+	@ConfigItem(
+		keyName = "predictedHitOverParty",
+		name = "Send predicted hits over party",
+		description = "Send predicted hits to members in the runelite party",
+		position = 7,
+		section = xp_miscellaneous_settings
+	)
+	default boolean predictedHitOverParty()
+	{
+		return true;
+	}
 }

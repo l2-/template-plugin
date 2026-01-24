@@ -44,6 +44,7 @@ public class PredictedHit
 	private int equippedWeaponId = -1;
 	private AttackStyle attackStyle = AttackStyle.NONE;
 	private Prayer[] activePrayer = new Prayer[0];
+	private boolean specialAttack = false;
 
 	// user defined xp modifier in the Customizable-xp-drops plugin
 	private double userXpModifier = -1;

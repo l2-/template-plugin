@@ -156,7 +156,7 @@ public class XpDropDamageCalculator
 		return client.getServerVarbitValue(prayer.getVarbit()) == 1;
 	}
 
-	private void setPlayerData(PredictedHit hit, AttackStyle attackStyle)
+	private void setPlayerData(PredictedHit hit, AttackStyle attackStyle, boolean specialAttack)
 	{
 		ItemContainer equipment = client.getItemContainer(InventoryID.WORN);
 		if (equipment != null)
@@ -201,15 +201,16 @@ public class XpDropDamageCalculator
 				break;
 		}
 		hit.setAttackStyle(predictedHitAttackStyle);
+		hit.setSpecialAttack(specialAttack);
 	}
 
-	public PredictedHit predictHit(Actor actor, int hpXpDiff, double configModifier, AttackStyle attackStyle)
+	public PredictedHit predictHit(Actor actor, int hpXpDiff, double configModifier, AttackStyle attackStyle, boolean specialAttack)
 	{
 		PredictedHit hit = new PredictedHit();
 		hit.setUserXpModifier(configModifier);
 		hit.setHpXpAwarded(hpXpDiff);
 
-		setPlayerData(hit, attackStyle);
+		setPlayerData(hit, attackStyle, specialAttack);
 
 		if (actor instanceof Player)
 		{

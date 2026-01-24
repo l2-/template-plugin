@@ -10,6 +10,7 @@ import com.xpdrops.config.XpDropsConfig;
 import com.xpdrops.overlay.XpDropOverlayManager;
 import com.xpdrops.predictedhit.Hit;
 import com.xpdrops.predictedhit.PredictedHit;
+import com.xpdrops.predictedhit.PredictedHitPartyMessage;
 import com.xpdrops.predictedhit.XpDropDamageCalculator;
 import com.xpdrops.predictedhit.npcswithscalingbonus.ChambersLayoutSolver;
 import lombok.Getter;
@@ -44,6 +45,8 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.events.PluginMessage;
 import net.runelite.client.game.ItemVariationMapping;
+import net.runelite.client.party.PartyService;
+import net.runelite.client.party.WSClient;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -108,6 +111,12 @@ public class CustomizableXpDropsPlugin extends Plugin
 	@Inject
 	private Gson gson;
 
+	@Inject
+	private PartyService partyService;
+
+	@Inject
+	private WSClient wsClient;
+
 	@Provides
 	XpDropsConfig provideConfig(ConfigManager configManager)
 	{
@@ -141,6 +150,8 @@ public class CustomizableXpDropsPlugin extends Plugin
 	private int castingModeVarbit = -1;
 	@Getter
 	private AttackStyle attackStyle;
+	private int specEnergy = -1;
+	private boolean wasSpecialAttack = false;
 
 	@Override
 	protected void startUp()
@@ -156,6 +167,8 @@ public class CustomizableXpDropsPlugin extends Plugin
 				int[] xps = client.getSkillExperiences();
 				System.arraycopy(xps, 0, previous_exp, 0, previous_exp.length);
 
+				specEnergy = client.getServerVarpValue(VarPlayerID.SA_ENERGY);
+				wasSpecialAttack = false;
 				initAttackStyles();
 				initShouldDraw();
 			});
@@ -193,6 +206,8 @@ public class CustomizableXpDropsPlugin extends Plugin
 		xpDropDamageCalculator.populateUserDefinedXpBonusMapping(config.predictedHitModifiers());
 
 		importExport.addImportExportMenuOptions();
+
+		wsClient.registerMessage(PredictedHitPartyMessage.class);
 
 		long totalTime = System.currentTimeMillis() - time;
 		log.debug("Plugin took {}ms to start.", totalTime);
@@ -235,6 +250,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 		xpDropOverlayManager.shutdown();
 		setXpTrackerHidden(false); // should be according to varbit?
 		importExport.removeMenuOptions();
+		wsClient.unregisterMessage(PredictedHitPartyMessage.class);
 	}
 
 	protected void setXpTrackerHidden(boolean hidden)
@@ -269,12 +285,22 @@ public class CustomizableXpDropsPlugin extends Plugin
 		}
 
 		chambersLayoutSolver.onVarbitChanged(varbitChanged);
+
+		if (varbitChanged.getVarpId() == VarPlayerID.SA_ENERGY)
+		{
+			if (varbitChanged.getValue() < specEnergy)
+			{
+				wasSpecialAttack = true;
+			}
+			specEnergy = varbitChanged.getValue();
+		}
 	}
 
 	@Subscribe
 	protected void onGameTick(GameTick gameTick)
 	{
 		chambersLayoutSolver.onGameTick(gameTick);
+		wasSpecialAttack = false;
 	}
 
 	@Subscribe
@@ -370,13 +396,17 @@ public class CustomizableXpDropsPlugin extends Plugin
 				return;
 			}
 
-			if (config.useCustomizableXpDrops() && config.xpDropsHideVanilla())
-			{
-				xpdrop.setHidden(true);
-			}
-			else if (config.showPredictedHit())
+			// Putting this check before the xpDropsHideVanilla check means we can show xp drops even if xpDropsHideVanilla is true.
+			// This is intended behavior for now to simplify expected behavior
+			if (config.showPredictedHit() && !config.useCustomizableXpDrops())
 			{
 				appendPredictedHit(xpdrop);
+				return;
+			}
+
+			if (config.xpDropsHideVanilla())
+			{
+				xpdrop.setHidden(true);
 			}
 		}
 	}
@@ -432,7 +462,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 		}
 		if (event.getSkill() == net.runelite.api.Skill.HITPOINTS)
 		{
-			PredictedHit predictedHit = xpDropDamageCalculator.predictHit(lastOpponent, currentXp, config.xpMultiplier(), attackStyle);
+			PredictedHit predictedHit = xpDropDamageCalculator.predictHit(lastOpponent, currentXp, config.xpMultiplier(), attackStyle, wasSpecialAttack);
 			log.debug("Hit npc with fake hp xp drop xp:{} hit:{} npc_id:{}", currentXp, predictedHit.getHit(), lastOpponentId);
 			hitBuffer.add(new Hit(predictedHit.getHit(), lastOpponent, attackStyle));
 			postPredictedHit(predictedHit);
@@ -458,7 +488,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 			}
 			if (event.getSkill() == net.runelite.api.Skill.HITPOINTS)
 			{
-				PredictedHit predictedHit = xpDropDamageCalculator.predictHit(lastOpponent, currentXp - previousXp, config.xpMultiplier(), attackStyle);
+				PredictedHit predictedHit = xpDropDamageCalculator.predictHit(lastOpponent, currentXp - previousXp, config.xpMultiplier(), attackStyle, wasSpecialAttack);
 				log.debug("Hit npc with hp xp drop xp:{} hit:{} npc_id:{}", currentXp - previousXp, predictedHit.getHit(), lastOpponentId);
 				hitBuffer.add(new Hit(predictedHit.getHit(), lastOpponent, attackStyle));
 				postPredictedHit(predictedHit);
@@ -593,5 +623,10 @@ public class CustomizableXpDropsPlugin extends Plugin
 		HashMap<String, Object> data = new HashMap<>();
 		data.put("value", gson.toJson(hit));
 		eventBus.post(new PluginMessage(namespace, name, data));
+
+		if (config.predictedHitOverParty() && partyService.isInParty())
+		{
+			partyService.send(new PredictedHitPartyMessage(hit));
+		}
 	}
 }
