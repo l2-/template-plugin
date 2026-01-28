@@ -209,37 +209,40 @@ public class XpDropDamageCalculator
 		PredictedHit hit = new PredictedHit();
 		hit.setUserXpModifier(configModifier);
 		hit.setHpXpAwarded(hpXpDiff);
+		hit.setServerTick(client.getTickCount());
 
 		setPlayerData(hit, attackStyle, specialAttack);
 
 		if (actor instanceof Player)
 		{
-			return predictedHitPlayer(hit, actor.getCombatLevel());
+			return predictedHitPlayer(hit, ((Player) actor).getId(), actor.getCombatLevel());
 		}
 		else if (actor instanceof NPC)
 		{
-			return predictedHitNpc(hit, ((NPC) actor).getId(), actor.getCombatLevel());
+			return predictedHitNpc(hit, ((NPC) actor).getId(), ((NPC) actor).getIndex(), actor.getCombatLevel());
 		}
 		return null;
 	}
 
-	private PredictedHit predictedHitPlayer(PredictedHit hit, int cmb)
+	private PredictedHit predictedHitPlayer(PredictedHit hit, int id, int cmb)
 	{
 		hit.setOpponentIsPlayer(true);
 		hit.setPlayerCombatLevel(cmb);
+		hit.setTargetIndex(id);
 		double modifier = Math.min(1.125d, 1 + Math.floor(cmb / 20.0d) / 40.0d);
 		hit.setXpModifier(modifier);
 		hit.setHit(calculateHit(hit.getHpXpAwarded(), modifier, hit.getUserXpModifier()));
 		return hit;
 	}
 
-	private PredictedHit predictedHitNpc(PredictedHit hit, int id, int cmb)
+	private PredictedHit predictedHitNpc(PredictedHit hit, int id, int index, int cmb)
 	{
 		hit.setNpcId(id);
+		hit.setTargetIndex(index);
 		hit.setXpModifier(1);
 
 		// Special case for Awakened DT2 Bosses
-		if ((hit.getNpcId() == LEVIATHAN_ID || hit.getNpcId() == VARDORVIS_ID) && cmb > 1000)
+		if ((id == LEVIATHAN_ID || id == VARDORVIS_ID) && cmb > 1000)
 		{
 			id *= -1;
 		}

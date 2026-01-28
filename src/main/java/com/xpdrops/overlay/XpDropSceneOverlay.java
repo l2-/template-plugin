@@ -94,7 +94,7 @@ public class XpDropSceneOverlay extends Overlay
 			}
 			else
 			{
-				int iconsWidth = XpDropOverlayUtilities.getIconWidthForIcons(graphics, xpDropInFlight.getIcons(), config, xpDropOverlayManager);
+				int iconsWidth = XpDropOverlayUtilities.getIconWidthForIcons(graphics, xpDropInFlight.getIcons(), config.iconSizeOverride(), xpDropOverlayManager);
 				int totalWidth = textWidth + iconsWidth;
 				x = (int)(xStart + point.getX() - totalWidth / 2.0f + iconsWidth);
 			}
@@ -110,7 +110,7 @@ public class XpDropSceneOverlay extends Overlay
 
 			int imageX = x - 2;
 			int imageY = y - graphics.getFontMetrics().getMaxAscent();
-			XpDropOverlayUtilities.drawIcons(graphics, xpDropInFlight.getIcons(), imageX, imageY, xpDropInFlight.getAlpha(), true, config, xpDropOverlayManager);
+			XpDropOverlayUtilities.drawIcons(graphics, xpDropInFlight.getIcons(), imageX, imageY, xpDropInFlight.getAlpha(), true, config.iconSizeOverride(), xpDropOverlayManager);
 		}
 	}
 }

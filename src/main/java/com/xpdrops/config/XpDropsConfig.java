@@ -48,13 +48,13 @@ public interface XpDropsConfig extends Config
 	enum VerticalDirection
 	{
 		UP,
-		DOWN
+		DOWN,
 	}
 
 	enum HorizontalDirection
 	{
 		LEFT,
-		RIGHT
+		RIGHT,
 	}
 
 	enum PredictedHitIconStyle
@@ -62,7 +62,13 @@ public interface XpDropsConfig extends Config
 		NO_ICON,
 		HITSPLAT,
 		HITSPLAT_SKILL,
-		SKILL
+		SKILL,
+	}
+
+	enum PartyDropsAnchor
+	{
+		TARGET,
+		PLAYER,
 	}
 
 	@ConfigSection(
@@ -103,6 +109,14 @@ public interface XpDropsConfig extends Config
 		closedByDefault = true
 	)
 	String xp_miscellaneous_settings = "xp_miscellaneous_settings";
+
+	@ConfigSection(
+		name = "Party",
+		description = "Party settings",
+		position = 6,
+		closedByDefault = true
+	)
+	String party_settings = "party_settings";
 
 	@ConfigItem(
 		keyName = "useCustomizableXpDrops",
@@ -810,15 +824,238 @@ public interface XpDropsConfig extends Config
 		return Overlay.PRIORITY_HIGHEST;
 	}
 
+	@ConfigItem(
+		keyName = "sendPredictedHitOverParty",
+		name = "Send predicted hits over party",
+		description = "Send predicted hits to members in the Runelite party",
+		position = 0,
+		section = party_settings
+	)
+	default boolean sendPredictedHitOverParty()
+	{
+		return true;
+	}
+
 
 	@ConfigItem(
-		keyName = "predictedHitOverParty",
-		name = "Send predicted hits over party",
-		description = "Send predicted hits to members in the runelite party",
-		position = 7,
-		section = xp_miscellaneous_settings
+		keyName = "showPredictedHitOverParty",
+		name = "Show predicted hits from party",
+		description = "Show predicted hits from members in the Runelite party",
+		position = 1,
+		section = party_settings
 	)
-	default boolean predictedHitOverParty()
+	default boolean showPredictedHitOverParty()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "predictedHitPartyOverlayLocation",
+		name = "Overlay location",
+		description = "Show predicted hits from party members on target or over their head",
+		position = 2,
+		section = party_settings
+	)
+	default PartyDropsAnchor predictedHitPartyOverlayLocation()
+	{
+		return PartyDropsAnchor.PLAYER;
+	}
+
+	@ConfigItem(
+		keyName = "predictedHitOverPartyShowIcon",
+		name = "Show hit splat icon",
+		description = "Show hit splat icon together with the predicted hit",
+		position = 3,
+		section = party_settings
+	)
+	default boolean predictedHitOverPartyShowIcon()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "colorPerMemberPredictedHitOverParty",
+		name = "Color per party member",
+		description = "Give the predicted hits a color per party member."
+			+ "<br>Only works when Overlay location is Player",
+		position = 4,
+		section = party_settings
+	)
+	default boolean colorPerMemberPredictedHitOverParty()
+	{
+		return true;
+	}
+
+	@Alpha
+	@ConfigItem(
+		keyName = "predictedHitOverPartyColor",
+		name = "Predicted hit color",
+		description = "Color of predicted hit."
+			+ "When Color per party member is on the party member decides the color through the party plugin settings.",
+		position = 5,
+		section = party_settings
+	)
+	default Color predictedHitOverPartyColor()
+	{
+		return Color.WHITE;
+	}
+
+
+	@Range(min = Integer.MIN_VALUE)
+	@ConfigItem(
+		keyName = "predictedHitOverPartyAttachToOffsetX",
+		name = "Attach to x offset",
+		description = "Change the attach to overlay x position with relation to the target",
+		position = 6,
+		section = party_settings
+	)
+	default int predictedHitOverPartyAttachToOffsetX()
+	{
+		return 0;
+	}
+
+	@Range(min = Integer.MIN_VALUE)
+	@ConfigItem(
+		keyName = "predictedHitOverPartyAttachToOffsetY",
+		name = "Attach to y offset",
+		description = "Change the attach to overlay y position with relation to the target",
+		position = 7,
+		section = party_settings
+	)
+	default int predictedHitOverPartyAttachToOffsetY()
+	{
+		return 0;
+	}
+
+	@ConfigItem(
+		keyName = "predictedHitOverPartyFontName",
+		name = "Font",
+		description = "Name of the font to use for XP drops. Leave blank to use RuneLite setting.<br>" +
+			"If the font does not seem to work checkout the 'Installing custom fonts' section on the support page of this plugin",
+		position = 8,
+		section = party_settings
+	)
+	default String predictedHitOverPartyFontName()
+	{
+		return "";
+	}
+
+	@ConfigItem(
+		keyName = "predictedHitOverPartyFontStyle",
+		name = "Font style",
+		description = "Style of the font to use for party predicted hits. Only works with custom font.",
+		position = 9,
+		section = party_settings
+	)
+	default FontStyle predictedHitOverPartyFontStyle()
+	{
+		return FontStyle.DEFAULT;
+	}
+
+	@ConfigItem(
+		keyName = "predictedHitOverPartyFontSize",
+		name = "Font size",
+		description = "Size of the font to use for party predicted hits. Only works with custom font.",
+		position = 10,
+		section = party_settings
+	)
+	default int predictedHitOverPartyFontSize()
+	{
+		return 16;
+	}
+
+	@ConfigItem(
+		keyName = "predictedHitOverPartyHitBackground",
+		name = "Background",
+		description = "Background of the party predicted hit text",
+		position = 11,
+		section = party_settings
+	)
+	default TextComponentWithAlpha.Background predictedHitOverPartyHitBackground()
+	{
+		return TextComponentWithAlpha.Background.SHADOW;
+	}
+
+	@ConfigItem(
+		keyName = "predictedHitOverPartyIconSizeOverride",
+		name = "Icon size override",
+		description = "When non zero indicates the size of the icons in the party predicted hit.",
+		position = 12,
+		section = party_settings
+	)
+	default int predictedHitOverPartyIconSizeOverride()
+	{
+		return 0;
+	}
+
+	@ConfigItem(
+		keyName = "predictedHitOverPartyYPixelsPerSecond",
+		name = "Vertical party predicted hit speed",
+		description = "The amount of pixels per second the party predicted hit is moved in vertical direction",
+		position = 14,
+		section = party_settings
+	)
+	default int predictedHitOverPartyYPixelsPerSecond()
+	{
+		return 0;
+	}
+
+	@ConfigItem(
+		keyName = "predictedHitOverPartyYDirection",
+		name = "Vertical direction",
+		description = "The direction in which the party predicted hit moves",
+		position = 15,
+		section = party_settings
+	)
+	default VerticalDirection predictedHitOverPartyYDirection()
+	{
+		return VerticalDirection.UP;
+	}
+
+	@ConfigItem(
+		keyName = "predictedHitOverPartyXPixelsPerSecond",
+		name = "Horizontal party predicted hit speed",
+		description = "The amount of pixels per second the party predicted hit is moved in horizontal direction",
+		position = 16,
+		section = party_settings
+	)
+	default int predictedHitOverPartyXPixelsPerSecond()
+	{
+		return 0;
+	}
+
+	@ConfigItem(
+		keyName = "predictedHitOverPartyXDirection",
+		name = "Horizontal direction",
+		description = "The direction in which the party predicted hit moves",
+		position = 17,
+		section = party_settings
+	)
+	default HorizontalDirection predictedHitOverPartyXDirection()
+	{
+		return HorizontalDirection.LEFT;
+	}
+
+	@ConfigItem(
+		keyName = "predictedHitOverPartyFramesPerDrop",
+		name = "Time until disappearance",
+		description = "The amount of frames (50 per second, 30 per server tick) the party predicted hit will show for",
+		position = 18,
+		section = party_settings
+	)
+	default int predictedHitOverPartyFramesPerDrop()
+	{
+		return 60;
+	}
+
+	@ConfigItem(
+		keyName = "predictedHitOverPartyFadeOut",
+		name = "Fade out",
+		description = "Should the party predicted hit fade out",
+		position = 19,
+		section = party_settings
+	)
+	default boolean predictedHitOverPartyFadeOut()
 	{
 		return true;
 	}

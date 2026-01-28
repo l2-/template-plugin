@@ -136,7 +136,7 @@ public class XpDropMerger
 		xpDropsToBePutInFlight.sort(XpDropMerger::skillPriorityComparator);
 	}
 
-	private <T> Optional<T> findLast(List<T> list, Predicate<T> p)
+	public static <T> Optional<T> findLast(List<T> list, Predicate<T> p)
 	{
 		for (int i = list.size() - 1; i >= 0; i--)
 		{

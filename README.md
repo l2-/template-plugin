@@ -17,8 +17,11 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - Show predicted damage from XP drop.
 - Replace the XP tracker widget with a minimalistic one.
 - Export your plugin settings to share with a friend by right-clicking the xp orb in-game.
+- Show predicted hits with vanilla XP drops. `Use Customizable XP drops` off and `Show prdicted hit` on.
+- Show predicted hits from party members.
 
 #### Change log
+- v1.13.0 - Show XP drops/predicted hits from party members.
 - v1.12.1 - Fix regression for a combination of settings, added special attack to predicted hit message, added predicted hit message to party.
 - v1.12.0 - Add plugin message for predicted hit.
 - v1.11.0 - Add `Use Customizable XP drops` setting. It's on by default. If off the xp tracker and predicted hits can still function.
@@ -113,7 +116,7 @@ Round of experience gained happens on the server before it is sent to the client
 Furthermore, some monsters in OSRS give bonus experience in the form of a multiplier over the experience gained.
 This plugin tries to use the same multipliers per monster but the list is incomplete leading to incorrect predicted hits.
 
-#### Predicted hits plugin/party message
+#### Predicted hits plugin message
 This plugin emits a message over the event bus when a hit is predicted. Under namespace `customizable-xp-drops` and name `predicted-hit`.
 The data field of this message is a map with a key `value` in which a JSON string is stored which contains all the information about the predicted hit.
 Copy over [PredictedHit.java](src/main/java/com/xpdrops/predictedhit/PredictedHit.java) to your own plugin and use this to deserialize the JSON string under the aforementioned `value` key in the data map.\
@@ -129,19 +132,6 @@ protected void onPluginMessage(PluginMessage pluginMessage)
         PredictedHit predictedHit = gson.fromJson(json.toString(), PredictedHit.class);
         log.debug("predicted hit {}", predictedHit.getHit());
     }
-}
-```
-When `Send predicted hits over party` under `Miscellaneous` is turned on the plugin also sends this message over the party service.
-Copy over  [PredictedHit.java](src/main/java/com/xpdrops/predictedhit/PredictedHit.java) and [PredictedHitPartyMessage.java](src/main/java/com/xpdrops/predictedhit/PredictedHitPartyMessage.java) to your plugin and register the message with
-```java
-wsClient.registerMessage(PredictedHitPartyMessage.class);
-```
-Example for listening to the party message
-```java
-@Subscribe
-protected void onPredictedHitPartyMessage(PredictedHitPartyMessage partyMessage)
-{
-    log.debug("Hit {} special attack {}", partyMessage.getPredictedHit().getHit(), partyMessage.getPredictedHit().isSpecialAttack());
 }
 ```
 

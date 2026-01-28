@@ -90,13 +90,13 @@ public class XpDropOverlayUtilities
 		return text;
 	}
 
-	public static int getIconWidthForIcons(Graphics2D graphics, int icons, XpDropsConfig config, XpDropOverlayManager xpDropOverlayManager)
+	public static int getIconWidthForIcons(Graphics2D graphics, int icons, int iconSizeOverride, XpDropOverlayManager xpDropOverlayManager)
 	{
 		int width = 0;
 		int iconSize = graphics.getFontMetrics().getHeight();
-		if (config.iconSizeOverride() > 0)
+		if (iconSizeOverride > 0)
 		{
-			iconSize = config.iconSizeOverride();
+			iconSize = iconSizeOverride;
 		}
 
 		for (int i = XpDropOverlayManager.SKILL_INDICES.length - 1; i >= 0; i--)
@@ -139,13 +139,13 @@ public class XpDropOverlayUtilities
 		return width;
 	}
 
-	public static int drawIcons(Graphics2D graphics, int icons, int x, int y, float alpha, boolean rightToLeft, XpDropsConfig config, XpDropOverlayManager xpDropOverlayManager)
+	public static int drawIcons(Graphics2D graphics, int icons, int x, int y, float alpha, boolean rightToLeft, int iconSizeOverride, XpDropOverlayManager xpDropOverlayManager)
 	{
 		int width = 0;
 		int iconSize = graphics.getFontMetrics().getHeight();
-		if (config.iconSizeOverride() > 0)
+		if (iconSizeOverride > 0)
 		{
-			iconSize = config.iconSizeOverride();
+			iconSize = iconSizeOverride;
 		}
 
 		for (int i = XpDropOverlayManager.SKILL_INDICES.length - 1; i >= 0; i--)

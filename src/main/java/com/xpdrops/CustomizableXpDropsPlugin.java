@@ -10,7 +10,7 @@ import com.xpdrops.config.XpDropsConfig;
 import com.xpdrops.overlay.XpDropOverlayManager;
 import com.xpdrops.predictedhit.Hit;
 import com.xpdrops.predictedhit.PredictedHit;
-import com.xpdrops.predictedhit.PredictedHitPartyMessage;
+import com.xpdrops.predictedhit.party.PredictedHitPartyManager;
 import com.xpdrops.predictedhit.XpDropDamageCalculator;
 import com.xpdrops.predictedhit.npcswithscalingbonus.ChambersLayoutSolver;
 import lombok.Getter;
@@ -45,11 +45,10 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.events.PluginMessage;
 import net.runelite.client.game.ItemVariationMapping;
-import net.runelite.client.party.PartyService;
-import net.runelite.client.party.WSClient;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.party.PartyPlugin;
 import net.runelite.client.plugins.xptracker.XpTrackerPlugin;
 import net.runelite.client.util.Text;
 
@@ -65,8 +64,11 @@ import java.util.stream.Collectors;
 
 import static net.runelite.api.ScriptID.XPDROPS_SETDROPSIZE;
 
+// Depends on XpTrackerPlugin for custom xp tracker
 @PluginDependency(XpTrackerPlugin.class)
-// Plugin class and xp drop manager
+// Depends on PartyPlugin for PartyConfig
+@PluginDependency(PartyPlugin.class)
+// Plugin class
 @PluginDescriptor(
 	name = "Customizable XP drops",
 	description = "Allows one to use fully customizable xp drops independent of the in-game ones"
@@ -112,10 +114,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 	private Gson gson;
 
 	@Inject
-	private PartyService partyService;
-
-	@Inject
-	private WSClient wsClient;
+	private PredictedHitPartyManager predictedHitPartyManager;
 
 	@Provides
 	XpDropsConfig provideConfig(ConfigManager configManager)
@@ -207,7 +206,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 
 		importExport.addImportExportMenuOptions();
 
-		wsClient.registerMessage(PredictedHitPartyMessage.class);
+		predictedHitPartyManager.startUp();
 
 		long totalTime = System.currentTimeMillis() - time;
 		log.debug("Plugin took {}ms to start.", totalTime);
@@ -248,9 +247,9 @@ public class CustomizableXpDropsPlugin extends Plugin
 	protected void shutDown()
 	{
 		xpDropOverlayManager.shutdown();
-		setXpTrackerHidden(false); // should be according to varbit?
+		setXpTrackerHidden(false);
 		importExport.removeMenuOptions();
-		wsClient.unregisterMessage(PredictedHitPartyMessage.class);
+		predictedHitPartyManager.shutDown();
 	}
 
 	protected void setXpTrackerHidden(boolean hidden)
@@ -505,6 +504,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 	protected void onBeforeRender(BeforeRender beforeRender)
 	{
 		xpDropOverlayManager.update();
+		predictedHitPartyManager.update();
 	}
 
 	@Subscribe
@@ -623,10 +623,6 @@ public class CustomizableXpDropsPlugin extends Plugin
 		HashMap<String, Object> data = new HashMap<>();
 		data.put("value", gson.toJson(hit));
 		eventBus.post(new PluginMessage(namespace, name, data));
-
-		if (config.predictedHitOverParty() && partyService.isInParty())
-		{
-			partyService.send(new PredictedHitPartyMessage(hit));
-		}
+		predictedHitPartyManager.postPredictedHit(hit);
 	}
 }

@@ -91,14 +91,14 @@ public class XpDropOverlay extends Overlay
 				}
 				else
 				{
-					int iconsWidth = XpDropOverlayUtilities.getIconWidthForIcons(graphics, xpDropInFlight.getIcons(), config, xpDropOverlayManager);
+					int iconsWidth = XpDropOverlayUtilities.getIconWidthForIcons(graphics, xpDropInFlight.getIcons(), config.iconSizeOverride(), xpDropOverlayManager);
 					x = (int)(totalWidth / 2.0f - (textWidth + iconsWidth) / 2.0f + iconsWidth + xStart);
 				}
 				XpDropOverlayUtilities.drawText(graphics, text, x, textY, (int) xpDropInFlight.getAlpha(), config.xpDropBackground());
 
 				int imageX = x - 2;
 				int imageY = textY - graphics.getFontMetrics().getMaxAscent();
-				XpDropOverlayUtilities.drawIcons(graphics, xpDropInFlight.getIcons(), imageX, imageY, xpDropInFlight.getAlpha(), true, config, xpDropOverlayManager);
+				XpDropOverlayUtilities.drawIcons(graphics, xpDropInFlight.getIcons(), imageX, imageY, xpDropInFlight.getAlpha(), true, config.iconSizeOverride(), xpDropOverlayManager);
 			}
 			else if (config.xDirection() == XpDropsConfig.HorizontalDirection.RIGHT)
 			{
@@ -130,6 +130,6 @@ public class XpDropOverlay extends Overlay
 
 	private int drawIcons(Graphics2D graphics, int icons, int x, int y, float alpha, boolean rightToLeft)
 	{
-		return XpDropOverlayUtilities.drawIcons(graphics, icons, x, y, alpha, rightToLeft, config, xpDropOverlayManager);
+		return XpDropOverlayUtilities.drawIcons(graphics, icons, x, y, alpha, rightToLeft, config.iconSizeOverride(), xpDropOverlayManager);
 	}
 }

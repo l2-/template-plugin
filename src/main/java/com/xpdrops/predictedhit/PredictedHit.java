@@ -37,6 +37,9 @@ public class PredictedHit
 	private boolean opponentIsPlayer = false;
 	// If opponentIsPlayer is true this is -1
 	private int npcId = -1;
+	private int targetIndex = -1;
+
+	private int serverTick = -1;
 
 	// If opponentIsPlayer is false this is -1
 	private int playerCombatLevel = -1;
