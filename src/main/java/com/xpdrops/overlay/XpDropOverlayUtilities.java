@@ -139,7 +139,7 @@ public class XpDropOverlayUtilities
 		return width;
 	}
 
-	public static int drawIcons(Graphics2D graphics, int icons, int x, int y, float alpha, boolean rightToLeft, int iconSizeOverride, XpDropOverlayManager xpDropOverlayManager)
+	public static int drawIcons(Graphics2D graphics, int icons, int x, int y, float alpha, boolean rightToLeft, int iconSizeOverride, boolean self, XpDropOverlayManager xpDropOverlayManager)
 	{
 		int width = 0;
 		int iconSize = graphics.getFontMetrics().getHeight();
@@ -190,7 +190,15 @@ public class XpDropOverlayUtilities
 			int icon = (icons >> HITSPLAT_ICON_INDEX) & 0x1;
 			if (icon == 0x1)
 			{
-				BufferedImage image = xpDropOverlayManager.getHitsplatIcon();
+				BufferedImage image;
+				if (self)
+				{
+					image = xpDropOverlayManager.getHitsplatIcon();
+				}
+				else
+				{
+					image = xpDropOverlayManager.getDarkRedHitsplatIcon();
+				}
 				int _iconSize = Math.max(iconSize - 4, 14);
 				Dimension dimension = drawIcon(graphics, image, x, y, _iconSize, _iconSize, alpha / 0xff, rightToLeft);
 				width += dimension.getWidth() + 2;
@@ -245,7 +253,10 @@ public class XpDropOverlayUtilities
 	public static String RGBToHex(int rgb)
 	{
 		StringBuilder hex = new StringBuilder(Integer.toHexString(rgb)); // Apparently never contains more than 8 hex digits.
-		if (hex.length() < 8) while (hex.length() < 8) hex.insert(0, "0");
+		if (hex.length() < 8) while (hex.length() < 8)
+		{
+			hex.insert(0, "0");
+		}
 		return hex.toString();
 	}
 }

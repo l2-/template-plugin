@@ -120,7 +120,7 @@ public class PartyOverlay extends Overlay
 
 			int imageX = x - 2;
 			int imageY = y - graphics.getFontMetrics().getMaxAscent();
-			XpDropOverlayUtilities.drawIcons(graphics, xpDropInFlight.getIcons(), imageX, imageY, xpDropInFlight.getAlpha(), true, config.predictedHitOverPartyIconSizeOverride(), xpDropOverlayManager);
+			XpDropOverlayUtilities.drawIcons(graphics, xpDropInFlight.getIcons(), imageX, imageY, xpDropInFlight.getAlpha(), true, config.predictedHitOverPartyIconSizeOverride(), false, xpDropOverlayManager);
 		}
 	}
 }

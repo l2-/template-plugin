@@ -98,7 +98,7 @@ public class XpDropOverlay extends Overlay
 
 				int imageX = x - 2;
 				int imageY = textY - graphics.getFontMetrics().getMaxAscent();
-				XpDropOverlayUtilities.drawIcons(graphics, xpDropInFlight.getIcons(), imageX, imageY, xpDropInFlight.getAlpha(), true, config.iconSizeOverride(), xpDropOverlayManager);
+				XpDropOverlayUtilities.drawIcons(graphics, xpDropInFlight.getIcons(), imageX, imageY, xpDropInFlight.getAlpha(), true, config.iconSizeOverride(), true, xpDropOverlayManager);
 			}
 			else if (config.xDirection() == XpDropsConfig.HorizontalDirection.RIGHT)
 			{
@@ -130,6 +130,6 @@ public class XpDropOverlay extends Overlay
 
 	private int drawIcons(Graphics2D graphics, int icons, int x, int y, float alpha, boolean rightToLeft)
 	{
-		return XpDropOverlayUtilities.drawIcons(graphics, icons, x, y, alpha, rightToLeft, config.iconSizeOverride(), xpDropOverlayManager);
+		return XpDropOverlayUtilities.drawIcons(graphics, icons, x, y, alpha, rightToLeft, config.iconSizeOverride(), true, xpDropOverlayManager);
 	}
 }

@@ -34,6 +34,7 @@ import java.util.HashMap;
 public class XpDropOverlayManager
 {
 	private static final int RED_HIT_SPLAT_SPRITE_ID = 1359;
+	private static final int DARK_RED_HIT_SPLAT_SPRITE_ID = 1631;
 	private static final int FAKE_SKILL_ICON_ID = 423; //sprite index 11
 	private static final int[] SKILL_ICON_ORDINAL_ICONS = new int[]{
 		197, 199, 198, 203, 200, 201, 202, 212, 214, 208,
@@ -129,6 +130,12 @@ public class XpDropOverlayManager
 	public BufferedImage getHitsplatIcon()
 	{
 		return getIcon(RED_HIT_SPLAT_SPRITE_ID, 0);
+	}
+
+	@Nullable
+	public BufferedImage getDarkRedHitsplatIcon()
+	{
+		return getIcon(DARK_RED_HIT_SPLAT_SPRITE_ID, 0);
 	}
 
 	public void xpDropOverlayPriorityChanged()
