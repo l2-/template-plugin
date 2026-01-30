@@ -838,7 +838,7 @@ public interface XpDropsConfig extends Config
 
 
 	@ConfigItem(
-		keyName = "showPredictedHitOverParty",
+		keyName = "showPredictedHitOverParty1",
 		name = "Show predicted hits from party",
 		description = "Show predicted hits from members in the Runelite party",
 		position = 1,
@@ -846,7 +846,7 @@ public interface XpDropsConfig extends Config
 	)
 	default boolean showPredictedHitOverParty()
 	{
-		return true;
+		return false;
 	}
 
 	@ConfigItem(

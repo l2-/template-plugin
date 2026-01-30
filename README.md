@@ -21,6 +21,7 @@ A plugin which allows you to customize XP drops in more ways than the default OS
 - Show predicted hits from party members.
 
 #### Change log
+- v1.13.2 - Change predicted hit in party setting to default to off.
 - v1.13.1 - Change predicted hit splat sprite for damage from others.
 - v1.13.0 - Show XP drops/predicted hits from party members.
 - v1.12.1 - Fix regression for a combination of settings, added special attack to predicted hit message, added predicted hit message to party.
