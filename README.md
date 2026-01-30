@@ -2,7 +2,7 @@
 
 A plugin which allows you to customize XP drops in more ways than the default OSRS XP drops allow.
 
-Join the discord server if you have suggestions, issues or feedback https://discord.gg/emTbMUQkXs.
+Join the discord server if you have suggestions, issues or feedback, or want to be notified about updates https://discord.gg/emTbMUQkXs.
 
 ### Features
 - Show XP drops grouped or ungrouped, as well as configuring the delay between subsequent ungrouped XP drops.
