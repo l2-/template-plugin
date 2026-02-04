@@ -84,7 +84,7 @@ public class PredictedHitPartyManager
 	{
 		if ("CustomizableXPDrops".equals(configChanged.getGroup()))
 		{
-			if ("showPredictedHitOverParty".equals(configChanged.getKey()))
+			if ("showPredictedHitOverParty1".equals(configChanged.getKey()))
 			{
 				partyOverlay.setHidden(!config.showPredictedHitOverParty());
 			}
@@ -206,7 +206,7 @@ public class PredictedHitPartyManager
 
 	private void updateHitsInFlight()
 	{
-		for (Actor key : predictedHitInFlights.keySet())
+		for (Actor key : predictedHitInFlights.keySet().toArray(new Actor[0]))
 		{
 			predictedHitInFlights.get(key).removeIf(xpDropInFlight -> xpDropInFlight.getFrame() > config.predictedHitOverPartyFramesPerDrop());
 		}

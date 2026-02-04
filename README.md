@@ -23,6 +23,7 @@ Join the discord server if you have suggestions, issues or feedback, or want to 
 - Show predicted hits from party members.
 
 #### Change log
+- v1.13.3 - Fixed issue with overlay not turning on without turning the plugin off and on. Fixed exception issue.
 - v1.13.2 - Change predicted hit in party setting to default to off.
 - v1.13.1 - Change predicted hit splat sprite for damage from others.
 - v1.13.0 - Show XP drops/predicted hits from party members.
