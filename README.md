@@ -191,7 +191,7 @@ With optional progress bar (Settings: Font size 16, Font style bold, icon size o
 Import and export settings of this plugin to share with friends.\
 ![xpgloberightclickmenu](https://i.imgur.com/GYCCXQj.png)
 
-From https://github.com/ruchir90 \
+From https://github.com/ruchptl \
 ![pic1](https://i.imgur.com/8W9zE8g.png)
 ![pic2](https://i.imgur.com/ZFpgKa1.png)
 ![pic3](https://i.imgur.com/sSabp2c.gif)
