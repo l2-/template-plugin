@@ -25,7 +25,6 @@ public class PartyOverlay extends Overlay
 {
 	private final XpDropsConfig config;
 	private final PredictedHitPartyManager predictedHitPartyManager;
-	private final XpDropFontHandler xpDropFontHandler = new XpDropFontHandler();
 	private final XpDropOverlayManager xpDropOverlayManager;
 
 	@Inject
@@ -48,12 +47,8 @@ public class PartyOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		xpDropFontHandler.updateFont(
-			config.predictedHitOverPartyFontName(),
-			config.predictedHitOverPartyFontSize(),
-			config.predictedHitOverPartyFontStyle());
 		XpDropOverlayUtilities.setGraphicsProperties(graphics);
-		xpDropFontHandler.handleFont(graphics);
+		XpDropFontHandler.handleFont(graphics, config.predictedHitOverPartyFontType());
 
 		if (client.getLocalPlayer() != null)
 		{

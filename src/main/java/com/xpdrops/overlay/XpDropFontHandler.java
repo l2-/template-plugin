@@ -1,6 +1,6 @@
 package com.xpdrops.overlay;
 
-import com.xpdrops.config.XpDropsConfig;
+import net.runelite.client.config.FontType;
 import net.runelite.client.ui.FontManager;
 
 import java.awt.Font;
@@ -9,62 +9,38 @@ import java.awt.RenderingHints;
 
 public class XpDropFontHandler
 {
-	private String lastFont = "";
-	private int lastFontSize = 0;
-	private boolean useRunescapeFont = true;
-	private XpDropsConfig.FontStyle lastFontStyle = XpDropsConfig.FontStyle.DEFAULT;
-	private Font font = null;
+	static Font runescapeBoldFont = XpDropOverlayManager.RUNESCAPE_BOLD_FONT;
+	static Font runescapeBoldItalicsFont = XpDropOverlayManager.RUNESCAPE_BOLD_FONT.deriveFont(Font.BOLD | Font.ITALIC);
 
-	public void handleFont(Graphics2D graphics)
+	public static void handleFont(Graphics2D graphics, FontType fontType)
 	{
+		Font font = fontType.getFont();
 		if (font != null)
 		{
-			graphics.setFont(font);
-			if (useRunescapeFont)
+			if (FontManager.getBuiltInFonts().contains(font.getFamily()))
 			{
 				graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-			}
-		}
-	}
 
-	public void updateFont(String fontName, int fontSize, XpDropsConfig.FontStyle fontStyle)
-	{
-		if (!lastFont.equals(fontName) || lastFontSize != fontSize || lastFontStyle != fontStyle)
-		{
-			lastFont = fontName;
-			lastFontSize = fontSize;
-			lastFontStyle = fontStyle;
-
-			int style = fontStyle.getStyle();
-			// default to runescape fonts
-			if ("".equals(fontName))
-			{
-
-				if (fontSize < 16)
+				// Hack since Runelite's bold font is not the same as the bold font of vanilla xp drops
+				if (fontType.isBold() && fontType.isItalic())
 				{
-					font = FontManager.getRunescapeSmallFont();
+					if (fontType.getSize() != runescapeBoldItalicsFont.getSize())
+					{
+						runescapeBoldItalicsFont = runescapeBoldItalicsFont.deriveFont((float)fontType.getSize());
+					}
+					font = runescapeBoldItalicsFont;
 				}
-				else if (fontStyle == XpDropsConfig.FontStyle.BOLD
-					|| fontStyle == XpDropsConfig.FontStyle.BOLD_ITALICS)
+				else if (fontType.isBold())
 				{
-					font = XpDropOverlayManager.RUNESCAPE_BOLD_FONT;
-					style ^= Font.BOLD; // Bold is implicit for this Font object, we do not want to derive using bold again.
+					if (fontType.getSize() != runescapeBoldFont.getSize())
+					{
+						runescapeBoldFont = runescapeBoldFont.deriveFont((float)fontType.getSize());
+					}
+					font = runescapeBoldFont;
 				}
-				else
-				{
-					font = FontManager.getRunescapeFont();
-				}
-
-				float size = Math.max(16.0f, fontSize);
-				font = font.deriveFont(style, size);
-
-				useRunescapeFont = true;
-				return;
 			}
 
-			// use a system wide font
-			font = new Font(fontName, style, fontSize);
-			useRunescapeFont = false;
+			graphics.setFont(font);
 		}
 	}
 }

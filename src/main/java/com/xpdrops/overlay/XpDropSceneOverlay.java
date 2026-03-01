@@ -19,7 +19,6 @@ public class XpDropSceneOverlay extends Overlay
 {
 	private final XpDropsConfig config;
 	private final XpDropOverlayManager xpDropOverlayManager;
-	private final XpDropFontHandler xpDropFontHandler = new XpDropFontHandler();
 
 	@Inject
 	private Client client;
@@ -36,9 +35,8 @@ public class XpDropSceneOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		xpDropFontHandler.updateFont(config.fontName(), config.fontSize(), config.fontStyle());
 		XpDropOverlayUtilities.setGraphicsProperties(graphics);
-		xpDropFontHandler.handleFont(graphics);
+		XpDropFontHandler.handleFont(graphics, config.xpDropFontType());
 
 		if (client.getLocalPlayer() != null)
 		{

@@ -19,7 +19,6 @@ public class XpTrackerOverlay extends Overlay
 {
 	private final XpDropsConfig config;
 	private final XpDropOverlayManager xpDropOverlayManager;
-	private final XpDropFontHandler xpDropFontHandler = new XpDropFontHandler();
 	private static final int PROGRESS_BAR_HEIGHT = 6;
 
 	@Inject
@@ -44,9 +43,8 @@ public class XpTrackerOverlay extends Overlay
 		Dimension dimension = null;
 		if (config.useXpTracker())
 		{
-			xpDropFontHandler.updateFont(config.xpTrackerFontName(), config.xpTrackerFontSize(), config.xpTrackerFontStyle());
 			XpDropOverlayUtilities.setGraphicsProperties(graphics);
-			xpDropFontHandler.handleFont(graphics);
+			XpDropFontHandler.handleFont(graphics, config.xpTrackerFontType());
 
 			Skill currentSkill = xpDropOverlayManager.getLastSkill();
 			long xp = getSkillExperience(currentSkill);

@@ -2,10 +2,15 @@ package com.xpdrops.config;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.config.ConfigManager;
+import net.runelite.client.config.FontType;
+import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.overlay.Overlay;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.awt.Font;
+import java.util.Locale;
 
 @Singleton
 @Slf4j
@@ -33,6 +38,10 @@ public class MigrationManager
 
 		migrateOverlayPriorityToFloat(configGroup, "xpDropOverlayPriority", "xpDropOverlayPriority1");
 		migrateOverlayPriorityToFloat(configGroup, "xpTrackerOverlayPriority", "xpTrackerOverlayPriority1");
+
+		migrateFontToFontType(configGroup, "fontName", "fontStyle", "fontSize", "xpDropFontType");
+		migrateFontToFontType(configGroup, "xpTrackerFontName", "xpTrackerFontStyle", "xpTrackerFontSize", "xpTrackerFontType");
+		migrateFontToFontType(configGroup, "predictedHitOverPartyFontName", "predictedHitOverPartyFontStyle", "predictedHitOverPartyFontSize", "predictedHitOverPartyFontType");
 	}
 
 	public float OverlayPriorityToFloat(String oldValue)
@@ -61,5 +70,88 @@ public class MigrationManager
 		configManager.setConfiguration(group, newKey, newValue);
 		configManager.unsetConfiguration(group, oldKey);
 		log.debug("Migrated {}:{} to {}:{}", oldKey, value, newKey, newValue);
+	}
+
+	@Nullable
+	private String configValueToFontFamily(@Nullable String oldFontName)
+	{
+		if (oldFontName == null || "".equals(oldFontName))
+		{
+			return null;
+		}
+
+		Font font = FontManager.getFallbackFont(oldFontName, Font.PLAIN, 16);
+		if (FontManager.getDefaultFont().getFamily().equals(font.getFamily()))
+		{
+			return null;
+		}
+
+		return font.getFamily();
+	}
+
+	@Nullable
+	private Integer configValueToInteger(@Nullable String oldFontSizeString)
+	{
+		if (oldFontSizeString == null || "".equals(oldFontSizeString))
+		{
+			return null;
+		}
+
+		{
+			try
+			{
+				return Integer.parseInt(oldFontSizeString);
+			}
+			catch (NumberFormatException ignored)
+			{
+				return null;
+			}
+		}
+	}
+
+	private void migrateFontToFontType(String group, String oldKeyFontName, String oldKeyFontStyle, String oldKeyFontSize, String newKey)
+	{
+		String fontNameString = configManager.getConfiguration(group, oldKeyFontName);
+		String fontStyleString = configManager.getConfiguration(group, oldKeyFontStyle);
+		String fontSizeString = configManager.getConfiguration(group, oldKeyFontSize);
+
+		String fontFamily = configValueToFontFamily(fontNameString);
+		Integer fontSize = configValueToInteger(fontSizeString);
+
+		if (fontFamily == null && fontStyleString == null && fontSize == null)
+		{
+			// nothing to migrate
+			return;
+		}
+
+		if (fontFamily == null)
+		{
+			fontFamily = FontManager.getRunescapeFont().getFamily();
+		}
+
+		FontType fontType = FontType.REGULAR;
+		if (fontFamily != null)
+		{
+			fontType = fontType.withFamily(fontFamily);
+		}
+		if (fontSize != null)
+		{
+			fontType = fontType.withSize(fontSize);
+		}
+
+		boolean bold = fontStyleString != null
+			&& ("BOLD".equals(fontStyleString.toUpperCase(Locale.ROOT))
+				|| "BOLD_ITALICS".equals(fontStyleString.toUpperCase(Locale.ROOT)));
+		fontType = fontType.withBold(bold);
+
+		boolean italics = fontStyleString != null
+			&& ("ITALICS".equals(fontStyleString.toUpperCase(Locale.ROOT))
+				|| "BOLD_ITALICS".equals(fontStyleString.toUpperCase(Locale.ROOT)));
+		fontType = fontType.withItalic(italics);
+
+		configManager.setConfiguration(group, newKey, fontType);
+		configManager.unsetConfiguration(group, oldKeyFontName);
+		configManager.unsetConfiguration(group, oldKeyFontSize);
+		configManager.unsetConfiguration(group, oldKeyFontStyle);
 	}
 }

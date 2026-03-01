@@ -1,44 +1,20 @@
 package com.xpdrops.config;
 
 import com.xpdrops.overlay.TextComponentWithAlpha;
-import lombok.Getter;
 import net.runelite.client.config.Alpha;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
+import net.runelite.client.config.FontType;
 import net.runelite.client.config.Range;
 import net.runelite.client.ui.overlay.Overlay;
 
 import java.awt.Color;
-import java.awt.Font;
 
 @ConfigGroup("CustomizableXPDrops")
 public interface XpDropsConfig extends Config
 {
-	enum FontStyle
-	{
-		BOLD("Bold", Font.BOLD),
-		ITALICS("Italics", Font.ITALIC),
-		BOLD_ITALICS("Bold and italics", Font.BOLD | Font.ITALIC),
-		DEFAULT("Default", Font.PLAIN);
-
-		private final String name;
-		@Getter
-		private final int style;
-
-		FontStyle(String name, int style)
-		{
-			this.style = style;
-			this.name = name;
-		}
-
-		public String getName()
-		{
-			return name;
-		}
-	}
-
 	enum CenterOn
 	{
 		TEXT,
@@ -316,40 +292,15 @@ public interface XpDropsConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "fontName",
-		name = "Font",
-		description = "Name of the font to use for XP drops. Leave blank to use RuneLite setting.<br>" +
-			"If the font does not seem to work checkout the 'Installing custom fonts' section on the support page of this plugin",
-		position = 11,
-		section = font_settings
-	)
-	default String fontName()
-	{
-		return "";
-	}
-
-	@ConfigItem(
-		keyName = "fontStyle",
+		keyName = "xpDropFontType",
 		name = "Font style",
 		description = "Style of the font to use for XP drops. Only works with custom font.",
 		position = 12,
 		section = font_settings
 	)
-	default FontStyle fontStyle()
+	default FontType xpDropFontType()
 	{
-		return FontStyle.DEFAULT;
-	}
-
-	@ConfigItem(
-		keyName = "fontSize",
-		name = "Font size",
-		description = "Size of the font to use for XP drops. Only works with custom font.",
-		position = 13,
-		section = font_settings
-	)
-	default int fontSize()
-	{
-		return 16;
+		return FontType.REGULAR;
 	}
 
 	@ConfigItem(
@@ -635,40 +586,15 @@ public interface XpDropsConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "xpTrackerFontName",
+		keyName = "xpTrackerFontType",
 		name = "Font",
-		description = "Name of the font to use for XP tracker. Leave blank to use RuneLite setting.<br>" +
-			"If the font does not seem to work checkout the 'Installing custom fonts' section on the support page of this plugin",
+		description = "Font to use for the xp tracker",
 		position = 28,
 		section = xp_tracker_settings
 	)
-	default String xpTrackerFontName()
+	default FontType xpTrackerFontType()
 	{
-		return "";
-	}
-
-	@ConfigItem(
-		keyName = "xpTrackerFontStyle",
-		name = "Font style",
-		description = "Style of the font to use for XP tracker. Only works with custom font.",
-		position = 29,
-		section = xp_tracker_settings
-	)
-	default FontStyle xpTrackerFontStyle()
-	{
-		return FontStyle.DEFAULT;
-	}
-
-	@ConfigItem(
-		keyName = "xpTrackerFontSize",
-		name = "XP tracker font size",
-		description = "Size of font for the XP tracker overlay",
-		position = 30,
-		section = xp_tracker_settings
-	)
-	default int xpTrackerFontSize()
-	{
-		return 16;
+		return FontType.REGULAR;
 	}
 
 	@ConfigItem(
@@ -928,40 +854,15 @@ public interface XpDropsConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "predictedHitOverPartyFontName",
+		keyName = "predictedHitOverPartyFontType",
 		name = "Font",
-		description = "Name of the font to use for XP drops. Leave blank to use RuneLite setting.<br>" +
-			"If the font does not seem to work checkout the 'Installing custom fonts' section on the support page of this plugin",
+		description = "Font to use for predicted hits from party members",
 		position = 8,
 		section = party_settings
 	)
-	default String predictedHitOverPartyFontName()
+	default FontType predictedHitOverPartyFontType()
 	{
-		return "";
-	}
-
-	@ConfigItem(
-		keyName = "predictedHitOverPartyFontStyle",
-		name = "Font style",
-		description = "Style of the font to use for party predicted hits. Only works with custom font.",
-		position = 9,
-		section = party_settings
-	)
-	default FontStyle predictedHitOverPartyFontStyle()
-	{
-		return FontStyle.DEFAULT;
-	}
-
-	@ConfigItem(
-		keyName = "predictedHitOverPartyFontSize",
-		name = "Font size",
-		description = "Size of the font to use for party predicted hits. Only works with custom font.",
-		position = 10,
-		section = party_settings
-	)
-	default int predictedHitOverPartyFontSize()
-	{
-		return 16;
+		return FontType.REGULAR;
 	}
 
 	@ConfigItem(

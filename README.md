@@ -6,13 +6,13 @@ Join the discord server if you have suggestions, issues or feedback, or want to 
 
 ### Features
 - Show XP drops grouped or ungrouped, as well as configuring the delay between subsequent ungrouped XP drops.
-- Customize the font, style and size of the XP drop text.
-- Customize the color of the XP drop text.
+- Customize the font, style, size, color and background of the XP drop text.
 - Customize the location, direction and speed of the XP drop.
 - Fade out the XP drop before it disappears.
 - Color the XP drop based on active offensive prayers.
 - Group fake (also known as blocked) XP drops with regular XP drops.
 - Clear icons even at small size.
+- Customize icon size.
 - Customize which skills to filter from showing XP drops at all.
 - Attach XP drop location to in game player model.
 - Add a custom prefix and suffix to the XP drop text.
@@ -23,6 +23,7 @@ Join the discord server if you have suggestions, issues or feedback, or want to 
 - Show predicted hits from party members.
 
 #### Change log
+- v1.15.0 - Changed font configs to work with the new Runelite font config setting feature. Added migration for old font settings to new one.
 - v1.14.0 - Added new cow boss xp bonuses.
 - v1.13.3 - Fixed issue with overlay not turning on without turning the plugin off and on. Fixed exception issue.
 - v1.13.2 - Change predicted hit in party setting to default to off.
@@ -110,10 +111,16 @@ Join the discord server if you have suggestions, issues or feedback, or want to 
 
 ### Known issues
 
+#### My XP drops are not showing
+The plugin looks at the in-game toggle for hiding xp drops to determine if it should show xp drops.
+This can be toggled by clicking the xp orb next to the minimap.
+If the xp drops still don't show after toggling it to show with the xp orb feel free to open an issue on github or join the discord server to help me figure out what is causing it.\
+![ingamexporb](https://i.imgur.com/4a7h8oT.png)
+
 #### OSRS Font Scaling
 The Old school RuneScape fonts are bitmap fonts. 
 This means they do not scale well in size and have ugly edges and artifacts when using a font size that is not a multiple of 16.
-It is recommended to specify a font in the settings when using such font size.
+It is recommended to use a non-runescape font in the settings when using font sizes other than 16/32/48 etc.
 
 #### Predicted hits
 Predicted hits will never be 100% accurate. Predicted hits are calculated from the hitpoints experience gained. 
@@ -156,14 +163,17 @@ When `Attach to player` or `Attach to target` is enabled the xp drops are center
 You can use 'Center xp drop on', 'Attach to x offset' and 'Attach to y offset' to fine tune the position of the xp drop with relation to the player or target.
 
 ### Installing custom fonts
-When installing custom fonts on Windows make sure to use "Install for all users" otherwise the plugin might not be able to find the font.
-Once installed, enter the name of the font under Font in the plugin settings. This field is case-insensitive.
+It is possible to use fonts without installing them to your operating system. 
+Fonts that are placed in the `.runelite/fonts` directory will be picked up by Runelite and shown in the font dropdown.
+When you place a font in this directory you can skip the steps below.\
+Alternatively, when installing custom fonts on Windows, make sure to use "Install for all users" otherwise the plugin might not be able to find the font.
+Once installed, the font should show up in the dropdown under the font settings in the plugin.
 Fonts that are shipped with Windows should not need to be installed.\
 ![installforallusers](https://i.imgur.com/MXzOKjH.png)
 
 ### Vanilla XP drops
 This plugin replaces vanilla XP drops however using (close to) the following settings they can easily be mimicked if you play on fixed client layout.
-The vanilla xp drops speed depends on the size of the game canvas therefore the defaults given below only match vanilla behaviour on fixed layout client size.
+The vanilla xp drops speed depends on the size of the game canvas (size of the client) therefore the defaults given below only match vanilla behaviour on fixed layout client size.
 Note that you can view both customizable xp drops and vanilla xp drops at the same time by setting `Hide vanilla xp drops: false` under the Miscellaneous tab in the plugin settings for easy comparing.
 Note that when using ungrouped xp drops the `XP drop delay` setting is also important and depends on size and speed.\
 Vanilla XP drop Size smallest:  `Font style: Default`, `Background: Shadow`, `Font size: 12`, `Icon size override: 0`.\
