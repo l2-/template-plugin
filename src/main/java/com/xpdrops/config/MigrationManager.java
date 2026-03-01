@@ -153,5 +153,15 @@ public class MigrationManager
 		configManager.unsetConfiguration(group, oldKeyFontName);
 		configManager.unsetConfiguration(group, oldKeyFontSize);
 		configManager.unsetConfiguration(group, oldKeyFontStyle);
+		log.debug(
+			"Migrated {}:{} {}:{} {}:{} to {}:{}",
+			oldKeyFontName,
+			fontNameString,
+			oldKeyFontStyle,
+			fontStyleString,
+			oldKeyFontSize,
+			fontSizeString,
+			newKey,
+			fontType);
 	}
 }
