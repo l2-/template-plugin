@@ -10,7 +10,7 @@ import java.awt.RenderingHints;
 public class XpDropFontHandler
 {
 	static Font runescapeBoldFont = XpDropOverlayManager.RUNESCAPE_BOLD_FONT;
-	static Font runescapeBoldItalicsFont = XpDropOverlayManager.RUNESCAPE_BOLD_FONT.deriveFont(Font.BOLD | Font.ITALIC);
+	static Font runescapeBoldItalicsFont = XpDropOverlayManager.RUNESCAPE_BOLD_FONT.deriveFont(Font.ITALIC);
 
 	public static void handleFont(Graphics2D graphics, FontType fontType)
 	{

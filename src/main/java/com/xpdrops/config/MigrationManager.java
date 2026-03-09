@@ -81,9 +81,9 @@ public class MigrationManager
 		}
 
 		Font font = FontManager.getFallbackFont(oldFontName, Font.PLAIN, 16);
-		if (FontManager.getDefaultFont().getFamily().equals(font.getFamily()))
+		if (font == null)
 		{
-			return null;
+			return FontManager.getDefaultFont().getFamily();
 		}
 
 		return font.getFamily();
@@ -126,14 +126,20 @@ public class MigrationManager
 
 		if (fontFamily == null)
 		{
-			fontFamily = FontManager.getRunescapeFont().getFamily();
+			// Edge case
+			if (fontSize != null && fontSize < 16)
+			{
+				fontSize = 16;
+				fontFamily = FontManager.getRunescapeSmallFont().getFamily();
+			}
+			else
+			{
+				fontFamily = FontManager.getRunescapeFont().getFamily();
+			}
 		}
 
 		FontType fontType = FontType.REGULAR;
-		if (fontFamily != null)
-		{
-			fontType = fontType.withFamily(fontFamily);
-		}
+		fontType = fontType.withFamily(fontFamily);
 		if (fontSize != null)
 		{
 			fontType = fontType.withSize(fontSize);

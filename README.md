@@ -23,6 +23,7 @@ Join the discord server if you have suggestions, issues or feedback, or want to 
 - Show predicted hits from party members.
 
 #### Change log
+- v1.15.1 - Added cases to font migration. Fix where bold italic Runescape font was extra thicc.
 - v1.15.0 - Changed font configs to work with the new Runelite font config setting feature. Added migration for old font settings to new one.
 - v1.14.0 - Added new cow boss xp bonuses.
 - v1.13.3 - Fixed issue with overlay not turning on without turning the plugin off and on. Fixed exception issue.
