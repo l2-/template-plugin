@@ -17,7 +17,7 @@ public class XpDropFontHandler
 		Font font = fontType.getFont();
 		if (font != null)
 		{
-			if (FontManager.getBuiltInFonts().contains(font.getFamily()))
+			if (font.getFamily().equals(FontManager.getRunescapeFont().getFamily()))
 			{
 				graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 
