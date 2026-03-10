@@ -17,10 +17,13 @@ public class XpDropFontHandler
 		Font font = fontType.getFont();
 		if (font != null)
 		{
-			if (font.getFamily().equals(FontManager.getRunescapeFont().getFamily()))
+			if (FontManager.getBuiltInFonts().contains(font.getFamily()))
 			{
 				graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+			}
 
+			if (font.getFamily().equals(FontManager.getRunescapeFont().getFamily()))
+			{
 				// Hack since Runelite's bold font is not the same as the bold font of vanilla xp drops
 				if (fontType.isBold() && fontType.isItalic())
 				{

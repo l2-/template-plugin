@@ -23,6 +23,7 @@ Join the discord server if you have suggestions, issues or feedback, or want to 
 - Show predicted hits from party members.
 
 #### Change log
+- v1.15.3 - Fixed case of Runescape small font being rendered with antialiasing.
 - v1.15.2 - Fixed case of Runescape small + bold combination resulting in Runescape bold font.
 - v1.15.1 - Added cases to font migration. Fix where bold italic Runescape font was extra thicc.
 - v1.15.0 - Changed font configs to work with the new Runelite font config setting feature. Added migration for old font settings to new one.
