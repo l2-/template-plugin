@@ -24,6 +24,7 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.client.util.Text;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -204,6 +205,7 @@ public class XpDropDamageCalculator
 		hit.setSpecialAttack(specialAttack);
 	}
 
+	@Nullable
 	public PredictedHit predictHit(Actor actor, int hpXpDiff, double configModifier, AttackStyle attackStyle, boolean specialAttack)
 	{
 		PredictedHit hit = new PredictedHit();

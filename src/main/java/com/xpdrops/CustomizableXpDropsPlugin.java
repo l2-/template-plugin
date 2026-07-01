@@ -21,13 +21,13 @@ import net.runelite.api.EquipmentInventorySlot;
 import net.runelite.api.GameState;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
-import net.runelite.api.Player;
 import net.runelite.api.Prayer;
 import net.runelite.api.events.BeforeRender;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.FakeXpDrop;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.InteractingChanged;
 import net.runelite.api.events.ScriptPostFired;
 import net.runelite.api.events.ScriptPreFired;
 import net.runelite.api.events.StatChanged;
@@ -151,6 +151,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 	private AttackStyle attackStyle;
 	private int specEnergy = -1;
 	private boolean wasSpecialAttack = false;
+	private Actor lastOpponent = null;
 
 	@Override
 	protected void startUp()
@@ -443,6 +444,20 @@ public class CustomizableXpDropsPlugin extends Plugin
 	}
 
 	@Subscribe
+	public void onInteractingChanged(InteractingChanged event)
+	{
+		if (event.getSource() != client.getLocalPlayer())
+		{
+			return;
+		}
+
+		if (event.getTarget() != null)
+		{
+			lastOpponent = event.getTarget();
+		}
+	}
+
+	@Subscribe
 	protected void onFakeXpDrop(FakeXpDrop event)
 	{
 		int currentXp = event.getXp();
@@ -452,19 +467,19 @@ public class CustomizableXpDropsPlugin extends Plugin
 			return;
 		}
 
-		Player player = client.getLocalPlayer();
-		int lastOpponentId = -1;
-		Actor lastOpponent = null;
-		if (player != null)
-		{
-			lastOpponent = player.getInteracting();
-		}
 		if (event.getSkill() == net.runelite.api.Skill.HITPOINTS)
 		{
 			PredictedHit predictedHit = xpDropDamageCalculator.predictHit(lastOpponent, currentXp, config.xpMultiplier(), attackStyle, wasSpecialAttack);
-			log.debug("Hit npc with fake hp xp drop xp:{} hit:{} npc_id:{}", currentXp, predictedHit.getHit(), lastOpponentId);
-			hitBuffer.add(new Hit(predictedHit.getHit(), lastOpponent, attackStyle));
-			postPredictedHit(predictedHit);
+			if (predictedHit != null)
+			{
+				log.debug("Hit npc with fake hp xp drop xp:{} hit:{} npc_id:{}", currentXp, predictedHit.getHit(), predictedHit.getNpcId());
+				hitBuffer.add(new Hit(predictedHit.getHit(), lastOpponent, attackStyle));
+				postPredictedHit(predictedHit);
+			}
+			else
+			{
+				log.debug("Hit npc with fake hp xp drop but NO target. xp:{}", currentXp);
+			}
 		}
 
 		XpDrop xpDrop = new XpDrop(Skill.fromSkill(event.getSkill()), currentXp, matchPrayerStyle(Skill.fromSkill(event.getSkill())), true, lastOpponent);
@@ -478,19 +493,19 @@ public class CustomizableXpDropsPlugin extends Plugin
 		int previousXp = previous_exp[event.getSkill().ordinal()];
 		if (previousXp > 0 && currentXp - previousXp > 0)
 		{
-			Player player = client.getLocalPlayer();
-			int lastOpponentId = -1;
-			Actor lastOpponent = null;
-			if (player != null)
-			{
-				lastOpponent = player.getInteracting();
-			}
 			if (event.getSkill() == net.runelite.api.Skill.HITPOINTS)
 			{
 				PredictedHit predictedHit = xpDropDamageCalculator.predictHit(lastOpponent, currentXp - previousXp, config.xpMultiplier(), attackStyle, wasSpecialAttack);
-				log.debug("Hit npc with hp xp drop xp:{} hit:{} npc_id:{}", currentXp - previousXp, predictedHit.getHit(), lastOpponentId);
-				hitBuffer.add(new Hit(predictedHit.getHit(), lastOpponent, attackStyle));
-				postPredictedHit(predictedHit);
+				if (predictedHit != null)
+				{
+					log.debug("Hit npc with hp xp drop xp:{} hit:{} npc_id:{}", currentXp - previousXp, predictedHit.getHit(), predictedHit.getNpcId());
+					hitBuffer.add(new Hit(predictedHit.getHit(), lastOpponent, attackStyle));
+					postPredictedHit(predictedHit);
+				}
+				else
+				{
+					log.debug("Hit npc with hp xp drop but NO target. xp:{}", currentXp);
+				}
 			}
 
 			XpDrop xpDrop = new XpDrop(Skill.fromSkill(event.getSkill()), currentXp - previousXp, matchPrayerStyle(Skill.fromSkill(event.getSkill())), false, lastOpponent);
