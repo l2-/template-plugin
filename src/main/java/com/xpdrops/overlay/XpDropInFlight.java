@@ -1,10 +1,10 @@
 package com.xpdrops.overlay;
 
 import com.xpdrops.XpDropStyle;
+import com.xpdrops.predictedhit.TargetActor;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.ToString;
-import net.runelite.api.Actor;
 
 @Data
 @AllArgsConstructor
@@ -21,7 +21,7 @@ public class XpDropInFlight
 	private float alpha;
 	private float frame;
 	private int hit;
-	private Actor attachTo;
+	private TargetActor attachToTargetActor;
 	// Can include predicted hit but is not 'just' a predicted hit.
 	private boolean isPredictedHit;
 	private int clientTickCount;
@@ -32,7 +32,7 @@ public class XpDropInFlight
 		amount = amount + xpDropInFlight.getAmount();
 		style = style == XpDropStyle.DEFAULT ? xpDropInFlight.getStyle() : style;
 		hit = hit + xpDropInFlight.getHit();
-		attachTo = attachTo == null ? xpDropInFlight.attachTo : attachTo;
+		attachToTargetActor = attachToTargetActor == null ? xpDropInFlight.attachToTargetActor : attachToTargetActor;
 		return this;
 	}
 }

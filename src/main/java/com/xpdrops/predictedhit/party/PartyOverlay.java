@@ -4,13 +4,14 @@ import com.xpdrops.config.XpDropsConfig;
 import com.xpdrops.overlay.XpDropFontHandler;
 import com.xpdrops.overlay.XpDropOverlayManager;
 import com.xpdrops.overlay.XpDropOverlayUtilities;
+import com.xpdrops.predictedhit.TargetActor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Actor;
 import net.runelite.api.Client;
-import net.runelite.api.NPC;
 import net.runelite.api.Point;
+import net.runelite.api.WorldView;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
@@ -77,17 +78,32 @@ public class PartyOverlay extends Overlay
 			}
 			String text = PartyOverlayUtilities.getDropText(xpDropInFlight);
 
-			Actor target = xpDropInFlight.getAttachTo();
-			if (target == null
-				|| client.getLocalPlayer() == null
-				|| client.getLocalPlayer().getWorldView() == null
-			|| (target instanceof NPC &&
-				client.getLocalPlayer().getWorldView().npcs() != null &&
-				client.getLocalPlayer().getWorldView().npcs().byIndex(((NPC) target).getIndex()) == null))
+			TargetActor target = xpDropInFlight.getAttachToTarget();
+			if (target == null)
 			{
 				continue;
 			}
-			Point point = getCanvasTextLocation(graphics, target);
+			WorldView worldView = client.getLocalPlayer() != null ? client.getLocalPlayer().getWorldView() : client.getTopLevelWorldView();
+			if (worldView == null)
+			{
+				continue;
+			}
+
+			Actor actor = null;
+			if (target.isNpc())
+			{
+				actor = worldView.npcs().byIndex(target.getIndex());
+			}
+			else if (target.isPlayer())
+			{
+				actor = worldView.players().byIndex(target.getIndex());
+			}
+			if (actor == null)
+			{
+				continue;
+			}
+
+			Point point = getCanvasTextLocation(graphics, actor);
 			if (point == null)
 			{
 				continue;

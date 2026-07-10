@@ -42,11 +42,9 @@ public class ChambersLayoutSolver
 	private static final int ROOMS_PER_PLANE = 8;
 	private static final int AMOUNT_OF_ROOMS_PER_X_AXIS_PER_PLANE = 4;
 	private static final WorldPoint TEMP_LOCATION = new WorldPoint(3360, 5152, 2);
-	private static final String CM_RAID_CODE = "SPCFPC#¤CFP SPC#";
 
 	private final Client client;
 	boolean checkInRaid;
-	private boolean loggedIn;
 	private boolean inRaidChambers;
 	private int raidPartyID;
 	private RaidType isCM = RaidType.UNKNOWN;
@@ -58,8 +56,6 @@ public class ChambersLayoutSolver
 	{
 		this.client = client;
 	}
-
-
 
 	public RaidType getRaidType()
 	{
@@ -106,7 +102,6 @@ public class ChambersLayoutSolver
 	{
 		if (checkInRaid)
 		{
-			loggedIn = true;
 			checkInRaid = false;
 
 			if (inRaidChambers)
@@ -134,11 +129,6 @@ public class ChambersLayoutSolver
 			}
 
 			checkInRaid = true;
-		}
-		else if (client.getGameState() == GameState.LOGIN_SCREEN
-			|| client.getGameState() == GameState.CONNECTION_LOST)
-		{
-			loggedIn = false;
 		}
 		else if (client.getGameState() == GameState.HOPPING)
 		{

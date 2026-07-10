@@ -1,10 +1,12 @@
 package com.xpdrops.overlay;
 
 import com.xpdrops.config.XpDropsConfig;
+import com.xpdrops.predictedhit.TargetActor;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import net.runelite.api.Point;
+import net.runelite.api.WorldView;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
@@ -65,10 +67,23 @@ public class XpDropSceneOverlay extends Overlay
 			}
 			String text = XpDropOverlayUtilities.getDropText(xpDropInFlight, config);
 
-			Actor target = xpDropInFlight.getAttachTo();
-			if (target == null || !config.attachToTarget())
+			TargetActor targetActor = xpDropInFlight.getAttachToTargetActor();
+			Actor target = null;
+			if (targetActor == null || !config.attachToTarget())
 			{
 				target = client.getLocalPlayer();
+			}
+			WorldView worldView = client.getLocalPlayer() != null ? client.getLocalPlayer().getWorldView() : client.getTopLevelWorldView();
+			if (targetActor != null && worldView != null)
+			{
+				if (targetActor.isNpc())
+				{
+					target = worldView.npcs().byIndex(targetActor.getIndex());
+				}
+				else if (targetActor.isPlayer())
+				{
+					target = worldView.players().byIndex(targetActor.getIndex());
+				}
 			}
 			if (target == null)
 			{

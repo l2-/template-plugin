@@ -1,9 +1,9 @@
 package com.xpdrops.predictedhit.party;
 
+import com.xpdrops.predictedhit.TargetActor;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.ToString;
-import net.runelite.api.Actor;
 
 import java.awt.Color;
 
@@ -18,7 +18,7 @@ public class PredictedHitInFlight
 	private float alpha;
 	private float frame;
 	private int hit;
-	private Actor attachTo;
+	private TargetActor attachToTarget;
 	private Color color;
 	private int serverTick;
 }

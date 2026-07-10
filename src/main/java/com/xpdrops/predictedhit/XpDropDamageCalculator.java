@@ -10,13 +10,10 @@ import com.xpdrops.predictedhit.npcswithscalingbonus.cox.CoXNPCs;
 import com.xpdrops.predictedhit.npcswithscalingbonus.toa.ToANPCs;
 import com.xpdrops.predictedhit.npcswithscalingbonus.tob.ToBNPCs;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import net.runelite.api.EquipmentInventorySlot;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
-import net.runelite.api.NPC;
-import net.runelite.api.Player;
 import net.runelite.api.Prayer;
 import net.runelite.api.gameval.InventoryID;
 import net.runelite.api.gameval.VarbitID;
@@ -24,6 +21,7 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.client.util.Text;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -44,8 +42,6 @@ public class XpDropDamageCalculator
 	private static final String NPC_JSON_FILE = "npcs.min.json";
 	private static final HashMap<Integer, Double> XP_BONUS_MAPPING = new HashMap<>();
 	private static final HashMap<Integer, Double> USER_DEFINED_XP_BONUS_MAPPING = new HashMap<>();
-	private static final Pattern RAID_LEVEL_MATCHER = Pattern.compile("(\\d+)");
-	private static final int RAID_LEVEL_WIDGET_ID = (481 << 16) | 42;
 	private static final int ROOM_LEVEL_WIDGET_ID = (481 << 16) | 45;
 	private static final int COX_SCALED_PARTY_SIZE_VARBIT = 9540;
 	private static final int RAID_PARTY_SIZE = 5424;
@@ -204,7 +200,7 @@ public class XpDropDamageCalculator
 		hit.setSpecialAttack(specialAttack);
 	}
 
-	public PredictedHit predictHit(Actor actor, int hpXpDiff, double configModifier, AttackStyle attackStyle, boolean specialAttack)
+	public PredictedHit predictHit(@Nonnull TargetActor actor, int hpXpDiff, double configModifier, AttackStyle attackStyle, boolean specialAttack)
 	{
 		PredictedHit hit = new PredictedHit();
 		hit.setUserXpModifier(configModifier);
@@ -213,22 +209,22 @@ public class XpDropDamageCalculator
 
 		setPlayerData(hit, attackStyle, specialAttack);
 
-		if (actor instanceof Player)
+		if (actor.isPlayer())
 		{
-			return predictedHitPlayer(hit, ((Player) actor).getId(), actor.getCombatLevel());
+			return predictedHitPlayer(hit, actor.getIndex(), actor.getCombatLevel());
 		}
-		else if (actor instanceof NPC)
+		else if (actor.isNpc())
 		{
-			return predictedHitNpc(hit, ((NPC) actor).getId(), ((NPC) actor).getIndex(), actor.getCombatLevel());
+			return predictedHitNpc(hit, actor.getId(), actor.getIndex(), actor.getCombatLevel());
 		}
 		return null;
 	}
 
-	private PredictedHit predictedHitPlayer(PredictedHit hit, int id, int cmb)
+	private PredictedHit predictedHitPlayer(PredictedHit hit, int index, int cmb)
 	{
 		hit.setOpponentIsPlayer(true);
 		hit.setPlayerCombatLevel(cmb);
-		hit.setTargetIndex(id);
+		hit.setTargetIndex(index);
 		double modifier = Math.min(1.125d, 1 + Math.floor(cmb / 20.0d) / 40.0d);
 		hit.setXpModifier(modifier);
 		hit.setHit(calculateHit(hit.getHpXpAwarded(), modifier, hit.getUserXpModifier()));

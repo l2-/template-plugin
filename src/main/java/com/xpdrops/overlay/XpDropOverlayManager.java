@@ -8,12 +8,12 @@ import com.xpdrops.attackstyles.AttackStyle;
 import com.xpdrops.config.XpDropsConfig;
 import com.xpdrops.config.XpTrackerSkills;
 import com.xpdrops.predictedhit.Hit;
+import com.xpdrops.predictedhit.TargetActor;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import net.runelite.api.SpritePixels;
 import net.runelite.client.ui.overlay.Overlay;
@@ -314,13 +314,13 @@ public class XpDropOverlayManager
 
 		int totalHit = 0;
 		AttackStyle predictedHitAttackStyle = null;
-		Actor target = null;
+		TargetActor targetActor = null;
 		{
 			Hit hit = plugin.getHitBuffer().poll();
 			while (hit != null)
 			{
 				totalHit += hit.getHit();
-				target = hit.getAttachedActor();
+				targetActor = hit.getAttachedTargetActor();
 				predictedHitAttackStyle = hit.getStyle();
 
 				hit = plugin.getHitBuffer().poll();
@@ -370,7 +370,7 @@ public class XpDropOverlayManager
 				icons |= flags & HITSPLAT_FLAGS_MASK;
 			}
 
-			XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, flags, totalHit, style, 0, 0, 0xff, 0, 0, target, true, client.getTickCount());
+			XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, flags, totalHit, style, 0, 0, 0xff, 0, 0, targetActor, true, client.getTickCount());
 			drops.add(xpDropInFlight);
 		}
 
@@ -408,7 +408,7 @@ public class XpDropOverlayManager
 				}
 
 				int hit = config.neverGroupPredictedHit() || filteredHit ? 0 : totalHit;
-				XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, flags, amount, style, 0, 0, 0xff, 0, hit, target, false, client.getTickCount());
+				XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, flags, amount, style, 0, 0, 0xff, 0, hit, targetActor, false, client.getTickCount());
 				drops.add(xpDropInFlight);
 			}
 		}
@@ -451,7 +451,7 @@ public class XpDropOverlayManager
 						}
 
 						int hit = config.neverGroupPredictedHit() || filteredHit ? 0 : totalHit;
-						XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, flags, amount, style, 0, 0, 0xff, 0, hit, xpDrop.getAttachedActor(), false, client.getTickCount());
+						XpDropInFlight xpDropInFlight = new XpDropInFlight(icons, flags, amount, style, 0, 0, 0xff, 0, hit, xpDrop.getAttachedTargetActor(), false, client.getTickCount());
 						dropsInFlightMap.put(xpDrop.getSkill(), xpDropInFlight);
 						dropsInFlight.add(xpDropInFlight);
 					}

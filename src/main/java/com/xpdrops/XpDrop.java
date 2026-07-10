@@ -1,8 +1,8 @@
 package com.xpdrops;
 
+import com.xpdrops.predictedhit.TargetActor;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import net.runelite.api.Actor;
 
 @Data
 @AllArgsConstructor
@@ -12,5 +12,5 @@ public class XpDrop
 	private int experience;
 	private XpDropStyle style;
 	private boolean fake;
-	private Actor attachedActor;
+	private TargetActor attachedTargetActor;
 }

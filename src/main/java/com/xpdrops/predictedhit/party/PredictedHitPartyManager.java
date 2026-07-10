@@ -4,6 +4,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.xpdrops.config.XpDropsConfig;
 import com.xpdrops.overlay.XpDropOverlayManager;
 import com.xpdrops.predictedhit.PredictedHit;
+import com.xpdrops.predictedhit.TargetActor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Actor;
@@ -55,7 +56,7 @@ public class PredictedHitPartyManager
 
 	// <target, hits>
 	@Getter
-	private final ArrayListMultimap<Actor, PredictedHitInFlight> predictedHitInFlights = ArrayListMultimap.create();
+	private final ArrayListMultimap<TargetActor, PredictedHitInFlight> predictedHitInFlights = ArrayListMultimap.create();
 
 	@Inject
 	protected PredictedHitPartyManager(XpDropsConfig config, PartyConfig partyConfig)
@@ -94,27 +95,31 @@ public class PredictedHitPartyManager
 	private PredictedHitInFlight convertToPredictedHitInFlight(PredictedHit hit, String memberName, Color playerColor)
 	{
 		int amount = hit.getHit();
-		Actor target;
+		TargetActor target;
 		if (config.predictedHitPartyOverlayLocation() == XpDropsConfig.PartyDropsAnchor.PLAYER)
 		{
 			WorldView wv = client.getLocalPlayer().getWorldView();
-			target = wv.players().stream()
+			Actor actor = wv.players().stream()
 				.filter(Objects::nonNull)
 				.filter(p -> p.getName() != null && Text.standardize(memberName).equals(Text.standardize(p.getName())))
 				.findFirst()
 				.orElse(null);
+			target = TargetActor.fromActor(actor);
 		}
 		else
 		{
 			WorldView wv = client.getLocalPlayer().getWorldView();
+			Actor actor;
 			if (hit.isOpponentIsPlayer())
 			{
-				target = wv.players().byIndex(hit.getTargetIndex());
+				actor = wv.players().byIndex(hit.getTargetIndex());
 			}
 			else
 			{
-				target = wv.npcs().byIndex(hit.getTargetIndex());
+				actor = wv.npcs().byIndex(hit.getTargetIndex());
 			}
+			target = TargetActor.fromActor(actor);
+
 		}
 		Color color;
 		if (config.colorPerMemberPredictedHitOverParty()
@@ -138,12 +143,12 @@ public class PredictedHitPartyManager
 
 	private void queue(PredictedHitInFlight newHit)
 	{
-		if (newHit.getAttachTo() == null)
+		if (newHit.getAttachToTarget() == null)
 		{
 			log.debug("Predicted party hit without target! {}", newHit);
 			return;
 		}
-		List<PredictedHitInFlight> hitsOnTarget = predictedHitInFlights.get(newHit.getAttachTo());
+		List<PredictedHitInFlight> hitsOnTarget = predictedHitInFlights.get(newHit.getAttachToTarget());
 
 		if (config.predictedHitPartyOverlayLocation() == XpDropsConfig.PartyDropsAnchor.TARGET)
 		{
@@ -206,7 +211,7 @@ public class PredictedHitPartyManager
 
 	private void updateHitsInFlight()
 	{
-		for (Actor key : predictedHitInFlights.keySet().toArray(new Actor[0]))
+		for (TargetActor key : predictedHitInFlights.keySet().toArray(new TargetActor[0]))
 		{
 			predictedHitInFlights.get(key).removeIf(xpDropInFlight -> xpDropInFlight.getFrame() > config.predictedHitOverPartyFramesPerDrop());
 		}
@@ -217,7 +222,7 @@ public class PredictedHitPartyManager
 		float frameTime = System.currentTimeMillis() - lastFrameTime;
 		float frameTimeModifier = frameTime / XpDropOverlayManager.CONSTANT_FRAME_TIME;
 
-		for (Actor key : predictedHitInFlights.keySet())
+		for (TargetActor key : predictedHitInFlights.keySet())
 		{
 			for (PredictedHitInFlight hitInFlight : predictedHitInFlights.get(key))
 			{
@@ -234,7 +239,7 @@ public class PredictedHitPartyManager
 		{
 			int threshold = (int) (0.66f * config.predictedHitOverPartyFramesPerDrop());
 			int delta = config.predictedHitOverPartyFramesPerDrop() - threshold;
-			for (Actor key : predictedHitInFlights.keySet())
+			for (TargetActor key : predictedHitInFlights.keySet())
 			{
 				for (PredictedHitInFlight hitInFlight : predictedHitInFlights.get(key))
 				{
