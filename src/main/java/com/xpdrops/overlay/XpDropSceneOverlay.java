@@ -73,16 +73,19 @@ public class XpDropSceneOverlay extends Overlay
 			{
 				target = client.getLocalPlayer();
 			}
-			WorldView worldView = client.getLocalPlayer() != null ? client.getLocalPlayer().getWorldView() : client.getTopLevelWorldView();
-			if (targetActor != null && worldView != null)
+			else
 			{
-				if (targetActor.isNpc())
+				WorldView worldView = client.getLocalPlayer() != null ? client.getLocalPlayer().getWorldView() : client.getTopLevelWorldView();
+				if (worldView != null)
 				{
-					target = worldView.npcs().byIndex(targetActor.getIndex());
-				}
-				else if (targetActor.isPlayer())
-				{
-					target = worldView.players().byIndex(targetActor.getIndex());
+					if (targetActor.isNpc())
+					{
+						target = worldView.npcs().byIndex(targetActor.getIndex());
+					}
+					else if (targetActor.isPlayer())
+					{
+						target = worldView.players().byIndex(targetActor.getIndex());
+					}
 				}
 			}
 			if (target == null)

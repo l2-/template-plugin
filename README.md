@@ -23,6 +23,7 @@ Join the discord server if you have suggestions, issues or feedback, or want to 
 - Show predicted hits from party members.
 
 #### Change log
+- v1.15.7 - Fix issue where attach to player was showing attach to target instead when attacking npcs/players.
 - v1.15.6 - Fix issue of attaching xp drops to incorrect target.
 - v1.15.5 - Change interaction logic to attempt fix of predicted hit at maggot boss.
 - v1.15.4 - Add maggot king boss xp bonus.
