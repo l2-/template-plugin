@@ -23,6 +23,7 @@ Join the discord server if you have suggestions, issues or feedback, or want to 
 - Show predicted hits from party members.
 
 #### Change log
+- v1.15.8 - Changes to predicted hit over party to reduce packet size. If predicted hits over party don't work make sure all members of the party have the same version of the plugin installed.
 - v1.15.7 - Fix issue where attach to player was showing attach to target instead when attacking npcs/players.
 - v1.15.6 - Fix issue of attaching xp drops to incorrect target.
 - v1.15.5 - Change interaction logic to attempt fix of predicted hit at maggot boss.
@@ -31,6 +32,9 @@ Join the discord server if you have suggestions, issues or feedback, or want to 
 - v1.15.2 - Fixed case of Runescape small + bold combination resulting in Runescape bold font.
 - v1.15.1 - Added cases to font migration. Fix where bold italic Runescape font was extra thicc.
 - v1.15.0 - Changed font configs to work with the new Runelite font config setting feature. Added migration for old font settings to new one.
+<details>
+<summary>Older versions changelog</summary>
+
 - v1.14.0 - Added new cow boss xp bonuses.
 - v1.13.3 - Fixed issue with overlay not turning on without turning the plugin off and on. Fixed exception issue.
 - v1.13.2 - Change predicted hit in party setting to default to off.
@@ -42,9 +46,6 @@ Join the discord server if you have suggestions, issues or feedback, or want to 
 - v1.10.2 - Prevent IllegalArgumentException. - `@SRLJustin`
 - v1.10.1 - Fix import/export menu not showing.
 - v1.10.0 - Add sailing skill.
-<details>
-<summary>Older versions changelog</summary>
-
 - v1.9.12 - Fix issue where XP tracker would always stay on screen when not using Most Recent as tracked skill.
 - v1.9.11 - Fix overlay priority - `@taysta`
 - v1.9.10 - Fixed a bug regarding predicted hits being wrong when relogging within CM.
@@ -154,6 +155,7 @@ protected void onPluginMessage(PluginMessage pluginMessage)
     }
 }
 ```
+This plugin message is only posted for predicted hits from the local player. To receive predicted hits from other party members your own implementation will have to send and receive the necessary data.
 
 #### XP drops are delayed
 Try increasing the `Vertical XP drop speed` and/or lowering the `XP drop delay` settings. 

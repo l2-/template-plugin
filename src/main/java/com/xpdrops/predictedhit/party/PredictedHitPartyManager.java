@@ -14,6 +14,7 @@ import net.runelite.client.callback.ClientThread;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
+import net.runelite.client.party.PartyMember;
 import net.runelite.client.party.PartyService;
 import net.runelite.client.party.WSClient;
 import net.runelite.client.plugins.party.PartyConfig;
@@ -21,6 +22,7 @@ import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.Text;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.awt.Color;
 import java.util.List;
@@ -92,9 +94,14 @@ public class PredictedHitPartyManager
 		}
 	}
 
-	private PredictedHitInFlight convertToPredictedHitInFlight(PredictedHit hit, String memberName, Color playerColor)
+	private PredictedHitInFlight toPredictedHitInFlight(
+		int hit,
+		boolean isPlayer,
+		int targetIndex,
+		int serverTick,
+		@Nonnull String memberName,
+		@Nonnull Color playerColor)
 	{
-		int amount = hit.getHit();
 		TargetActor target;
 		if (config.predictedHitPartyOverlayLocation() == XpDropsConfig.PartyDropsAnchor.PLAYER)
 		{
@@ -110,13 +117,13 @@ public class PredictedHitPartyManager
 		{
 			WorldView wv = client.getLocalPlayer().getWorldView();
 			Actor actor;
-			if (hit.isOpponentIsPlayer())
+			if (isPlayer)
 			{
-				actor = wv.players().byIndex(hit.getTargetIndex());
+				actor = wv.players().byIndex(targetIndex);
 			}
 			else
 			{
-				actor = wv.npcs().byIndex(hit.getTargetIndex());
+				actor = wv.npcs().byIndex(targetIndex);
 			}
 			target = TargetActor.fromActor(actor);
 
@@ -138,7 +145,7 @@ public class PredictedHitPartyManager
 			icons = XpDropOverlayManager.HITSPLAT_FLAGS_MASK;
 		}
 
-		return new PredictedHitInFlight(icons, 0, 0, 0xff, 0, amount, target, color, hit.getServerTick());
+		return new PredictedHitInFlight(icons, 0, 0, 0xff, 0, hit, target, color, serverTick);
 	}
 
 	private void queue(PredictedHitInFlight newHit)
@@ -174,12 +181,30 @@ public class PredictedHitPartyManager
 		if (!partyService.isInParty()) return;
 		if (partyService.getMemberById(partyMessage.getMemberId()) == null) return;
 		if (partyMessage.getWorld() != client.getWorld()) return;
+		if (partyMessage.getPredictedHit() == null) return;
+
+		@Nonnull final PredictedHitPartyMessage.PredictedHit hit = partyMessage.getPredictedHit();
+		final boolean targetIsPlayer = hit.getOpponent() != null
+			&& hit.getOpponent().getIsPlayer() != null
+			&& hit.getOpponent().getIsPlayer();
+		final int targetIndex = hit.getOpponent() != null && hit.getOpponent().getIndex() != null
+			? hit.getOpponent().getIndex()
+			: -1;
+		@Nonnull final PartyMember partyMember = partyService.getMemberById(partyMessage.getMemberId());
+		final String displayName = partyMember.getDisplayName();
+		final Color color = partyMessage.getColor() != null
+			? partyMessage.getColor()
+			: Color.WHITE;
 
 		clientThread.invokeLater(() ->
 		{
-			PredictedHitInFlight hitInFlight = convertToPredictedHitInFlight(
-				partyMessage.getPredictedHit(),
-				partyService.getMemberById(partyMessage.getMemberId()).getDisplayName(), partyMessage.getColor());
+			PredictedHitInFlight hitInFlight = toPredictedHitInFlight(
+				hit.getHit(),
+				targetIsPlayer,
+				targetIndex,
+				hit.getServerTick(),
+				displayName,
+				color);
 			queue(hitInFlight);
 		});
 	}
@@ -193,7 +218,8 @@ public class PredictedHitPartyManager
 			{
 				color = partyConfig.memberColor();
 			}
-			partyService.send(new PredictedHitPartyMessage(hit, color, client.getWorld()));
+			PredictedHitPartyMessage partyMessage = PredictedHitPartyMessage.create(hit, color, client.getWorld());
+			partyService.send(partyMessage);
 		}
 	}
 

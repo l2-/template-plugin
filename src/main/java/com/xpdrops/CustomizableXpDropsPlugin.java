@@ -640,14 +640,19 @@ public class CustomizableXpDropsPlugin extends Plugin
 		}
 	}
 
-	private void postPredictedHit(PredictedHit hit)
+	private void postPredictedHitPluginMessage(PredictedHit hit)
 	{
 		String namespace = "customizable-xp-drops";
 		String name = "predicted-hit";
 		HashMap<String, Object> data = new HashMap<>();
 		data.put("value", gson.toJson(hit));
 		eventBus.post(new PluginMessage(namespace, name, data));
+	}
+
+	private void postPredictedHit(PredictedHit hit)
+	{
 		log.debug("Posting hit against {}", hit.getTargetIndex());
+		postPredictedHitPluginMessage(hit);
 		predictedHitPartyManager.postPredictedHit(hit);
 	}
 }
