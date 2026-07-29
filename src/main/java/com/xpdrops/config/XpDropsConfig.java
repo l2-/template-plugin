@@ -561,11 +561,24 @@ public interface XpDropsConfig extends Config
 		return false;
 	}
 
+	@Range(min = 3, max = 12)
+	@ConfigItem(
+		keyName = "xpTrackerProgressBarHeight",
+		name = "Progress bar height",
+		description = "The height in pixels of the xp tracker progress bar.",
+		position = 26,
+		section = xp_tracker_settings
+	)
+	default int xpTrackerProgressBarHeight()
+	{
+		return 6;
+	}
+
 	@ConfigItem(
 		keyName = "showIconsXpTracker",
 		name = "Show icons xp tracker",
 		description = "Enable or disable skill icons for xp tracker",
-		position = 26,
+		position = 27,
 		section = xp_tracker_settings
 	)
 	default boolean showIconsXpTracker()
@@ -577,7 +590,7 @@ public interface XpDropsConfig extends Config
 		keyName = "xpTrackerSkill",
 		name = "Xp tracker skill",
 		description = "Skill to display within the Xp Tracker",
-		position = 27,
+		position = 28,
 		section = xp_tracker_settings
 	)
 	default XpTrackerSkills xpTrackerSkill()
@@ -589,7 +602,7 @@ public interface XpDropsConfig extends Config
 		keyName = "xpTrackerFontType",
 		name = "Font",
 		description = "Font to use for the xp tracker",
-		position = 28,
+		position = 29,
 		section = xp_tracker_settings
 	)
 	default FontType xpTrackerFontType()
