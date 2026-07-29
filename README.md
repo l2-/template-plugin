@@ -23,6 +23,7 @@ Join the discord server if you have suggestions, issues or feedback, or want to 
 - Show predicted hits from party members.
 
 #### Change log
+- v1.15.9 - Add config to progress bar height of xp tracker - `@55h1`
 - v1.15.8 - Changes to predicted hit over party to reduce packet size. If predicted hits over party don't work make sure all members of the party have the same version of the plugin installed.
 - v1.15.7 - Fix issue where attach to player was showing attach to target instead when attacking npcs/players.
 - v1.15.6 - Fix issue of attaching xp drops to incorrect target.

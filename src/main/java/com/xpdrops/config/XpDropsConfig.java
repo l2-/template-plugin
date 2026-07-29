@@ -561,7 +561,7 @@ public interface XpDropsConfig extends Config
 		return false;
 	}
 
-	@Range(min = 3, max = 12)
+	@Range(min = 3)
 	@ConfigItem(
 		keyName = "xpTrackerProgressBarHeight",
 		name = "Progress bar height",
