@@ -43,7 +43,29 @@ public class XpTrackerOverlayTests extends MockedTests
 	public void drawProgressBarDoesNotThrowExceptionForGarbageXpParameters(int start, int end, int current, int expected)
 	{
 		when(xpDropsConfig.xpTrackerBorderColor()).thenReturn(Color.BLACK);
+		when(xpDropsConfig.xpTrackerProgressBarHeight()).thenReturn(6);
 		int val = xpTrackerOverlay.drawProgressBar(graphics, 0, 0, 100, start, end, current);
 		assertEquals(val, expected);
+	}
+
+	static Stream<Arguments> drawProgressBarUsesConfiguredHeightArguments()
+	{
+		return Stream.of(
+			Arguments.of(-10, 3),
+			Arguments.of(0, 3),
+			Arguments.of(3, 3),
+			Arguments.of(6, 6),
+			Arguments.of(10, 10)
+		);
+	}
+
+	@ParameterizedTest
+	@MethodSource("drawProgressBarUsesConfiguredHeightArguments")
+	public void drawProgressBarUsesConfiguredHeight(int configuredHeight, int expected)
+	{
+		when(xpDropsConfig.xpTrackerBorderColor()).thenReturn(Color.BLACK);
+		when(xpDropsConfig.xpTrackerProgressBarHeight()).thenReturn(configuredHeight);
+		int val = xpTrackerOverlay.drawProgressBar(graphics, 0, 0, 100, 0, 50, 25);
+		assertEquals(expected, val);
 	}
 }

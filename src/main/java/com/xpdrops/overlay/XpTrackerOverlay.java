@@ -19,7 +19,7 @@ public class XpTrackerOverlay extends Overlay
 {
 	private final XpDropsConfig config;
 	private final XpDropOverlayManager xpDropOverlayManager;
-	private static final int PROGRESS_BAR_HEIGHT = 6;
+	private static final int MIN_PROGRESS_BAR_HEIGHT = 3;
 
 	@Inject
 	private Client client;
@@ -155,7 +155,7 @@ public class XpTrackerOverlay extends Overlay
 		int alpha = getAlpha();
 
 		int progressBarWidth = (int) (ratio * (width - 4));
-		int barHeight = PROGRESS_BAR_HEIGHT;
+		int barHeight = Math.max(MIN_PROGRESS_BAR_HEIGHT, config.xpTrackerProgressBarHeight());
 
 		Color borderColor = new Color(config.xpTrackerBorderColor().getRed(), config.xpTrackerBorderColor().getGreen(), config.xpTrackerBorderColor().getBlue(), alpha);
 		graphics.setColor(borderColor);
@@ -170,7 +170,7 @@ public class XpTrackerOverlay extends Overlay
 		final Color c = new Color((int) (255 - rMod), (int) (0 + gMod), 0, alpha);
 		graphics.setColor(c);
 		graphics.fillRect(x + 2, y + 2, progressBarWidth, barHeight - 2);
-		return PROGRESS_BAR_HEIGHT;
+		return barHeight;
 	}
 
 	private Dimension drawIcon(Graphics2D graphics, int icon, int x, int y, float alpha)
