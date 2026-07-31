@@ -38,12 +38,14 @@ public class PredictedHit
 	// If opponentIsPlayer is true this is -1
 	private int npcId = -1;
 	private int targetIndex = -1;
+	private int targetWorldViewId = -1;
 
 	private int serverTick = -1;
 
 	// If opponentIsPlayer is false this is -1
 	private int playerCombatLevel = -1;
 
+	private int sourceWorldViewId = -1;
 	private int equippedWeaponId = -1;
 	private AttackStyle attackStyle = AttackStyle.NONE;
 	private Prayer[] activePrayer = new Prayer[0];

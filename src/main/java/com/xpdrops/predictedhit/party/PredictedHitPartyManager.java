@@ -98,6 +98,8 @@ public class PredictedHitPartyManager
 		int hit,
 		boolean isPlayer,
 		int targetIndex,
+		int targetWorldViewId,
+		int sourceWorldViewId,
 		int serverTick,
 		@Nonnull String memberName,
 		@Nonnull Color playerColor)
@@ -105,25 +107,32 @@ public class PredictedHitPartyManager
 		TargetActor target;
 		if (config.predictedHitPartyOverlayLocation() == XpDropsConfig.PartyDropsAnchor.PLAYER)
 		{
-			WorldView wv = client.getLocalPlayer().getWorldView();
-			Actor actor = wv.players().stream()
-				.filter(Objects::nonNull)
-				.filter(p -> p.getName() != null && Text.standardize(memberName).equals(Text.standardize(p.getName())))
-				.findFirst()
-				.orElse(null);
+			WorldView wv = client.getWorldView(sourceWorldViewId);
+			Actor actor = null;
+			if (wv != null)
+			{
+				actor = wv.players().stream()
+					.filter(Objects::nonNull)
+					.filter(p -> p.getName() != null && Text.standardize(memberName).equals(Text.standardize(p.getName())))
+					.findFirst()
+					.orElse(null);
+			}
 			target = TargetActor.fromActor(actor);
 		}
 		else
 		{
-			WorldView wv = client.getLocalPlayer().getWorldView();
-			Actor actor;
-			if (isPlayer)
+			WorldView wv = client.getWorldView(targetWorldViewId);
+			Actor actor = null;
+			if (wv != null)
 			{
-				actor = wv.players().byIndex(targetIndex);
-			}
-			else
-			{
-				actor = wv.npcs().byIndex(targetIndex);
+				if (isPlayer)
+				{
+					actor = wv.players().byIndex(targetIndex);
+				}
+				else
+				{
+					actor = wv.npcs().byIndex(targetIndex);
+				}
 			}
 			target = TargetActor.fromActor(actor);
 
@@ -195,6 +204,12 @@ public class PredictedHitPartyManager
 		final Color color = partyMessage.getColor() != null
 			? partyMessage.getColor()
 			: Color.WHITE;
+		final int targetWorldViewId = hit.getOpponent() != null && hit.getOpponent().getWorldViewId() != null
+			? hit.getOpponent().getWorldViewId()
+			: -1;
+		final int sourceWorldViewId = hit.getSourceWorldViewId() != null
+			? hit.getSourceWorldViewId()
+			: -1;
 
 		clientThread.invokeLater(() ->
 		{
@@ -202,6 +217,8 @@ public class PredictedHitPartyManager
 				hit.getHit(),
 				targetIsPlayer,
 				targetIndex,
+				targetWorldViewId,
+				sourceWorldViewId,
 				hit.getServerTick(),
 				displayName,
 				color);

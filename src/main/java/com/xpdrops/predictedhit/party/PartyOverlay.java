@@ -83,7 +83,7 @@ public class PartyOverlay extends Overlay
 			{
 				continue;
 			}
-			WorldView worldView = client.getLocalPlayer() != null ? client.getLocalPlayer().getWorldView() : client.getTopLevelWorldView();
+			WorldView worldView = client.getWorldView(target.getWorldViewId());
 			if (worldView == null)
 			{
 				continue;

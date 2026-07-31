@@ -28,6 +28,9 @@ public class PredictedHitPartyMessage extends PartyMemberMessage
 			@SerializedName("i")
 			private Integer index;
 			@Nullable
+			@SerializedName("wvi")
+			private Integer worldViewId;
+			@Nullable
 			@SerializedName("p")
 			private Boolean isPlayer;
 
@@ -35,6 +38,7 @@ public class PredictedHitPartyMessage extends PartyMemberMessage
 			{
 				return new Opponent(
 					hit.getTargetIndex() >= 0 ? hit.getTargetIndex() : null,
+					hit.getTargetWorldViewId() >= 0 ? hit.getTargetWorldViewId() : null,
 					hit.isOpponentIsPlayer() ? true : null
 				);
 			}
@@ -46,6 +50,10 @@ public class PredictedHitPartyMessage extends PartyMemberMessage
 		@SerializedName("vs")
 		private Opponent opponent;
 
+		@Nullable
+		@SerializedName("wvi")
+		private Integer sourceWorldViewId;
+
 		@SerializedName("t")
 		private int serverTick;
 
@@ -54,6 +62,7 @@ public class PredictedHitPartyMessage extends PartyMemberMessage
 			return new PredictedHitPartyMessage.PredictedHit(
 				hit.getHit(),
 				Opponent.create(hit),
+				hit.getSourceWorldViewId(),
 				hit.getServerTick());
 		}
 	}

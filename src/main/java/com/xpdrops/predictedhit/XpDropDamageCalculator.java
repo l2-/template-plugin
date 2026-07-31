@@ -197,6 +197,10 @@ public class XpDropDamageCalculator
 		}
 		hit.setAttackStyle(predictedHitAttackStyle);
 		hit.setSpecialAttack(specialAttack);
+		int worldViewId = client.getLocalPlayer() != null && client.getLocalPlayer().getWorldView() != null
+			? client.getLocalPlayer().getWorldView().getId()
+			: -1;
+		hit.setSourceWorldViewId(worldViewId);
 	}
 
 	public PredictedHit predictHit(@Nonnull TargetActor actor, int hpXpDiff, double configModifier, AttackStyle attackStyle, boolean specialAttack)
@@ -208,6 +212,7 @@ public class XpDropDamageCalculator
 
 		setPlayerData(hit, attackStyle, specialAttack);
 
+		hit.setTargetWorldViewId(actor.getWorldViewId());
 		if (actor.isPlayer())
 		{
 			return predictedHitPlayer(hit, actor.getIndex(), actor.getCombatLevel());

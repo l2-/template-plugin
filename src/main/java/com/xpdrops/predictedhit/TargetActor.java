@@ -14,6 +14,7 @@ public class TargetActor
 {
 	int id;
 	int index;
+	int worldViewId;
 	int combatLevel;
 	boolean isPlayer;
 	boolean isNpc;
@@ -23,11 +24,11 @@ public class TargetActor
 	{
 		if (actor instanceof Player)
 		{
-			return new TargetActor(-1, ((Player) actor).getId(), actor.getCombatLevel(), true, false);
+			return new TargetActor(-1, ((Player) actor).getId(), actor.getWorldView().getId(), actor.getCombatLevel(), true, false);
 		}
 		else if (actor instanceof NPC)
 		{
-			return new TargetActor(((NPC) actor).getId(), ((NPC) actor).getIndex(), actor.getCombatLevel(), false, true);
+			return new TargetActor(((NPC) actor).getId(), ((NPC) actor).getIndex(), actor.getWorldView().getId(), actor.getCombatLevel(), false, true);
 		}
 		return null;
 	}
