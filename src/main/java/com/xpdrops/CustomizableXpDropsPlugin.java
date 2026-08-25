@@ -26,6 +26,7 @@ import net.runelite.api.Player;
 import net.runelite.api.Prayer;
 import net.runelite.api.events.BeforeRender;
 import net.runelite.api.events.ChatMessage;
+import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.FakeXpDrop;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
@@ -135,7 +136,9 @@ public class CustomizableXpDropsPlugin extends Plugin
 	@Getter
 	private final PriorityQueue<XpDrop> queue = new PriorityQueue<>(this::skillPriorityComparator);
 	@Getter
-	private final ArrayDeque<Hit> hitBuffer = new ArrayDeque<>();
+	private final ArrayDeque<Hit> hitBufferOverlay = new ArrayDeque<>();
+	@Getter
+	private final ArrayDeque<PredictedHit> hitBufferClientTick = new ArrayDeque<>();
 	@Getter
 	private final HashSet<String> filteredSkills = new HashSet<>();
 	@Getter
@@ -255,6 +258,9 @@ public class CustomizableXpDropsPlugin extends Plugin
 		setXpTrackerHidden(false);
 		importExport.removeMenuOptions();
 		predictedHitPartyManager.shutDown();
+		hitBufferClientTick.clear();
+		hitBufferOverlay.clear();
+		queue.clear();
 	}
 
 	protected void setXpTrackerHidden(boolean hidden)
@@ -305,6 +311,29 @@ public class CustomizableXpDropsPlugin extends Plugin
 	{
 		chambersLayoutSolver.onGameTick(gameTick);
 		wasSpecialAttack = false;
+	}
+
+	@Subscribe
+	protected void onClientTick(ClientTick clientTick)
+	{
+		if (!hitBufferClientTick.isEmpty())
+		{
+			PredictedHit hit = hitBufferClientTick
+				.stream()
+				.skip(1)
+				.reduce(
+					hitBufferClientTick.peek(),
+					(current, next) ->
+					{
+						if (next.getServerTick() == current.getServerTick())
+						{
+							current.setHit(current.getHit() + next.getHit());
+						}
+						return current;
+					});
+			postPredictedHit(hit);
+		}
+		hitBufferClientTick.clear();
 	}
 
 	@Subscribe
@@ -484,9 +513,8 @@ public class CustomizableXpDropsPlugin extends Plugin
 		if (event.getSkill() == net.runelite.api.Skill.HITPOINTS && targetActor != null)
 		{
 			PredictedHit predictedHit = xpDropDamageCalculator.predictHit(targetActor, currentXp, config.xpMultiplier(), attackStyle, wasSpecialAttack);
-			log.debug("Hit npc with fake hp xp drop xp:{} hit:{} npc_id:{}", currentXp, predictedHit.getHit(), targetActor.getId());
-			hitBuffer.add(new Hit(predictedHit.getHit(), attachToTargetActor, attackStyle));
-			postPredictedHit(predictedHit);
+			hitBufferOverlay.add(new Hit(predictedHit.getHit(), attachToTargetActor, attackStyle));
+			hitBufferClientTick.add(predictedHit);
 		}
 
 		XpDrop xpDrop = new XpDrop(Skill.fromSkill(event.getSkill()), currentXp, matchPrayerStyle(Skill.fromSkill(event.getSkill())), true, attachToTargetActor);
@@ -512,9 +540,8 @@ public class CustomizableXpDropsPlugin extends Plugin
 			if (event.getSkill() == net.runelite.api.Skill.HITPOINTS && targetActor != null)
 			{
 				PredictedHit predictedHit = xpDropDamageCalculator.predictHit(targetActor, currentXp - previousXp, config.xpMultiplier(), attackStyle, wasSpecialAttack);
-				log.debug("Hit npc with hp xp drop xp:{} hit:{} npc_id:{}", currentXp - previousXp, predictedHit.getHit(), targetActor.getId());
-				hitBuffer.add(new Hit(predictedHit.getHit(), attachToTargetActor, attackStyle));
-				postPredictedHit(predictedHit);
+				hitBufferOverlay.add(new Hit(predictedHit.getHit(), attachToTargetActor, attackStyle));
+				hitBufferClientTick.add(predictedHit);
 			}
 
 			XpDrop xpDrop = new XpDrop(Skill.fromSkill(event.getSkill()), currentXp - previousXp, matchPrayerStyle(Skill.fromSkill(event.getSkill())), false, attachToTargetActor);
@@ -619,7 +646,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 	private void appendPredictedHit(Widget xpdrop)
 	{
 		final Widget text = xpdrop.getChild(0);
-		Hit hit = hitBuffer.peek();
+		Hit hit = hitBufferOverlay.peek();
 		if (text != null
 			&& xpdrop.getChildren() != null
 			&& Arrays

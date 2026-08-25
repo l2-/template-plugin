@@ -205,6 +205,7 @@ public class XpDropOverlayManager
 		//remove overlays
 		shutdownXpDropOverlay();
 		overlayManager.remove(currentXpTrackerOverlay);
+		xpDropsInFlight.clear();
 	}
 
 	public void update()
@@ -316,14 +317,14 @@ public class XpDropOverlayManager
 		AttackStyle predictedHitAttackStyle = null;
 		TargetActor targetActor = null;
 		{
-			Hit hit = plugin.getHitBuffer().poll();
+			Hit hit = plugin.getHitBufferOverlay().poll();
 			while (hit != null)
 			{
 				totalHit += hit.getHit();
 				targetActor = hit.getAttachedTargetActor();
 				predictedHitAttackStyle = hit.getStyle();
 
-				hit = plugin.getHitBuffer().poll();
+				hit = plugin.getHitBufferOverlay().poll();
 			}
 		}
 

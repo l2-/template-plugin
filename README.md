@@ -23,6 +23,7 @@ Join the discord server if you have suggestions, issues or feedback, or want to 
 - Show predicted hits from party members.
 
 #### Change log
+- v1.15.13 - Fixed bug where people with 200m hp xp would get a predicted hit per hit splat for party and plugin messages.
 - v1.15.12 - Added Venators and Blood-Starved Venator XP bonus - `@cpbr-dev`
 - v1.15.11 - Fix party predicted hits on npcs in different worldviews. For example when sailing.
 - v1.15.10.1 - Fix mad angel xp bonus.
