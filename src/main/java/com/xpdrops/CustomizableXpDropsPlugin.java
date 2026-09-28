@@ -51,6 +51,7 @@ import net.runelite.client.game.ItemVariationMapping;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.party.PartyConfig;
 import net.runelite.client.plugins.party.PartyPlugin;
 import net.runelite.client.plugins.xptracker.XpTrackerPlugin;
 import net.runelite.client.util.Text;
@@ -124,6 +125,12 @@ public class CustomizableXpDropsPlugin extends Plugin
 	XpDropsConfig provideConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(XpDropsConfig.class);
+	}
+
+	@Provides
+	PartyConfig providePartyConfig(ConfigManager configManager)
+	{
+		return configManager.getConfig(PartyConfig.class);
 	}
 
 	int skillPriorityComparator(XpDrop x1, XpDrop x2)
