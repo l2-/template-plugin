@@ -127,12 +127,6 @@ public class CustomizableXpDropsPlugin extends Plugin
 		return configManager.getConfig(XpDropsConfig.class);
 	}
 
-	@Provides
-	PartyConfig providePartyConfig(ConfigManager configManager)
-	{
-		return configManager.getConfig(PartyConfig.class);
-	}
-
 	int skillPriorityComparator(XpDrop x1, XpDrop x2)
 	{
 		int priority1 = SKILL_PRIORITY[x1.getSkill().ordinal()];

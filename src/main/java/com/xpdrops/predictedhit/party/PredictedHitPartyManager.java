@@ -11,6 +11,7 @@ import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import net.runelite.api.WorldView;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -61,10 +62,10 @@ public class PredictedHitPartyManager
 	private final ArrayListMultimap<TargetActor, PredictedHitInFlight> predictedHitInFlights = ArrayListMultimap.create();
 
 	@Inject
-	protected PredictedHitPartyManager(XpDropsConfig config, PartyConfig partyConfig)
+	protected PredictedHitPartyManager(XpDropsConfig config, ConfigManager configManager)
 	{
 		this.config = config;
-		this.partyConfig = partyConfig;
+		this.partyConfig = configManager.getConfig(PartyConfig.class);
 	}
 
 	public void startUp()

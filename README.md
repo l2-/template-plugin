@@ -23,6 +23,7 @@ Join the discord server if you have suggestions, issues or feedback, or want to 
 - Show predicted hits from party members.
 
 #### Change log
+- v1.15.15 - Fixed bug where plugin settings would show the party plugin settings.
 - v1.15.14 - Fixed bug where plugin couldn't start.
 - v1.15.13 - Fixed bug where people with 200m hp xp would get a predicted hit per hit splat for party and plugin messages.
 - v1.15.12 - Added Venators and Blood-Starved Venator XP bonus - `@cpbr-dev`
