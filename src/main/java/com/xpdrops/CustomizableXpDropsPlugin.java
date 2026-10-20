@@ -11,9 +11,9 @@ import com.xpdrops.overlay.XpDropOverlayManager;
 import com.xpdrops.predictedhit.Hit;
 import com.xpdrops.predictedhit.PredictedHit;
 import com.xpdrops.predictedhit.TargetActor;
-import com.xpdrops.predictedhit.party.PredictedHitPartyManager;
 import com.xpdrops.predictedhit.XpDropDamageCalculator;
 import com.xpdrops.predictedhit.npcswithscalingbonus.ChambersLayoutSolver;
+import com.xpdrops.predictedhit.party.PredictedHitPartyManager;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Actor;
@@ -23,7 +23,6 @@ import net.runelite.api.GameState;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.Player;
-import net.runelite.api.Prayer;
 import net.runelite.api.events.BeforeRender;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.ClientTick;
@@ -568,7 +567,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 	{
 		for (XpPrayer prayer : XpPrayer.values())
 		{
-			if (client.getServerVarbitValue(prayer.getPrayer().getVarbit()) == 1)
+			if (client.getServerVarbitValue(prayer.getPrayerVarbit()) == 1)
 			{
 				return prayer;
 			}
@@ -610,7 +609,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 				return XpDropStyle.MELEE;
 			}
 			// The following prayers work for all 3 combat styles
-			if (activePrayer.getPrayer() == Prayer.RP_TRINITAS || activePrayer.getPrayer() == Prayer.RP_INTENSIFY)
+			if (activePrayer.getPrayerVarbit() == VarbitID.PRAYER_TRINITAS || activePrayer.getPrayerVarbit() == VarbitID.PRAYER_INTENSIFY)
 			{
 				switch (skill)
 				{
