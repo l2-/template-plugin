@@ -18,16 +18,10 @@ public class NPCStats
 
 	private int offensiveAtt;
 	private int offensiveStr;
-//	private int offensiveMage;
-//	private int offensiveMageStr;
-//	private int offensiveRange;
-//	private int offensiveRangeStr;
 
 	private int defensiveStab;
 	private int defensiveSlash;
 	private int defensiveCrush;
-	private int defensiveMage;
-	private int defensiveRange;
 
 	private static final int MAX_HP_FOR_MULTIPLIER = 2000;
 
