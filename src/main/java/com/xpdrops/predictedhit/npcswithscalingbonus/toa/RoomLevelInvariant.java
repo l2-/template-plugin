@@ -4,9 +4,9 @@ public abstract class RoomLevelInvariant extends ToANPC
 {
 	public static class RoomLevelInvariant5x extends RoomLevelInvariant
 	{
-		public RoomLevelInvariant5x(double baseHP, int att, int str, int def, int mage, int range, int offensiveAtt, int offensiveStr, int defensiveStab, int defensiveSlash, int defensiveCrush, int defensiveMage, int defensiveRange)
+		public RoomLevelInvariant5x(double baseHP, int att, int str, int def, int mage, int range, int offensiveAtt, int offensiveStr, int defensiveStab, int defensiveSlash, int defensiveCrush)
 		{
-			super(baseHP, att, str, def, mage, range, offensiveAtt, offensiveStr, defensiveStab, defensiveSlash, defensiveCrush, defensiveMage, defensiveRange);
+			super(baseHP, att, str, def, mage, range, offensiveAtt, offensiveStr, defensiveStab, defensiveSlash, defensiveCrush);
 		}
 
 		@Override
@@ -18,9 +18,9 @@ public abstract class RoomLevelInvariant extends ToANPC
 
 	public static class RoomLevelInvariant10x extends RoomLevelInvariant
 	{
-		public RoomLevelInvariant10x(double baseHP, int att, int str, int def, int mage, int range, int offensiveAtt, int offensiveStr, int defensiveStab, int defensiveSlash, int defensiveCrush, int defensiveMage, int defensiveRange)
+		public RoomLevelInvariant10x(double baseHP, int att, int str, int def, int mage, int range, int offensiveAtt, int offensiveStr, int defensiveStab, int defensiveSlash, int defensiveCrush)
 		{
-			super(baseHP, att, str, def, mage, range, offensiveAtt, offensiveStr, defensiveStab, defensiveSlash, defensiveCrush, defensiveMage, defensiveRange);
+			super(baseHP, att, str, def, mage, range, offensiveAtt, offensiveStr, defensiveStab, defensiveSlash, defensiveCrush);
 		}
 
 		@Override
@@ -30,9 +30,9 @@ public abstract class RoomLevelInvariant extends ToANPC
 		}
 	}
 
-	public RoomLevelInvariant(double baseHP, int att, int str, int def, int mage, int range, int offensiveAtt, int offensiveStr, int defensiveStab, int defensiveSlash, int defensiveCrush, int defensiveMage, int defensiveRange)
+	public RoomLevelInvariant(double baseHP, int att, int str, int def, int mage, int range, int offensiveAtt, int offensiveStr, int defensiveStab, int defensiveSlash, int defensiveCrush)
 	{
-		super(baseHP, att, str, def, mage, range, offensiveAtt, offensiveStr, defensiveStab, defensiveSlash, defensiveCrush, defensiveMage, defensiveRange);
+		super(baseHP, att, str, def, mage, range, offensiveAtt, offensiveStr, defensiveStab, defensiveSlash, defensiveCrush);
 	}
 
 	protected int calculateHp(int raidLevel, int partySize, int pathLevel, double multiplier)

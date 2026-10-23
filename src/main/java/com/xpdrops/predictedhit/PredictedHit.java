@@ -27,6 +27,7 @@ public class PredictedHit
 		COX_CM,
 		TOB,
 		TOA,
+		TFA,
 	}
 
 	// Calculated with (int) Math.round((hpXpAwarded * (3.0d / 4.0d)) / xpModifier / userXpModifier)

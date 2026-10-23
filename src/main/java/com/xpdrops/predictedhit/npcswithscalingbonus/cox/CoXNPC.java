@@ -5,9 +5,9 @@ import com.xpdrops.predictedhit.npcswithscalingbonus.NPCStats;
 // Credits: De0, Bogi153, craigobaker, Ogkek, Machtigeman, and In Africa, for the CoX specific formulae used in this class and package.
 public class CoXNPC extends NPCStats
 {
-	public CoXNPC(int hp, int att, int str, int mage, int range, int def, int offensiveAtt, int offensiveStr, int defensiveStab, int defensiveSlash, int defensiveCrush, int defensiveMage, int defensiveRange)
+	public CoXNPC(int hp, int att, int str, int mage, int range, int def, int offensiveAtt, int offensiveStr, int defensiveStab, int defensiveSlash, int defensiveCrush)
 	{
-		super(hp, att, str, def, mage, range, offensiveAtt, offensiveStr, defensiveStab, defensiveSlash, defensiveCrush, defensiveMage, defensiveRange);
+		super(hp, att, str, def, mage, range, offensiveAtt, offensiveStr, defensiveStab, defensiveSlash, defensiveCrush);
 	}
 
 	private boolean isCM(int raidType)
@@ -87,9 +87,7 @@ public class CoXNPC extends NPCStats
 			getOffensiveStr(),
 			getDefensiveStab(),
 			getDefensiveSlash(),
-			getDefensiveCrush(),
-			getDefensiveMage(),
-			getDefensiveRange()
+			getDefensiveCrush()
 		);
 		return modifierFromStats(scaledStats);
 	}

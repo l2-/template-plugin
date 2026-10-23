@@ -9,9 +9,9 @@ public abstract class ToANPC extends NPCStats
 	public static final double[] roomModifiers = {1.0, 1.08, 1.13, 1.18, 1.23, 1.28, 1.33};
 
 	protected final double baseHP;
-	public ToANPC(double baseHP, int att, int str, int def, int mage, int range, int offensiveAtt, int offensiveStr, int defensiveStab, int defensiveSlash, int defensiveCrush, int defensiveMage, int defensiveRange)
+	public ToANPC(double baseHP, int att, int str, int def, int mage, int range, int offensiveAtt, int offensiveStr, int defensiveStab, int defensiveSlash, int defensiveCrush)
 	{
-		super(0, att, str, def, mage, range, offensiveAtt, offensiveStr, defensiveStab, defensiveSlash, defensiveCrush, defensiveMage, defensiveRange);
+		super(0, att, str, def, mage, range, offensiveAtt, offensiveStr, defensiveStab, defensiveSlash, defensiveCrush);
 		this.baseHP = baseHP;
 	}
 
@@ -26,7 +26,7 @@ public abstract class ToANPC extends NPCStats
 		partySize = Math.max(0, Math.min(teamModifiers.length - 1, partySize - 1));
 		pathLevel = Math.max(0, Math.min(roomModifiers.length - 1, pathLevel));
 		int hp = calculateHp(raidLevel, partySize, pathLevel);
-		NPCStats npcStats = new NPCStats(hp, getAtt(), getStr(), getDef(), getMage(), getRange(), getOffensiveAtt(), getOffensiveStr(), getDefensiveStab(), getDefensiveSlash(), getDefensiveCrush(), getDefensiveMage(), getDefensiveRange());
+		NPCStats npcStats = new NPCStats(hp, getAtt(), getStr(), getDef(), getMage(), getRange(), getOffensiveAtt(), getOffensiveStr(), getDefensiveStab(), getDefensiveSlash(), getDefensiveCrush());
 		double modifierFromStats = modifierFromStats(npcStats);
 		// not sure if required but following the formulae
 		return Math.max(1.0, modifierFromStats);
