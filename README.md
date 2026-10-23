@@ -23,6 +23,7 @@ Join the discord server if you have suggestions, issues or feedback, or want to 
 - Show predicted hits from party members.
 
 #### Change log
+- v1.16.0 - Added The Fractured Archive bosses to predicted hit calculations.
 - v1.15.16 - Added Zeal prayer support.
 - v1.15.15 - Fixed bug where plugin settings would show the party plugin settings.
 - v1.15.14 - Fixed bug where plugin couldn't start.

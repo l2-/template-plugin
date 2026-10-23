@@ -7,6 +7,7 @@ import com.xpdrops.attackstyles.AttackStyle;
 import com.xpdrops.predictedhit.npcswithscalingbonus.ChambersLayoutSolver;
 import com.xpdrops.predictedhit.npcswithscalingbonus.DelveNpc;
 import com.xpdrops.predictedhit.npcswithscalingbonus.cox.CoXNPCs;
+import com.xpdrops.predictedhit.npcswithscalingbonus.tfa.TFA_NPCs;
 import com.xpdrops.predictedhit.npcswithscalingbonus.toa.ToANPCs;
 import com.xpdrops.predictedhit.npcswithscalingbonus.tob.ToBNPCs;
 import lombok.extern.slf4j.Slf4j;
@@ -130,6 +131,18 @@ public class XpDropDamageCalculator
 			}
 		}
 		return -1;
+	}
+
+	private int getTFAPartySize()
+	{
+		return 1 +
+			(client.getVarbitValue(VarbitID.TFA_CLIENT_P1) != 0 ? 1 : 0) +
+			(client.getVarbitValue(VarbitID.TFA_CLIENT_P2) != 0 ? 1 : 0) +
+			(client.getVarbitValue(VarbitID.TFA_CLIENT_P3) != 0 ? 1 : 0) +
+			(client.getVarbitValue(VarbitID.TFA_CLIENT_P4) != 0 ? 1 : 0) +
+			(client.getVarbitValue(VarbitID.TFA_CLIENT_P5) != 0 ? 1 : 0) +
+			(client.getVarbitValue(VarbitID.TFA_CLIENT_P6) != 0 ? 1 : 0) +
+			(client.getVarbitValue(VarbitID.TFA_CLIENT_P7) != 0 ? 1 : 0);
 	}
 
 	private int calculateHit(int hpXpDiff, double modifier, double configModifier)
@@ -292,6 +305,14 @@ public class XpDropDamageCalculator
 			hit.setRaidLevel(raidLevel);
 			hit.setXpModifier(ToANPCs.getModifier(id, partySize, raidLevel, roomLevel));
 			log.debug("TOA modifier {} {} party size {} raid level {} room level {}", id, hit.getXpModifier(), partySize, raidLevel, roomLevel);
+		}
+		else if (TFA_NPCs.isTFA_NPC(id))
+		{
+			int partySize = getTFAPartySize();
+			hit.setRaid(PredictedHit.Raid.TFA);
+			hit.setPartySize(partySize);
+			hit.setXpModifier(TFA_NPCs.getModifier(id, partySize));
+			log.debug("TFA modifier {} {} party size {}", id, hit.getXpModifier(), partySize);
 		}
 		else if (USER_DEFINED_XP_BONUS_MAPPING.containsKey(id))
 		{
