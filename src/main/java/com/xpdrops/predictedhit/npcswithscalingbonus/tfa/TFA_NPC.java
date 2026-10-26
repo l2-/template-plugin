@@ -15,7 +15,7 @@ public class TFA_NPC extends NPCStats
 
 	protected int calculateHp(int partySize)
 	{
-		double modifier = partySizeHpModifiers[Math.max(0, Math.min(partySize, partySizeHpModifiers.length - 1))];
+		double modifier = partySizeHpModifiers[Math.max(0, Math.min(partySize - 1, partySizeHpModifiers.length - 1))];
 		return (int)(Math.round(modifier * baseHP * 0.1) * 10);
 	}
 
