@@ -4,7 +4,7 @@ import com.xpdrops.predictedhit.npcswithscalingbonus.NPCStats;
 
 public class TFA_NPC extends NPCStats
 {
-	public static final double[] partySizeHpModifiers = {1, 1, 1.45, 1.87, 2.29, 2.71, 3.13, 3.55};
+	public static final double[] partySizeHpModifiers = {1, 1.1, 1.45, 1.87, 2.29, 2.71, 3.13, 3.55};
 	protected final double baseHP;
 
 	public TFA_NPC(int hp, int att, int str, int def, int mage, int range, int offensiveAtt, int offensiveStr, int defensiveStab, int defensiveSlash, int defensiveCrush)

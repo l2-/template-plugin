@@ -60,9 +60,9 @@ public enum TFA_NPCs
 	enum TFANPCStats
 	{
 		// Archive guardian and Ocellus p1 and p3 never have xp bonus
-		BORK(new TFA_NPC(1500, 200, 200, 300, 90, 200, 100, 40, 140, 130, 10)),
-		SMORK(new TFA_NPC(600, 1, 220, 1, 185, 185, 0, 0, 220, 170, 160)),
-		XARTH(new TFA_NPC(2600, 250, 170, 225, 220, 350, 450, 30, 115, 105, 20)),
+		BORK(new TFA_NPC(1650, 200, 200, 300, 90, 200, 100, 40, 140, 130, 10)),
+		SMORK(new TFA_NPC(650, 1, 220, 1, 185, 185, 0, 0, 220, 170, 160)),
+		XARTH(new TFA_NPC(2450, 250, 170, 225, 220, 350, 450, 30, 60, 105, 20)),
 		XARTH_CORPSE(new TFA_NPC(62, 50, 100, 40, 1, 100, 0, 0, 100, 100, 100)),
 		DAGON_HAI(new TFA_NPC(600, 1, 100, 1, 260, 290, 0, 1, 50, 50, 50)),
 		DREADNOTH_THE_JELLIED(new TFA_NPC(2100, 280, 125, 285, 250, 220, 185, 35, 15, 20, 5)),

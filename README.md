@@ -23,6 +23,7 @@ Join the discord server if you have suggestions, issues or feedback, or want to 
 - Show predicted hits from party members.
 
 #### Change log
+- v1.16.2 - Fixed TFA npc stats after last update.
 - v1.16.1 - Fixed incorrect party size calculation.
 - v1.16.0 - Added The Fractured Archive bosses to predicted hit calculations.
 - v1.15.16 - Added Zeal prayer support.
