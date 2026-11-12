@@ -22,7 +22,8 @@ public class TextComponentWithAlpha implements RenderableEntity
 	{
 		NONE,
 		SHADOW,
-		OUTLINE
+		OUTLINE,
+		BOLD_OUTLINE
 	}
 
 	int alphaOverride = 255;
@@ -96,6 +97,27 @@ public class TextComponentWithAlpha implements RenderableEntity
 						graphics.drawString(textWithoutCol, x + 1, position.y + 1);
 						break;
 					}
+					case BOLD_OUTLINE:
+					{
+						graphics.drawString(textWithoutCol, x + 1, position.y);
+						graphics.drawString(textWithoutCol, x - 1, position.y);
+
+						graphics.drawString(textWithoutCol, x, position.y + 1);
+						graphics.drawString(textWithoutCol, x, position.y - 1);
+
+						graphics.drawString(textWithoutCol, x + 1, position.y + 1);
+						graphics.drawString(textWithoutCol, x - 1, position.y - 1);
+
+						graphics.drawString(textWithoutCol, x + 1, position.y - 1);
+						graphics.drawString(textWithoutCol, x - 1, position.y + 1);
+
+						graphics.drawString(textWithoutCol, x + 2, position.y);
+						graphics.drawString(textWithoutCol, x, position.y + 2);
+
+						graphics.drawString(textWithoutCol, x + 2, position.y + 1);
+						graphics.drawString(textWithoutCol, x + 1, position.y + 2);
+						break;
+					}
 					default:
 						break;
 				}
@@ -113,7 +135,7 @@ public class TextComponentWithAlpha implements RenderableEntity
 
 			switch (background)
 			{
-				case OUTLINE :
+				case OUTLINE:
 				{
 					graphics.drawString(text, position.x, position.y + 1);
 					graphics.drawString(text, position.x, position.y - 1);
@@ -124,6 +146,27 @@ public class TextComponentWithAlpha implements RenderableEntity
 				case SHADOW:
 				{
 					graphics.drawString(text, position.x + 1, position.y + 1);
+					break;
+				}
+				case BOLD_OUTLINE:
+				{
+					graphics.drawString(text, position.x + 1, position.y);
+					graphics.drawString(text, position.x - 1, position.y);
+
+					graphics.drawString(text, position.x, position.y + 1);
+					graphics.drawString(text, position.x, position.y - 1);
+
+					graphics.drawString(text, position.x + 1, position.y + 1);
+					graphics.drawString(text, position.x - 1, position.y - 1);
+
+					graphics.drawString(text, position.x + 1, position.y - 1);
+					graphics.drawString(text, position.x - 1, position.y + 1);
+
+					graphics.drawString(text, position.x + 2, position.y);
+					graphics.drawString(text, position.x, position.y + 2);
+
+					graphics.drawString(text, position.x + 2, position.y + 1);
+					graphics.drawString(text, position.x + 1, position.y + 2);
 					break;
 				}
 				default:
