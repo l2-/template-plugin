@@ -82,45 +82,7 @@ public class TextComponentWithAlpha implements RenderableEntity
 
 				graphics.setColor(ColorUtil.colorWithAlpha(Color.BLACK, alpha));
 
-				switch (background)
-				{
-					case OUTLINE :
-					{
-						graphics.drawString(textWithoutCol, x, position.y + 1);
-						graphics.drawString(textWithoutCol, x, position.y - 1);
-						graphics.drawString(textWithoutCol, x + 1, position.y);
-						graphics.drawString(textWithoutCol, x - 1, position.y);
-						break;
-					}
-					case SHADOW:
-					{
-						graphics.drawString(textWithoutCol, x + 1, position.y + 1);
-						break;
-					}
-					case BOLD_OUTLINE:
-					{
-						graphics.drawString(textWithoutCol, x + 1, position.y);
-						graphics.drawString(textWithoutCol, x - 1, position.y);
-
-						graphics.drawString(textWithoutCol, x, position.y + 1);
-						graphics.drawString(textWithoutCol, x, position.y - 1);
-
-						graphics.drawString(textWithoutCol, x + 1, position.y + 1);
-						graphics.drawString(textWithoutCol, x - 1, position.y - 1);
-
-						graphics.drawString(textWithoutCol, x + 1, position.y - 1);
-						graphics.drawString(textWithoutCol, x - 1, position.y + 1);
-
-						graphics.drawString(textWithoutCol, x + 2, position.y);
-						graphics.drawString(textWithoutCol, x, position.y + 2);
-
-						graphics.drawString(textWithoutCol, x + 2, position.y + 1);
-						graphics.drawString(textWithoutCol, x + 1, position.y + 2);
-						break;
-					}
-					default:
-						break;
-				}
+				renderShadow(graphics, textWithoutCol, x, position.y, background);
 
 				// actual text
 				graphics.setColor(ColorUtil.colorWithAlpha(Color.decode("#" + rgbString), alpha));
@@ -133,45 +95,7 @@ public class TextComponentWithAlpha implements RenderableEntity
 		{
 			graphics.setColor(ColorUtil.colorWithAlpha(Color.BLACK, alphaOverride));
 
-			switch (background)
-			{
-				case OUTLINE:
-				{
-					graphics.drawString(text, position.x, position.y + 1);
-					graphics.drawString(text, position.x, position.y - 1);
-					graphics.drawString(text, position.x + 1, position.y);
-					graphics.drawString(text, position.x - 1, position.y);
-					break;
-				}
-				case SHADOW:
-				{
-					graphics.drawString(text, position.x + 1, position.y + 1);
-					break;
-				}
-				case BOLD_OUTLINE:
-				{
-					graphics.drawString(text, position.x + 1, position.y);
-					graphics.drawString(text, position.x - 1, position.y);
-
-					graphics.drawString(text, position.x, position.y + 1);
-					graphics.drawString(text, position.x, position.y - 1);
-
-					graphics.drawString(text, position.x + 1, position.y + 1);
-					graphics.drawString(text, position.x - 1, position.y - 1);
-
-					graphics.drawString(text, position.x + 1, position.y - 1);
-					graphics.drawString(text, position.x - 1, position.y + 1);
-
-					graphics.drawString(text, position.x + 2, position.y);
-					graphics.drawString(text, position.x, position.y + 2);
-
-					graphics.drawString(text, position.x + 2, position.y + 1);
-					graphics.drawString(text, position.x + 1, position.y + 2);
-					break;
-				}
-				default:
-					break;
-			}
+			renderShadow(graphics, text, position.x, position.y, background);
 
 			// actual text
 			graphics.setColor(ColorUtil.colorWithAlpha(color, alphaOverride));
@@ -187,5 +111,48 @@ public class TextComponentWithAlpha implements RenderableEntity
 		}
 
 		return new Dimension(width, height);
+	}
+
+	public void renderShadow(Graphics2D graphics, String text, int x, int y, Background background)
+	{
+		switch (background)
+		{
+			case OUTLINE:
+			{
+				graphics.drawString(text, x, y + 1);
+				graphics.drawString(text, x, y - 1);
+				graphics.drawString(text, x + 1, y);
+				graphics.drawString(text, x - 1, y);
+				break;
+			}
+			case SHADOW:
+			{
+				graphics.drawString(text, x + 1, y + 1);
+				break;
+			}
+			case BOLD_OUTLINE:
+			{
+				graphics.drawString(text, x + 1, y);
+				graphics.drawString(text, x - 1, y);
+
+				graphics.drawString(text, x, y + 1);
+				graphics.drawString(text, x, y - 1);
+
+				graphics.drawString(text, x + 1, y + 1);
+				graphics.drawString(text, x - 1, y - 1);
+
+				graphics.drawString(text, x + 1, y - 1);
+				graphics.drawString(text, x - 1, y + 1);
+
+				graphics.drawString(text, x + 2, y);
+				graphics.drawString(text, x, y + 2);
+
+				graphics.drawString(text, x + 2, y + 1);
+				graphics.drawString(text, x + 1, y + 2);
+				break;
+			}
+			default:
+				break;
+		}
 	}
 }
