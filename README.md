@@ -23,10 +23,14 @@ Join the discord server if you have suggestions, issues or feedback, or want to 
 - Show predicted hits from party members.
 
 #### Change log
+- v1.16.4 - Change TFA npc hp scaling in duo back to 1.0.
 - v1.16.3 - Added BOLD_OUTLINE to text rendering. - `rdutta`
 - v1.16.2 - Fixed TFA npc stats after last update.
 - v1.16.1 - Fixed incorrect party size calculation.
 - v1.16.0 - Added The Fractured Archive bosses to predicted hit calculations.
+<details>
+<summary>Older versions changelog</summary>
+
 - v1.15.16 - Added Zeal prayer support.
 - v1.15.15 - Fixed bug where plugin settings would show the party plugin settings.
 - v1.15.14 - Fixed bug where plugin couldn't start.
@@ -45,9 +49,6 @@ Join the discord server if you have suggestions, issues or feedback, or want to 
 - v1.15.2 - Fixed case of Runescape small + bold combination resulting in Runescape bold font.
 - v1.15.1 - Added cases to font migration. Fix where bold italic Runescape font was extra thicc.
 - v1.15.0 - Changed font configs to work with the new Runelite font config setting feature. Added migration for old font settings to new one.
-<details>
-<summary>Older versions changelog</summary>
-
 - v1.14.0 - Added new cow boss xp bonuses.
 - v1.13.3 - Fixed issue with overlay not turning on without turning the plugin off and on. Fixed exception issue.
 - v1.13.2 - Change predicted hit in party setting to default to off.
