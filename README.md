@@ -23,6 +23,7 @@ Join the discord server if you have suggestions, issues or feedback, or want to 
 - Show predicted hits from party members.
 
 #### Change log
+- v1.16.5 - Fixed predicted hits on Archive Guardian and Ocellus phases 1 and 3 showing too high. - `Mylosis`
 - v1.16.4 - Change TFA npc hp scaling in duo back to 1.0.
 - v1.16.3 - Added BOLD_OUTLINE to text rendering. - `rdutta`
 - v1.16.2 - Fixed TFA npc stats after last update.
