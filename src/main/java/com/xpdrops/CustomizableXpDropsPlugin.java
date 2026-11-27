@@ -490,6 +490,22 @@ public class CustomizableXpDropsPlugin extends Plugin
 		}
 	}
 
+	private boolean isCombatXpSkill(net.runelite.api.Skill skill)
+	{
+		switch (skill)
+		{
+			case ATTACK:
+			case STRENGTH:
+			case DEFENCE:
+			case RANGED:
+			case MAGIC:
+			case HITPOINTS:
+				return true;
+			default:
+				return false;
+		}
+	}
+
 	@Subscribe
 	protected void onFakeXpDrop(FakeXpDrop event)
 	{
@@ -507,8 +523,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 			opponent = player.getInteracting();
 		}
 		TargetActor targetActor = opponent != null ? TargetActor.fromActor(opponent) : lastInteractingTarget;
-		TargetActor attachToTargetActor = opponent != null ? targetActor : null;
-
+		TargetActor attachToTargetActor = isCombatXpSkill(event.getSkill()) ? targetActor : null;
 		if (event.getSkill() == net.runelite.api.Skill.HITPOINTS && targetActor != null)
 		{
 			PredictedHit predictedHit = xpDropDamageCalculator.predictHit(targetActor, currentXp, config.xpMultiplier(), attackStyle, wasSpecialAttack);
@@ -534,8 +549,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 				opponent = player.getInteracting();
 			}
 			TargetActor targetActor = opponent != null ? TargetActor.fromActor(opponent) : lastInteractingTarget;
-			TargetActor attachToTargetActor = opponent != null ? targetActor : null;
-
+			TargetActor attachToTargetActor = isCombatXpSkill(event.getSkill()) ? targetActor : null;
 			if (event.getSkill() == net.runelite.api.Skill.HITPOINTS && targetActor != null)
 			{
 				PredictedHit predictedHit = xpDropDamageCalculator.predictHit(targetActor, currentXp - previousXp, config.xpMultiplier(), attackStyle, wasSpecialAttack);
