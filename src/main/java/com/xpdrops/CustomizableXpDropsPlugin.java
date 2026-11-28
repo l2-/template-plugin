@@ -16,13 +16,11 @@ import com.xpdrops.predictedhit.npcswithscalingbonus.ChambersLayoutSolver;
 import com.xpdrops.predictedhit.party.PredictedHitPartyManager;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import net.runelite.api.EquipmentInventorySlot;
 import net.runelite.api.GameState;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
-import net.runelite.api.Player;
 import net.runelite.api.events.BeforeRender;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.ClientTick;
@@ -54,7 +52,6 @@ import net.runelite.client.plugins.party.PartyPlugin;
 import net.runelite.client.plugins.xptracker.XpTrackerPlugin;
 import net.runelite.client.util.Text;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.ArrayDeque;
 import java.util.Arrays;
@@ -119,6 +116,9 @@ public class CustomizableXpDropsPlugin extends Plugin
 	@Inject
 	private PredictedHitPartyManager predictedHitPartyManager;
 
+	@Inject
+	private TargetingActor targetingActor;
+
 	@Provides
 	XpDropsConfig provideConfig(ConfigManager configManager)
 	{
@@ -156,8 +156,6 @@ public class CustomizableXpDropsPlugin extends Plugin
 	private AttackStyle attackStyle;
 	private int specEnergy = -1;
 	private boolean wasSpecialAttack = false;
-	@Nullable
-	private TargetActor lastInteractingTarget = null;
 
 	@Override
 	protected void startUp()
@@ -310,10 +308,11 @@ public class CustomizableXpDropsPlugin extends Plugin
 	{
 		chambersLayoutSolver.onGameTick(gameTick);
 		wasSpecialAttack = false;
+		targetingActor.onGameTick(gameTick);
 	}
 
 	@Subscribe
-	protected void onClientTick(ClientTick clientTick)
+	protected void onClientTick(ClientTick ignored)
 	{
 		if (!hitBufferClientTick.isEmpty())
 		{
@@ -478,16 +477,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 	@Subscribe
 	public void onInteractingChanged(InteractingChanged event)
 	{
-		if (event.getSource() != client.getLocalPlayer())
-		{
-			return;
-		}
-
-		if (event.getTarget() != null)
-		{
-			Actor actor = event.getTarget();
-			lastInteractingTarget = TargetActor.fromActor(actor);
-		}
+		targetingActor.onInteractingChanged(event);
 	}
 
 	@Subscribe
@@ -500,14 +490,8 @@ public class CustomizableXpDropsPlugin extends Plugin
 			return;
 		}
 
-		Player player = client.getLocalPlayer();
-		Actor opponent = null;
-		if (player != null)
-		{
-			opponent = player.getInteracting();
-		}
-		TargetActor targetActor = opponent != null ? TargetActor.fromActor(opponent) : lastInteractingTarget;
-		TargetActor attachToTargetActor = opponent != null ? targetActor : null;
+		TargetActor targetActor = targetingActor.getTargetActor();
+		TargetActor attachToTargetActor = targetingActor.getAttachToTargetActor(event.getSkill());
 
 		if (event.getSkill() == net.runelite.api.Skill.HITPOINTS && targetActor != null)
 		{
@@ -527,14 +511,8 @@ public class CustomizableXpDropsPlugin extends Plugin
 		int previousXp = previous_exp[event.getSkill().ordinal()];
 		if (previousXp > 0 && currentXp - previousXp > 0)
 		{
-			Player player = client.getLocalPlayer();
-			Actor opponent = null;
-			if (player != null)
-			{
-				opponent = player.getInteracting();
-			}
-			TargetActor targetActor = opponent != null ? TargetActor.fromActor(opponent) : lastInteractingTarget;
-			TargetActor attachToTargetActor = opponent != null ? targetActor : null;
+			TargetActor targetActor = targetingActor.getTargetActor();
+			TargetActor attachToTargetActor = targetingActor.getAttachToTargetActor(event.getSkill());
 
 			if (event.getSkill() == net.runelite.api.Skill.HITPOINTS && targetActor != null)
 			{
@@ -551,7 +529,7 @@ public class CustomizableXpDropsPlugin extends Plugin
 	}
 
 	@Subscribe
-	protected void onBeforeRender(BeforeRender beforeRender)
+	protected void onBeforeRender(BeforeRender ignored)
 	{
 		xpDropOverlayManager.update();
 		predictedHitPartyManager.update();
