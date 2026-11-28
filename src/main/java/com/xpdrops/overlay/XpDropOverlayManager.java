@@ -391,6 +391,10 @@ public class XpDropOverlayManager
 					{
 						flags |= FAKE_SKILL_FLAGS_MASK;
 					}
+					if (targetActor == null)
+					{
+						targetActor = xpDrop.getAttachedTargetActor();
+					}
 				}
 
 				xpDrop = plugin.getQueue().poll();
